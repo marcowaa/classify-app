@@ -16,7 +16,8 @@ Your job is to prepare the app for direct Google Play acceptance with no hidden 
 - Prepare release artifacts and checklist for smooth first-pass review.
 
 ## Hard Constraints
-- DO NOT guess policy details. Verify from official Google Play and Android documentation each run.
+- DO NOT guess policy details. Verify from official Google Play and Android documentation each 
+run.
 - DO NOT hide unresolved risks. Report blockers explicitly.
 - DO NOT leave old code paths, dead feature flags, duplicate payment logic, or debug residue after edits.
 - DO NOT change unrelated architecture for style preferences.
