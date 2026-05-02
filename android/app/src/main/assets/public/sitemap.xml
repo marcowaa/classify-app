@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  
+  <!-- Homepage — الصفحة الرئيسية -->
+  <url>
+    <loc>https://classi-fy.com/</loc>
+    <lastmod>2026-03-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://classi-fy.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://classi-fy.com/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://classi-fy.com/"/>
+    <image:image>
+      <image:loc>https://classi-fy.com/icons/icon-512.png</image:loc>
+      <image:title>Classify — تطبيق تعليمي للأطفال</image:title>
+      <image:caption>Classify — أفضل تطبيق تعليمي آمن للأطفال مع دعم عائلي واضح</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://classi-fy.com/screenshots/mobile-home.png</image:loc>
+      <image:title>الصفحة الرئيسية لتطبيق Classify</image:title>
+    </image:image>
+  </url>
+
+  <!-- Download — تحميل التطبيق -->
+  <url>
+    <loc>https://classi-fy.com/download</loc>
+    <lastmod>2026-03-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://classi-fy.com/screenshots/mobile-games.png</image:loc>
+      <image:title>تحميل تطبيق Classify التعليمي</image:title>
+    </image:image>
+  </url>
+
+  <!-- Trial Games — جرب الألعاب -->
+  <url>
+    <loc>https://classi-fy.com/trial-games</loc>
+    <lastmod>2026-03-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://classi-fy.com/screenshots/mobile-games.png</image:loc>
+      <image:title>ألعاب تعليمية مجانية للأطفال</image:title>
+    </image:image>
+  </url>
+
+  <!-- About — عن كلاسيفاي -->
+  <url>
+    <loc>https://classi-fy.com/about</loc>
+    <lastmod>2026-04-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.92</priority>
+    <image:image>
+      <image:loc>https://classi-fy.com/screenshots/mobile-home.png</image:loc>
+      <image:title>شرح منصة Classify التعليمية للأطفال</image:title>
+      <image:caption>Classify منصة تعليمية تركز على دعم الأهل للأبناء عبر ألعاب تعليمية ومهام ومكافآت.</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Contact — تواصل معنا -->
+  <url>
+    <loc>https://classi-fy.com/contact</loc>
+    <lastmod>2026-03-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Legal Center — المركز القانوني -->
+  <url>
+    <loc>https://classi-fy.com/legal</loc>
+    <lastmod>2026-03-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Privacy Policy — سياسة الخصوصية -->
+  <url>
+    <loc>https://classi-fy.com/privacy-policy</loc>
+    <lastmod>2026-03-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Terms of Service — شروط الاستخدام -->
+  <url>
+    <loc>https://classi-fy.com/terms</loc>
+    <lastmod>2026-03-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Child Safety — أمان الأطفال -->
+  <url>
+    <loc>https://classi-fy.com/child-safety</loc>
+    <lastmod>2026-03-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Cookie Policy -->
+  <url>
+    <loc>https://classi-fy.com/cookie-policy</loc>
+    <lastmod>2026-03-18</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+
+  <!-- Refund Policy -->
+  <url>
+    <loc>https://classi-fy.com/refund-policy</loc>
+    <lastmod>2026-03-18</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+
+  <!-- Acceptable Use -->
+  <url>
+    <loc>https://classi-fy.com/acceptable-use</loc>
+    <lastmod>2026-03-18</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+
+  <!-- Accessibility -->
+  <url>
+    <loc>https://classi-fy.com/accessibility</loc>
+    <lastmod>2026-03-18</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+
+  <!-- Account Deletion -->
+  <url>
+    <loc>https://classi-fy.com/delete-account</loc>
+    <lastmod>2026-03-18</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+</urlset>

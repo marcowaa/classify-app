@@ -1,0 +1,261 @@
+{
+  "name": "Classify — منصة تعليمية تفاعلية للأطفال",
+  "short_name": "Classify",
+  "description": "منصة تعليمية ممتعة للأطفال مع دعم عائلي ذكي وألعاب تفاعلية — Fun educational platform for kids with family guidance and interactive games",
+  "lang": "ar",
+  "dir": "auto",
+  "start_url": "/",
+  "scope": "/",
+  "id": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "window-controls-overlay"],
+  "background_color": "#ffffff",
+  "theme_color": "#6B4D9D",
+  "orientation": "portrait-primary",
+  "prefer_related_applications": false,
+  "handle_links": "preferred",
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "auto"]
+  },
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "scope_extensions": [
+    { "origin": "https://classi-fy.com" }
+  ],
+  "note_taking": {
+    "new_note_url": "/child-tasks?action=new"
+  },
+  "file_handlers": [
+    {
+      "action": "/child-games",
+      "accept": {
+        "application/json": [".json"],
+        "text/plain": [".txt", ".csv"]
+      },
+      "icons": [
+        { "src": "/icons/icon-96.png", "sizes": "96x96", "type": "image/png" }
+      ],
+      "launch_type": "single-client"
+    }
+  ],
+  "widgets": [
+    {
+      "name": "Classify Tasks",
+      "short_name": "Tasks",
+      "description": "عرض مهام الطفل — View child tasks",
+      "tag": "classify-tasks",
+      "ms_ac_template": "widget/tasks",
+      "data": "/api/child/tasks",
+      "type": "application/json",
+      "screenshots": [
+        { "src": "/screenshots/mobile-home.png", "sizes": "540x1200", "label": "Tasks Widget" }
+      ],
+      "icons": [
+        { "src": "/icons/icon-96.png", "sizes": "96x96", "type": "image/png" }
+      ],
+      "backgrounds": [
+        { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+      ]
+    }
+  ],
+  "tab_strip": {
+    "home_tab": {
+      "scope_patterns": [
+        { "pathname": "/" },
+        { "pathname": "/child-dashboard" },
+        { "pathname": "/child-games" }
+      ]
+    },
+    "new_tab_button": {
+      "url": "/child-tasks"
+    }
+  },
+  "share_target": {
+    "action": "/child-games",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+classify",
+      "url": "/%s"
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.classi_fy.twa",
+      "id": "com.classi_fy.twa"
+    },
+    {
+      "platform": "webapp",
+      "url": "https://classi-fy.com/manifest.json"
+    }
+  ],
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
+  "icons": [
+    {
+      "src": "/icons/icon-36.png",
+      "sizes": "36x36",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-48.png",
+      "sizes": "48x48",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-256.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/512x512-monochrome.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "monochrome"
+    }
+  ],
+  "categories": ["education", "kids", "productivity", "lifestyle"],
+  "screenshots": [
+    {
+      "src": "/screenshots/mobile-home.png",
+      "sizes": "540x1200",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Classify — الصفحة الرئيسية"
+    },
+    {
+      "src": "/screenshots/mobile-games.png",
+      "sizes": "540x1200",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "ألعاب تعليمية ممتعة"
+    },
+    {
+      "src": "/screenshots/mobile-parent.png",
+      "sizes": "540x1200",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "لوحة تحكم الوالدين"
+    },
+    {
+      "src": "/screenshots/desktop-home.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Classify — Desktop View"
+    },
+    {
+      "src": "/screenshots/desktop-dashboard.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Parent Dashboard — Desktop"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Parent Dashboard",
+      "short_name": "Parent",
+      "description": "Go to parent dashboard — لوحة تحكم الوالدين",
+      "url": "/parent-dashboard",
+      "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96", "type": "image/png", "purpose": "any" }]
+    },
+    {
+      "name": "Child Games",
+      "short_name": "Games",
+      "description": "Play educational games — ألعاب تعليمية",
+      "url": "/child-games",
+      "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96", "type": "image/png", "purpose": "any" }]
+    },
+    {
+      "name": "Child Tasks",
+      "short_name": "Tasks",
+      "description": "View and complete tasks — المهام",
+      "url": "/child-tasks",
+      "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96", "type": "image/png", "purpose": "any" }]
+    },
+    {
+      "name": "Notifications",
+      "short_name": "Alerts",
+      "description": "Check notifications — الإشعارات",
+      "url": "/child-notifications",
+      "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96", "type": "image/png", "purpose": "any" }]
+    }
+  ]
+}

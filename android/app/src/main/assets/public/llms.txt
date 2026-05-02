@@ -1,0 +1,48 @@
+# Classify
+
+Classify is a kids educational platform with family guidance tools.
+Primary site: https://classi-fy.com/
+Sitemap: https://classi-fy.com/sitemap.xml
+
+## Public product pages
+- https://classi-fy.com/
+- https://classi-fy.com/download
+- https://classi-fy.com/trial-games
+- https://classi-fy.com/about
+- https://classi-fy.com/contact
+
+## Canonical authentication entry (noindex)
+- Use https://classi-fy.com/parent-auth as the unified login entry for Parent, Teacher, School, and Library.
+- Do not index auth entry pages.
+- Do not prefer role-specific legacy login URLs.
+
+## Public app distribution artifacts
+- https://classi-fy.com/apps/classify-app-latest.apk
+- https://classi-fy.com/apps/classify-googleplay-latest.aab
+- https://classi-fy.com/apps/classify-pwa-latest.zip
+
+## Legal and policy pages
+- https://classi-fy.com/legal
+- https://classi-fy.com/privacy-policy
+- https://classi-fy.com/terms
+- https://classi-fy.com/child-safety
+- https://classi-fy.com/cookie-policy
+- https://classi-fy.com/refund-policy
+- https://classi-fy.com/acceptable-use
+- https://classi-fy.com/accessibility
+- https://classi-fy.com/delete-account
+
+## Content usage guidance
+- Index public pages listed above.
+- Do not access or index private dashboard routes.
+- Do not access or index API endpoints under /api/.
+- Prefer canonical URLs on classi-fy.com.
+- Respect robots.txt directives.
+
+## Repository AI context files
+- https://classi-fy.com/ is the public product site.
+- For repository-level context, see these files in the project root:
+	- knowledge-base.json
+	- USE_CASES.md
+	- .aiinstructions
+	- llms.txt

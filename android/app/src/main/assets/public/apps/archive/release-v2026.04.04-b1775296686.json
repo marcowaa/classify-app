@@ -1,0 +1,60 @@
+{
+    "releaseTag":  "v2026.04.04-b1775296686",
+    "version":  "2026.04.04",
+    "buildNumber":  "1775296686",
+    "versionCode":  1775296686,
+    "generatedAt":  "2026-04-04T10:02:55.5527058Z",
+    "apiBase":  "https://classi-fy.com",
+    "aso":  {
+                "copyKeys":  {
+                                 "downloadTitle":  "downloadApp",
+                                 "downloadDescription":  "downloadAppDesc",
+                                 "screenshotsTitle":  "downloadAppPage.screenshotsTitle",
+                                 "apkCta":  "downloadAppPage.downloadApkCta",
+                                 "aabAriaLabel":  "downloadAppPage.aabAriaLabel",
+                                 "pwaAriaLabel":  "downloadAppPage.pwaZipAriaLabel"
+                             },
+                "listing":  {
+                                "storeShortDesc":  "Safe kids learning app with family guidance",
+                                "storeFullDesc":  "Classify helps families build healthy learning habits through interactive educational activities, rewards, and family guidance tools.",
+                                "playPromoText":  "New seasonal activities and improved child progress insights."
+                            },
+                "screenshots":  [
+                                    "/screenshots/classify/classify-1.jpeg",
+                                    "/screenshots/classify/classify-2.jpeg",
+                                    "/screenshots/classify/classify-3.jpeg",
+                                    "/screenshots/classify/classify-4.jpeg",
+                                    "/screenshots/classify/classify-5.jpeg"
+                                ],
+                "channels":  {
+                                 "apk":  {
+                                             "label":  "APK",
+                                             "latestUrl":  "/apps/classify-app-latest.apk"
+                                         },
+                                 "aab":  {
+                                             "label":  "AAB",
+                                             "latestUrl":  "/apps/classify-googleplay-latest.aab"
+                                         },
+                                 "pwa":  {
+                                             "label":  "PWA",
+                                             "latestUrl":  "/apps/classify-pwa-latest.zip"
+                                         }
+                             }
+            },
+    "files":  {
+                  "apk":  {
+                              "archiveUrl":  "/apps/archive/classify-app-v2026.04.04-b1775296686.apk",
+                              "size":  "104.0 MB",
+                              "name":  "classify-app-latest.apk",
+                              "bytes":  109012411,
+                              "latestUrl":  "/apps/classify-app-latest.apk"
+                          },
+                  "aab":  {
+                              "archiveUrl":  "/apps/archive/classify-googleplay-v2026.04.04-b1775296686.aab",
+                              "size":  "104.5 MB",
+                              "name":  "classify-googleplay-latest.aab",
+                              "bytes":  109531557,
+                              "latestUrl":  "/apps/classify-googleplay-latest.aab"
+                          }
+              }
+}

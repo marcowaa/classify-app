@@ -1,0 +1,1 @@
+const o="/api/analytics/trial-event";function a(t,e){if(typeof window>"u")return;const n={eventName:t,actorType:localStorage.getItem("childToken")?"child":localStorage.getItem("token")?"parent":"guest",path:window.location.pathname,...e};fetch(o,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(n)}).catch(()=>{})}export{a as t};

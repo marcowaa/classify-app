@@ -1,0 +1,13 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.classi_fy.twa",
+      "sha256_cert_fingerprints": [
+        "0D:C7:2C:D3:77:DB:B6:35:99:6C:75:E2:D5:03:FE:DC:B2:28:1A:74:60:F2:5E:CB:F4:88:76:B8:01:E0:41:08",
+        "20:BA:20:9F:08:C8:40:0A:BA:C2:A3:65:20:90:D5:BF:AD:B1:7F:71:C8:89:97:35:11:AF:6D:AA:63:E9:73:2D"
+      ]
+    }
+  }
+]
