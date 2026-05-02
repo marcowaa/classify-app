@@ -1,0 +1,265 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Ice Age Game</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+    
+    <link href="Content/themes/base/jquery-ui.css" rel="stylesheet" />
+    <link href="Content/superslides.css" rel="stylesheet" />
+    <link href="Content/ice-age-styles.css" rel="stylesheet" />
+
+    <script src="Content/scripts/ice-age-main.js"></script>
+    <script src="Content/scripts/ice-age-data-points.js"></script>
+    <script src="Scripts/jquery-2.1.0.min.js"></script>
+    <script src="Scripts/jquery-ui-1.10.4.min.js"></script>
+    <script src="Scripts/jquery.easing.1.3.js"></script>
+    <script src="Scripts/jquery.animate-enhanced.min.js"></script>
+    <script src="Scripts/jquery.superslides.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            $('.slides-navigation .prev').hide();
+
+            $('.slides-navigation .new').on('click',
+            function(){
+                window.IceAge.Attempts = 0,
+                $('#background-video').fadeIn(1000);
+                $('#slides').superslides('animate', 0);
+
+                $('.slides-navigation a').hide();
+                $('.slides-navigation .next').show();
+
+                $('#outcome-video').hide();
+                window.IceAge.ResetValues();
+
+            });
+
+            $('.slides-navigation .re-try').on('click', function () {
+                $('#background-video').fadeIn(1000);
+                $('#slides').superslides('animate', 'prev');
+
+                $('.slides-navigation a').hide();
+                $('.slides-navigation .next').show();
+                $('.slides-navigation .prev').show();
+
+                $('#outcome-video').hide();
+                window.IceAge.ResetValues();
+            });
+
+            $('#slides').superslides({
+                animation: 'slide',
+                animation_speed: 600,
+                hashchange: false,
+                pagination: false
+            })
+            .bind('init.slides', function (e) {
+
+            })
+            .bind('animating.slides', function (e) {
+                var $current = $(this).superslides('$current');
+
+                if ($current.attr('id') == 'slider-select') {
+                    // Hide controls
+                    $('.slides-navigation a').hide();
+
+                    // Fade background video
+                    $('#background-video').fadeOut(1000);
+
+                    //Blank out content
+                    $('#outcome-panel').hide();
+
+                    window.IceAge.Values = {
+                        precession: $('#precession').slider("value"),
+                        eccentricity: $('#eccentricity').slider("value"),
+                        obliquity: $('#obliquity').slider("value")
+                    }
+                }
+            })
+            .bind('animated.slides', function (e) {
+                var $current = $(this).superslides('$current');
+
+                if ($current.attr('id') !== 'game-results') {
+                    $('.next').show();
+                } else {
+                    $('.next').hide();
+                }
+
+                if ($current.attr('id') !== 'spalsh-screen' && $current.attr('id') !== 'game-results') {
+                    $('.prev').show();
+                } else {
+                    $('.prev').hide();
+                }
+
+                if ($current.attr('id') == 'game-results') {
+                    IceAge.RunEndSequence($(this).superslides('$current'));
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+  <video id="background-video" autoplay="autoplay" loop="loop" name="Background Loop" src="Content/videos/ui-loop.mov"></video>
+  <div id="slides">
+    <div class="slides-container">
+      <div id="spalsh-screen">
+          <h1>Create your own ice age</h1>
+      </div>
+      <div id="background">
+          <h1>Background</h1>
+          <div class="text-panel">
+              <p>
+                  You are invited to play God with Planet Earth and doom the planet and its inhabitants to ice age conditions –
+                  but do you know how to do it?
+              </p>
+              <p>
+              Global climate and the amount of heat received by the Earth from the sun is influenced by 3 main orbital parameters – (so called ‘Milankovitch cycles’)
+              </p>
+              <ul>
+                  <li>
+                        <strong>Eccentricity</strong> – influences the shape of orbit around the Earth – varies between circular and elliptical – this change occurs over a 96 ka period – its regulates the amount of heat received by the Earth - nicknamed ‘orbit’
+                  </li>
+                  <li>
+                      <strong>Obliquity</strong> – influences the tilt of the Earth as it orbits around the sun – ranging from 21-24 deg over a 42 ka period – this regulates the distribution of heat around the globe - nicknamed ‘tilt’ 
+                  </li>
+                  <li>
+                      <p><strong>Precession</strong> – the gravitational pull of the moon on the watery planet causes the Earth to ‘wobble’ on its axis as it orbits the Earth causing the seasons to move around the sun over a 21 ka period – this means that it ranges from the winter being closest to the sun (apehelion) and then 21 ka later the summer is closest to the sun (perihelion) and also regulates the distributions of heat around the globe – nicknamed ‘wobble’</p>
+                      <p>These are combined to produce a complex pattern of variable heat exchanged between the sun and the Earth – certain combinations will bring about an ice age</p>
+                  </li>
+              </ul>
+          </div>
+      </div>
+      <div id="mission">
+          <h1>Mission</h1>
+          <div class="text-panel">
+              <p>
+                Play with these parameters until you have worked out which extent of each parameter creates the least heat for the Earth – i.e. would it be cooler when the orbit is circular or elliptical?
+                <br />Then set the parameters using the sliding scale to try and create an ice age in the least number of attempts 
+              </p>
+          </div>
+          <div class="instruction-videos">
+              <video controls="controls" name="Eccentricity Example" src="Content/videos/example-ecc.mov"></video>
+              <video controls="controls" name="Obliquity Example" src="Content/videos/example-obl.mov"></video>
+              <video controls="controls" name="Precession Name" src="Content/videos/example-pre.mov"></video>
+          </div>
+      </div>
+      <div id="slider-select">
+          <h1>Select your parameters</h1>
+
+          <div class="slider-panel">
+              <div class="slider-row">
+                  <div class="slider-label">Eccentricity</div>
+                  <div class="slider" id="obliquity"></div>
+                  <div class="slider-extremities">
+                      <div class="slider-min">Circular</div>
+                      <div class="slider-max">Elliptical</div>
+                  </div>
+              </div>
+
+              <div class="slider-row">
+                  <div class="slider-label">Obliquity</div>
+                  <div class="slider" id="eccentricity"></div>
+                  <div class="slider-extremities">
+                      <div class="slider-min">Low Angle</div>
+                      <div class="slider-max">High Angle</div>
+                  </div>
+              </div>
+
+              <div class="slider-row">
+                  <div class="slider-label">Precession</div>
+                  <div class="slider" id="precession"></div>
+                  <div class="slider-extremities">
+                      <div class="slider-min">N.Hemi Perhelion</div>
+                      <div class="slider-max">N.Hemi Aphelion</div>
+                  </div>
+              </div>
+          </div>
+            <script type="text/javascript">
+                $(function () {
+                    var $slidervalue = $('<div class="slider-value"></div>');
+                    var updateVal = function (event, ui) {
+                        $(this).find(".ui-slider-handle").append($slidervalue.text(ui.value));
+                    };
+
+                    var defaultSliderConfig = {
+                        range: false,
+                        start: updateVal,
+                        create: updateVal,
+                        slide: updateVal
+                    };
+
+                    var obliquitySliderConfig = {
+                        min: 0.005,
+                        max: 0.06,
+                        step: 0.005,
+                        value: 0.03
+                    };
+
+                    var eccentricitySliderConfig = {
+                        min: 21.5,
+                        max: 24.5,
+                        step: 0.5,
+                        value: 23
+                    };
+
+                    var precessionSliderConfig = {
+                        min: -0.006,
+                        max: 0.006,
+                        step: 0.002,
+                        value: 0
+                    };
+
+                    $(".slider#precession").slider($.extend(defaultSliderConfig, precessionSliderConfig));
+
+                    $(".slider#eccentricity").slider($.extend(defaultSliderConfig, eccentricitySliderConfig));
+
+                    $(".slider#obliquity").slider($.extend(defaultSliderConfig, obliquitySliderConfig));
+                });
+            </script>
+      </div>
+      <div id="game-results">
+          <video id="outcome-video" name="" ></video>
+          <div id="outcome-panel">
+              <h1>You created <span id="outcome-title"></span></h1>
+
+              <div class="text-panel-outcome">
+                  <table id="result-table">
+                      <thead>
+                          <tr>
+                              <th colspan="2">Interglacial</th>
+                              <th colspan="2">Interstadial</th>
+                              <th colspan="2">Stadial</th>
+                              <th>Glacial</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr>
+                              <td id="one"><div id="result-pointer"></div></td>
+                              <td id="two"></td>
+                              <td id="three"></td>
+                              <td id="four"></td>
+                              <td id="five"></td>
+                              <td id="six"></td>
+                              <td id="seven"></td>
+                          </tr>
+                      </tbody>
+                  </table>
+                  <img id="outcome-image" class="preserve" />
+                  <span id="outcome-html"></span>
+              </div>
+          </div>
+      </div>
+    </div>
+
+    <nav class="slides-navigation">
+      <a href="#" class="next">Next &gt;&gt;</a>
+      <a href="#" style="display:none;" class="prev">&lt;&lt; Back</a>
+      <a href="#" style="display:none;" class="re-try">&lt;&lt; Try Again</a>
+      <a href="#" style="display:none;" class="new">New Game</a>
+    </nav>
+  </div>
+
+</body>
+</html>
+

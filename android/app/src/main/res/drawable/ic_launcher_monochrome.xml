@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Monochrome icon for Android 13+ themed icons
+    Simple "C" shape representing Classify app
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Background circle (will be tinted by system) -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M54,54m-40,0a40,40 0,1 1,80 0a40,40 0,1 1,-80 0" />
+    <!-- "C" letter cutout -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M62,34 C55.4,30.2 47.2,30.2 40.6,34 C34,37.8 30,44.6 30,52 C30,59.4 34,66.2 40.6,70 C47.2,73.8 55.4,73.8 62,70 L62,62 C57.6,65.4 51.4,66 46.4,63 C41.4,60 38.4,54.8 38.4,49.2 C38.4,43.6 41.4,38.4 46.4,35.4 C51.4,32.4 57.6,33 62,36.4 Z" />
+    <!-- Graduation cap accent -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M65,28 L72,32 L65,36 L58,32 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M63,33 L63,38 L67,38 L67,33 Z" />
+</vector>

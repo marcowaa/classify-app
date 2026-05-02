@@ -1,0 +1,2377 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-0K11FDXNEW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-0K11FDXNEW');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>مملكة الأرقام - Emoji Kingdom</title>
+<style>
+:root{
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-right:env(safe-area-inset-right,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --safe-left:env(safe-area-inset-left,0px);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Segoe UI',Tahoma,sans-serif;user-select:none;-webkit-tap-highlight-color:transparent}
+body{padding:var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left)}
+.screen{display:none;width:100%;height:100%;position:absolute;top:0;left:0}
+.screen.active{display:flex}
+
+/* ===== WORLD SELECT ===== */
+#world-screen{flex-direction:column;align-items:center;padding:clamp(6px,1.5vmin,12px);gap:clamp(4px,1vmin,8px);overflow-y:auto;background:linear-gradient(135deg,#8b5cf6,#6366f1,#a855f7,#7c3aed);background-size:300% 300%;animation:royalBG 15s ease infinite}
+.top-bar{display:flex;width:100%;max-width:500px;justify-content:space-between;align-items:center;flex-shrink:0;gap:6px;flex-wrap:wrap}
+.tb-item{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.2);border-radius:12px;padding:6px 14px;font-size:clamp(14px,2.8vmin,18px);color:#fff;font-weight:800;backdrop-filter:blur(4px);text-shadow:0 1px 4px rgba(0,0,0,.3);box-shadow:0 3px 0 rgba(0,0,0,.12),0 4px 8px rgba(0,0,0,.06),inset 0 1px 0 rgba(255,255,255,.2);transition:all .2s}
+.tb-item:hover{transform:translateY(-2px) scale(1.04)}
+.mute-btn{cursor:pointer;font-size:clamp(18px,3.5vmin,24px);padding:6px 10px !important}
+.lang-select{background:rgba(255,255,255,.22);color:#fff;border:0;border-radius:12px;padding:6px 10px;font-size:clamp(12px,2.2vmin,15px);font-weight:800;cursor:pointer;backdrop-filter:blur(4px);box-shadow:0 3px 0 rgba(0,0,0,.12),0 4px 8px rgba(0,0,0,.06),inset 0 1px 0 rgba(255,255,255,.2)}
+.lang-select option{color:#111827;background:#fff}
+.xp-bar-wrap{width:100%;max-width:500px;flex-shrink:0}
+.xp-bar{height:10px;background:rgba(255,255,255,.25);border-radius:99px;overflow:hidden;box-shadow:inset 0 2px 4px rgba(0,0,0,.2),0 1px 0 rgba(255,255,255,.15)}
+.xp-fill{height:100%;background:linear-gradient(90deg,#fbbf24,#f59e0b);border-radius:99px;transition:width .5s;box-shadow:0 1px 6px rgba(251,191,36,.5),inset 0 -1px 0 rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.4)}
+.xp-label{font-size:clamp(11px,2vmin,14px);color:rgba(255,255,255,.85);text-align:center;margin-top:3px;font-weight:600}
+.ls-title{font-size:clamp(24px,6vmin,36px);font-weight:900;color:#fff;text-shadow:0 3px 12px rgba(0,0,0,.4);text-align:center;flex-shrink:0}
+.ls-sub{font-size:clamp(13px,2.5vmin,16px);color:rgba(255,255,255,.8);font-weight:600;text-align:center;flex-shrink:0}
+.ls-btns{display:flex;gap:8px;flex-shrink:0}
+.ls-btn{border:none;background:rgba(255,255,255,.25);color:#fff;font-weight:800;font-size:clamp(14px,2.8vmin,18px);padding:10px 20px;border-radius:12px;cursor:pointer;backdrop-filter:blur(4px);text-shadow:0 1px 4px rgba(0,0,0,.3);box-shadow:0 4px 0 rgba(0,0,0,.12),0 6px 12px rgba(0,0,0,.08),inset 0 1px 0 rgba(255,255,255,.3);transition:all .2s cubic-bezier(.34,1.56,.64,1)}
+.ls-btn:hover{background:rgba(255,255,255,.35);transform:translateY(-3px) scale(1.05)}
+.ls-btn:active{transform:translateY(2px) scale(.96)}
+.ls-btn.daily{background:linear-gradient(135deg,#f59e0b,#f97316);box-shadow:0 4px 0 #c2410c,0 6px 12px rgba(249,115,22,.4)}
+
+/* WORLD CARDS GRID */
+.world-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(8px,2vmin,12px);width:100%;max-width:540px;padding:4px 0}
+.wc{position:relative;border-radius:clamp(16px,3.5vmin,24px);padding:clamp(12px,2.5vmin,18px) clamp(8px,1.5vmin,12px);text-align:center;cursor:pointer;transition:all .35s cubic-bezier(.34,1.56,.64,1);box-shadow:0 6px 0 rgba(0,0,0,.18),0 10px 0 rgba(0,0,0,.08),0 20px 40px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.4);border:2px solid rgba(255,255,255,.4);overflow:hidden;animation:cardFloat 3s ease-in-out infinite;transform-style:preserve-3d}
+.wc:nth-child(even){animation-delay:.5s}.wc:nth-child(3n){animation-delay:1s}.wc:nth-child(4n+1){animation-delay:1.5s}
+.wc:hover{transform:translateY(-8px) scale(1.06) rotateX(3deg);box-shadow:0 12px 0 rgba(0,0,0,.12),0 20px 0 rgba(0,0,0,.05),0 32px 60px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.6)}
+.wc:active{transform:translateY(2px) scale(.96)}
+.wc.locked{opacity:.55;cursor:not-allowed;animation:none;filter:grayscale(.4)}
+.wc.locked:hover{transform:none;box-shadow:0 6px 0 rgba(0,0,0,.18),0 10px 0 rgba(0,0,0,.08)}
+.wc-icon{font-size:clamp(36px,8vmin,52px);margin-bottom:4px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.25));animation:emojiWiggle 2.5s ease-in-out infinite}
+.wc:nth-child(2n) .wc-icon{animation-delay:.3s}.wc:nth-child(3n) .wc-icon{animation-delay:.7s}
+.wc.locked .wc-icon{animation:none}
+.wc-name{font-size:clamp(13px,2.5vmin,17px);font-weight:900;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.4);margin-bottom:2px}
+.wc-desc{font-size:clamp(10px,1.6vmin,12px);color:rgba(255,255,255,.85);font-weight:600;margin-bottom:4px}
+.wc-progress{font-size:clamp(12px,2vmin,15px);color:#fbbf24;font-weight:800;text-shadow:0 1px 4px rgba(0,0,0,.3)}
+.wc-mastery{font-size:clamp(11px,1.8vmin,14px);color:rgba(255,255,255,.9);font-weight:700;margin-top:2px}
+.wc-lock{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:clamp(36px,8vmin,50px);background:rgba(0,0,0,.25);border-radius:inherit;backdrop-filter:blur(2px)}
+.wc-lock-text{position:absolute;bottom:clamp(6px,1.5vmin,10px);left:0;right:0;font-size:clamp(9px,1.5vmin,11px);color:rgba(255,255,255,.9);font-weight:700;text-shadow:0 1px 4px rgba(0,0,0,.5)}
+
+/* ===== LEVEL SELECT (within world) ===== */
+#lvl-screen{flex-direction:column;align-items:center;padding:clamp(6px,1.5vmin,12px);gap:clamp(4px,1vmin,8px);overflow-y:auto;background:linear-gradient(135deg,#8b5cf6,#6366f1);transition:background .5s}
+.lvl-header{display:flex;width:100%;max-width:500px;align-items:center;gap:8px;flex-shrink:0}
+.lvl-back{border:none;background:rgba(255,255,255,.2);color:#fff;font-weight:800;font-size:clamp(14px,2.8vmin,18px);padding:8px 16px;border-radius:12px;cursor:pointer;backdrop-filter:blur(4px);box-shadow:0 3px 0 rgba(0,0,0,.12);transition:all .2s}
+.lvl-back:hover{background:rgba(255,255,255,.3);transform:translateY(-2px)}
+.lvl-world-title{flex:1;font-size:clamp(18px,4.5vmin,26px);font-weight:900;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.4);text-align:center}
+.ls-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(6px,1.5vmin,10px);width:100%;max-width:540px;padding:4px 0}
+.lc{position:relative;background:linear-gradient(160deg,rgba(255,255,255,.5) 0%,rgba(255,255,255,.2) 40%,rgba(255,255,255,.05) 100%);border:2px solid rgba(255,255,255,.55);border-radius:clamp(14px,3vmin,22px);padding:clamp(8px,2vmin,16px) clamp(4px,1vmin,8px);text-align:center;cursor:pointer;transition:all .35s cubic-bezier(.34,1.56,.64,1);backdrop-filter:blur(6px);box-shadow:0 6px 0 rgba(0,0,0,.18),0 10px 0 rgba(0,0,0,.08),0 20px 40px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.4);transform-style:preserve-3d;animation:cardFloat 3s ease-in-out infinite}
+.lc:nth-child(even){animation-delay:.5s}.lc:nth-child(3n){animation-delay:1s}.lc:nth-child(4n+1){animation-delay:1.5s}
+.lc:hover{transform:translateY(-8px) scale(1.1) rotateX(5deg);box-shadow:0 12px 0 rgba(0,0,0,.12),0 20px 0 rgba(0,0,0,.05),0 32px 60px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.6)}
+.lc:active{transform:translateY(2px) scale(.96)}
+.lc.locked{opacity:.5;cursor:not-allowed;animation:none}.lc.locked:hover{transform:none}
+.lc.current{animation:currentGlow 2.5s ease-in-out infinite,cardFloat 3s ease-in-out infinite;border-color:#fbbf24}
+@keyframes currentGlow{0%,100%{box-shadow:0 0 15px rgba(251,191,36,.4),0 6px 0 rgba(0,0,0,.15)}50%{box-shadow:0 0 30px rgba(251,191,36,.7),0 0 60px rgba(251,191,36,.2),0 6px 0 rgba(0,0,0,.12)}}
+.lc.boss-card{border-color:#ef4444;box-shadow:0 6px 0 rgba(239,68,68,.3),0 0 14px rgba(239,68,68,.3),0 20px 40px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.4)}
+.lc-num{font-size:clamp(22px,5vmin,32px);font-weight:900;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.3)}
+.lc-emoji{font-size:clamp(32px,7vmin,48px);margin:3px 0;filter:drop-shadow(0 2px 3px rgba(0,0,0,.2));animation:emojiWiggle 2.5s ease-in-out infinite}
+.lc:nth-child(2n) .lc-emoji{animation-delay:.3s}.lc:nth-child(3n) .lc-emoji{animation-delay:.7s}.lc:nth-child(4n) .lc-emoji{animation-delay:1.1s}.lc.locked .lc-emoji{animation:none}
+.lc-name{font-size:clamp(10px,1.8vmin,13px);color:#fff;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.3)}
+.lc-stars{font-size:clamp(14px,2.8vmin,18px);margin-top:2px}
+.lc-lock{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:clamp(32px,7vmin,46px);filter:drop-shadow(0 2px 6px rgba(0,0,0,.4))}
+
+/* ===== GAME SCREEN ===== */
+#game-screen{flex-direction:column;align-items:center;justify-content:flex-start;padding:clamp(6px,1.5vmin,12px);gap:clamp(3px,0.8vmin,6px);background:var(--bg,linear-gradient(135deg,#8b5cf6,#6366f1));transition:background .5s}
+.g-top{display:flex;width:100%;max-width:480px;justify-content:space-between;align-items:center;gap:6px;flex-shrink:0}
+.g-lives{display:flex;gap:2px;font-size:clamp(22px,5vmin,32px);filter:drop-shadow(0 2px 4px rgba(0,0,0,.2))}
+.g-combo{font-size:clamp(18px,3.5vmin,24px);font-weight:900;color:#fbbf24;min-width:70px;text-align:center;opacity:0;transition:opacity .3s;text-shadow:0 2px 6px rgba(0,0,0,.3)}
+.g-combo.show{opacity:1;text-shadow:0 0 10px rgba(251,191,36,.6),0 0 20px rgba(251,191,36,.3),0 2px 8px rgba(0,0,0,.3);animation:combo3DPulse .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes combo3DPulse{0%{transform:scale(1)}50%{transform:scale(1.35) rotateZ(-5deg)}100%{transform:scale(1)}}
+.g-mute{background:none;border:none;color:rgba(255,255,255,.85);font-size:clamp(20px,4vmin,28px);cursor:pointer;padding:4px 8px;border-radius:8px}
+.g-mute:hover{color:#fff;background:rgba(255,255,255,.15)}
+.gc{background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(255,255,255,.92));border:2px solid rgba(255,255,255,.2);border-radius:24px;padding:clamp(10px,2.5vmin,20px);max-width:min(480px,95vw);width:100%;text-align:center;box-shadow:0 16px 0 rgba(0,0,0,.04),0 24px 64px rgba(0,0,0,.2),inset 0 2px 0 rgba(255,255,255,.8);flex-shrink:1;overflow-y:auto;max-height:75vh}
+.g-hdr h1{font-size:clamp(17px,3.2vmin,22px);color:var(--accent,#4c1d95);margin-bottom:6px;font-weight:800}
+.g-stats{display:flex;justify-content:center;gap:clamp(10px,2.5vmin,20px);margin-bottom:clamp(6px,1.5vmin,10px)}
+.g-stat{display:flex;flex-direction:column;align-items:center}
+.g-sv{font-size:clamp(22px,5vmin,30px);font-weight:900;color:var(--accent,#7c3aed)}
+.g-sl{font-size:clamp(10px,1.8vmin,13px);color:#4b5563;text-transform:uppercase;letter-spacing:.04em;font-weight:700}
+.pbar{width:100%;height:clamp(8px,1.5vmin,10px);background:#e5e7eb;border-radius:99px;margin-bottom:clamp(6px,1.5vmin,10px);overflow:hidden;box-shadow:inset 0 3px 6px rgba(0,0,0,.15),0 2px 0 rgba(255,255,255,.2);border:1px solid rgba(0,0,0,.06)}
+.pfill{height:100%;background:linear-gradient(90deg,var(--accent,#8b5cf6),#ec4899);border-radius:99px;transition:width .4s;box-shadow:0 2px 8px rgba(236,72,153,.4),inset 0 -2px 0 rgba(0,0,0,.1),inset 0 2px 0 rgba(255,255,255,.3)}
+.timer{font-size:clamp(15px,2.5vmin,18px);color:#4b5563;margin-bottom:4px;font-weight:700}
+.timer.urgent{color:#ef4444;font-weight:700;animation:pulse .5s ease infinite;text-shadow:0 0 10px rgba(239,68,68,.5),0 0 20px rgba(239,68,68,.2)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.q-area{margin-bottom:clamp(6px,1.5vmin,12px)}
+.q-visual{font-size:clamp(28px,6vmin,40px);margin-bottom:6px;line-height:1.4;min-height:clamp(30px,6.5vmin,44px);transition:opacity .3s;filter:drop-shadow(0 1px 2px rgba(0,0,0,.15))}
+.q-text{font-size:clamp(32px,8vmin,52px);font-weight:900;color:#111827;direction:ltr;margin-bottom:4px;text-shadow:0 1px 2px rgba(0,0,0,.1)}
+.q-feedback{font-size:clamp(16px,3vmin,22px);color:#d97706;font-weight:800;min-height:clamp(20px,3.5vmin,26px);transition:all .3s}
+.ans-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(8px,1.8vmin,12px);margin-bottom:clamp(6px,1.5vmin,10px)}
+.ans-btn{padding:clamp(12px,2.8vmin,20px);font-size:clamp(24px,5.5vmin,36px);font-weight:900;border:none;border-radius:clamp(16px,3vmin,24px);background:linear-gradient(180deg,#fff 0%,#faf5ff 50%,#f3e8ff 100%);cursor:pointer;transition:all .15s cubic-bezier(.34,1.56,.64,1);color:#111827;text-shadow:0 1px 2px rgba(0,0,0,.08);box-shadow:0 6px 0 #c4b5fd,0 8px 0 #a78bfa,0 14px 28px rgba(0,0,0,.12),inset 0 -3px 0 rgba(0,0,0,.06),inset 0 2px 0 rgba(255,255,255,.8);position:relative;overflow:hidden}
+.ans-btn.symbol-choice{direction:ltr;unicode-bidi:isolate-override;font-family:ui-monospace,Menlo,Consolas,monospace}
+.ans-btn::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);transition:left .5s}
+.ans-btn:hover::after{left:100%}
+.ans-btn:hover{transform:translateY(-5px) scale(1.05);box-shadow:0 10px 0 #c4b5fd,0 12px 0 #a78bfa,0 22px 40px rgba(0,0,0,.15),inset 0 -3px 0 rgba(0,0,0,.04),inset 0 2px 0 rgba(255,255,255,.9)}
+.ans-btn:active{transform:translateY(4px) scale(.97);box-shadow:0 2px 0 #c4b5fd,0 3px 0 #a78bfa,0 4px 8px rgba(0,0,0,.08)}
+.ans-btn.correct{box-shadow:0 6px 0 #059669,0 8px 0 #047857,0 0 20px rgba(16,185,129,.4),inset 0 2px 0 rgba(255,255,255,.6);background:linear-gradient(180deg,#ecfdf5,#d1fae5,#a7f3d0);color:#064e3b;animation:correct3D .5s cubic-bezier(.34,1.56,.64,1)}
+.ans-btn.wrong{box-shadow:0 6px 0 #dc2626,0 8px 0 #b91c1c,0 0 20px rgba(239,68,68,.3),inset 0 2px 0 rgba(255,255,255,.4);background:linear-gradient(180deg,#fff1f2,#fee2e2,#fecaca);color:#7f1d1d}
+.ans-btn:disabled{cursor:default;opacity:.7}
+@keyframes correct3D{0%{transform:scale(1)}40%{transform:scale(1.12) rotateZ(-3deg)}70%{transform:scale(.95) rotateZ(2deg)}100%{transform:scale(1) rotateZ(0)}}
+
+/* NUMPAD */
+.numpad-wrap{display:none;width:100%;max-width:300px;margin:0 auto}
+.numpad-display{font-size:clamp(36px,8vmin,52px);font-weight:900;color:#111827;text-align:center;background:rgba(255,255,255,.6);border-radius:16px;padding:8px 16px;margin-bottom:8px;min-height:clamp(48px,10vmin,64px);border:3px solid var(--accent,#8b5cf6);box-shadow:inset 0 2px 4px rgba(0,0,0,.1);direction:ltr;transition:background .3s,border-color .3s}
+.numpad-display.np-correct{background:#d1fae5;border-color:#059669}
+.numpad-display.np-wrong{background:#fee2e2;border-color:#dc2626}
+.numpad-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(6px,1.2vmin,8px)}
+.np-btn{padding:clamp(10px,2.2vmin,16px);font-size:clamp(24px,5vmin,34px);font-weight:900;border:none;border-radius:clamp(14px,2.8vmin,20px);background:linear-gradient(180deg,#fff,#faf5ff,#f3e8ff);cursor:pointer;transition:all .15s cubic-bezier(.34,1.56,.64,1);color:#111827;box-shadow:0 5px 0 #c4b5fd,0 7px 0 #a78bfa,0 10px 20px rgba(0,0,0,.08),inset 0 2px 0 rgba(255,255,255,.8)}
+.np-btn:hover{transform:translateY(-3px) scale(1.05)}
+.np-btn:active{transform:translateY(3px) scale(.96);box-shadow:0 2px 0 #c4b5fd}
+.np-btn:disabled{opacity:.5;cursor:default;transform:none}
+.np-del{background:linear-gradient(180deg,#fff1f2,#fee2e2);color:#dc2626;box-shadow:0 5px 0 #fca5a5,0 7px 0 #f87171,0 10px 20px rgba(0,0,0,.08)}
+.np-ok{background:linear-gradient(180deg,#ecfdf5,#d1fae5);color:#059669;box-shadow:0 5px 0 #6ee7b7,0 7px 0 #34d399,0 10px 20px rgba(0,0,0,.08)}
+
+/* BOOSTERS */
+.boosters{display:flex;justify-content:center;gap:clamp(8px,2vmin,14px);margin-top:6px}
+.bst-btn{border:none;background:rgba(255,255,255,.15);border-radius:14px;padding:6px 14px;font-size:clamp(18px,3.5vmin,26px);cursor:pointer;transition:all .2s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;gap:4px;box-shadow:0 4px 0 rgba(0,0,0,.12),0 6px 12px rgba(0,0,0,.08),inset 0 1px 0 rgba(255,255,255,.3)}
+.bst-btn:hover{transform:translateY(-3px) scale(1.08);box-shadow:0 7px 0 rgba(0,0,0,.1),0 12px 20px rgba(0,0,0,.1)}
+.bst-btn:disabled{opacity:.3;cursor:not-allowed}
+.bst-cnt{font-size:clamp(12px,2.2vmin,16px);color:#374151;font-weight:800}
+
+/* BOSS */
+.boss-bar{width:100%;max-width:480px;flex-shrink:0}
+.boss-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.boss-emoji{font-size:clamp(36px,8vmin,52px);animation:bossFloat 2s ease infinite;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4)) drop-shadow(0 0 20px rgba(239,68,68,.3))}
+@keyframes bossFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.boss-label{font-size:clamp(16px,3vmin,20px);color:#fff;font-weight:800;text-shadow:0 2px 6px rgba(0,0,0,.3)}
+.boss-hp{display:flex;height:clamp(14px,3vmin,20px);border-radius:99px;overflow:hidden;gap:3px;background:rgba(0,0,0,.25);padding:3px;box-shadow:inset 0 2px 4px rgba(0,0,0,.3),0 2px 0 rgba(255,255,255,.1)}
+.boss-seg{flex:1;border-radius:99px;transition:all .4s cubic-bezier(.34,1.56,.64,1)}
+.boss-seg.empty{opacity:.2}
+
+/* ===== DONE SCREEN ===== */
+#done-screen{flex-direction:column;align-items:center;justify-content:center;gap:clamp(6px,1.5vmin,12px);padding:clamp(10px,2.5vmin,20px);overflow-y:auto;background-size:300% 300%;animation:royalBG 15s ease infinite}
+.d-emoji{font-size:clamp(56px,14vmin,84px);animation:doneBounce3D 1.5s cubic-bezier(.34,1.56,.64,1) infinite;filter:drop-shadow(0 8px 20px rgba(0,0,0,.3))}
+@keyframes doneBounce3D{0%,100%{transform:translateY(0) scale(1) rotateZ(0)}25%{transform:translateY(-12px) scale(1.05) rotateZ(-3deg)}50%{transform:translateY(-6px) scale(1.02) rotateZ(0)}75%{transform:translateY(-12px) scale(1.05) rotateZ(3deg)}}
+.d-title{font-size:clamp(24px,7vmin,36px);font-weight:900;color:#fff;text-shadow:0 3px 12px rgba(0,0,0,.4)}
+.d-stars{display:flex;gap:clamp(5px,1.2vmin,8px);font-size:clamp(32px,8vmin,50px);filter:drop-shadow(0 2px 6px rgba(0,0,0,.3))}
+.d-stars span{display:inline-block;animation:starPop3D .6s cubic-bezier(.34,1.56,.64,1) both}
+.d-stars span:nth-child(1){animation-delay:.1s}.d-stars span:nth-child(2){animation-delay:.3s}.d-stars span:nth-child(3){animation-delay:.5s}
+@keyframes starPop3D{0%{transform:scale(0) rotateY(180deg);opacity:0}60%{transform:scale(1.3) rotateY(45deg);opacity:1}100%{transform:scale(1) rotateY(0deg);opacity:1}}
+.d-sub{font-size:clamp(14px,2.8vmin,18px);color:rgba(255,255,255,.9);font-weight:600}
+.d-near{font-size:clamp(16px,3vmin,20px);color:#fbbf24;font-weight:800;animation:pulse .8s ease infinite;text-shadow:0 1px 4px rgba(0,0,0,.3)}
+.d-stats{display:flex;gap:clamp(6px,1.5vmin,12px);flex-wrap:wrap;justify-content:center}
+.d-st{text-align:center;background:rgba(255,255,255,.2);border-radius:10px;padding:clamp(5px,1.2vmin,10px) clamp(8px,2vmin,16px);backdrop-filter:blur(4px);box-shadow:0 4px 0 rgba(0,0,0,.1),0 8px 16px rgba(0,0,0,.08),inset 0 1px 0 rgba(255,255,255,.2);transition:all .3s cubic-bezier(.34,1.56,.64,1)}
+.d-st:hover{transform:translateY(-3px) scale(1.05)}
+.d-st-e{font-size:clamp(24px,6vmin,36px);filter:drop-shadow(0 2px 4px rgba(0,0,0,.2))}
+.d-st-v{font-size:clamp(20px,4.5vmin,28px);font-weight:900;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.3)}
+.d-st-l{font-size:clamp(10px,1.8vmin,12px);color:rgba(255,255,255,.8);text-transform:uppercase;font-weight:600}
+.d-badges{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.d-badge{background:rgba(255,255,255,.3);border-radius:10px;padding:5px 14px;font-size:clamp(14px,2.5vmin,18px);color:#fff;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.3);box-shadow:0 3px 0 rgba(0,0,0,.1),0 4px 8px rgba(0,0,0,.06),inset 0 1px 0 rgba(255,255,255,.2);transition:all .2s}
+.d-badge:hover{transform:translateY(-2px) scale(1.05)}
+.d-btns{display:flex;gap:clamp(5px,1.2vmin,8px);flex-wrap:wrap;justify-content:center}
+.d-btn{border:none;border-radius:14px;padding:clamp(10px,2.2vmin,16px) clamp(22px,5vmin,38px);font-size:clamp(15px,3vmin,20px);font-weight:900;cursor:pointer;transition:all .2s}
+.d-btn:hover{transform:scale(1.04)}.d-btn:active{transform:scale(.95)}
+.d-btn.pri{background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff;box-shadow:0 6px 0 #c2410c,0 8px 0 #9a3412,0 14px 24px rgba(249,115,22,.3)}
+.d-btn.pri:hover{transform:translateY(-3px) scale(1.06);box-shadow:0 9px 0 #c2410c,0 12px 0 #9a3412,0 20px 32px rgba(249,115,22,.35)}
+.d-btn.pri:active{transform:translateY(3px) scale(.96);box-shadow:0 2px 0 #c2410c,0 3px 0 #9a3412}
+.d-btn.sec{background:rgba(255,255,255,.25);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.15),0 6px 12px rgba(0,0,0,.08)}
+.d-btn.shr{background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;box-shadow:0 6px 0 #1d4ed8,0 8px 0 #1e40af,0 14px 24px rgba(37,99,235,.3)}
+
+/* MODALS */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:linear-gradient(135deg,#fbbf24,#f59e0b);border-radius:20px;padding:clamp(16px,4vmin,32px);text-align:center;max-width:320px;width:90%;box-shadow:0 8px 0 rgba(0,0,0,.1),0 24px 60px rgba(0,0,0,.4),inset 0 2px 0 rgba(255,255,255,.3);animation:modalIn .4s ease}
+@keyframes modalIn{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.modal h2{font-size:clamp(24px,6vmin,34px);font-weight:900;color:#fff;margin-bottom:10px;text-shadow:0 2px 6px rgba(0,0,0,.3)}
+.modal p{font-size:clamp(15px,3vmin,20px);color:rgba(255,255,255,.95);margin-bottom:14px;font-weight:600}
+.modal button{border:none;background:#fff;color:#b45309;font-weight:900;font-size:clamp(16px,3.2vmin,20px);padding:10px 32px;border-radius:14px;cursor:pointer}
+.shop-modal{background:linear-gradient(135deg,#6366f1,#4f46e5);border-radius:20px;padding:clamp(12px,3vmin,24px);text-align:center;max-width:360px;width:90%;box-shadow:0 8px 0 rgba(0,0,0,.12),0 24px 60px rgba(0,0,0,.4),inset 0 2px 0 rgba(255,255,255,.2);animation:modalIn .4s ease}
+.shop-modal h2{color:#fff;font-size:clamp(20px,5vmin,28px);margin-bottom:12px;text-shadow:0 2px 6px rgba(0,0,0,.3)}
+.shop-coins{color:#fbbf24;font-weight:900;font-size:clamp(18px,4vmin,24px);margin-bottom:12px;text-shadow:0 1px 4px rgba(0,0,0,.3)}
+.shop-items{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.shop-item{background:rgba(255,255,255,.15);border-radius:12px;padding:10px;backdrop-filter:blur(4px)}
+.shop-item-icon{font-size:40px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.2))}
+.shop-item-name{color:#fff;font-size:15px;font-weight:700;margin:6px 0}
+.shop-item-price{color:#fbbf24;font-weight:800;font-size:16px;text-shadow:0 1px 3px rgba(0,0,0,.3)}
+.shop-item-owned{color:rgba(255,255,255,.75);font-size:13px;font-weight:600}
+.shop-buy{border:none;background:#fbbf24;color:#1f2937;font-weight:800;font-size:14px;padding:6px 16px;border-radius:10px;cursor:pointer;margin-top:6px}
+.shop-buy:disabled{opacity:.4;cursor:not-allowed}
+.shop-close{border:none;background:rgba(255,255,255,.3);color:#fff;font-weight:800;padding:8px 24px;border-radius:12px;cursor:pointer;margin-top:12px;font-size:16px}
+
+/* BACK */
+.g-back{background:none;border:none;color:rgba(255,255,255,.85);font-size:clamp(16px,3vmin,20px);font-weight:800;cursor:pointer;padding:6px 12px;border-radius:10px;flex-shrink:0}
+.g-back:hover{color:#fff;background:rgba(255,255,255,.15)}
+
+/* TOOLTIP */
+.tooltip-popup{position:fixed;z-index:200;background:#1f2937;color:#fff;font-size:16px;font-weight:700;padding:10px 20px;border-radius:12px;transform:translateX(-50%) translateY(-100%);pointer-events:none;box-shadow:0 6px 20px rgba(0,0,0,.3);transition:opacity .3s;opacity:1}
+
+/* PARTICLES + ANIMATIONS */
+.particle{position:fixed;pointer-events:none;z-index:999;animation:floatup 1.2s ease-out forwards}
+@keyframes floatup{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-90px) scale(.3)}}
+@keyframes emojiBounce{0%{transform:scale(1)}30%{transform:scale(1.2)}60%{transform:scale(0.95)}100%{transform:scale(1)}}
+@keyframes screenShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+@keyframes cardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes emojiWiggle{0%,100%{transform:scale(1) rotate(0deg)}25%{transform:scale(1.15) rotate(-6deg)}50%{transform:scale(1) rotate(0deg)}75%{transform:scale(1.15) rotate(6deg)}}
+@keyframes royalBG{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.screen.active{animation:screenIn .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes screenIn{0%{opacity:0;transform:scale(.93) translateY(12px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+
+/* WEEKLY BUTTON */
+.ls-btn.weekly{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:2px solid rgba(255,255,255,.3);font-weight:700}
+.ls-btn.weekly:disabled{opacity:.5;cursor:default}
+.ls-btn.ach{background:linear-gradient(135deg,#f093fb,#f5576c);color:#fff;border:2px solid rgba(255,255,255,.3);font-weight:700}
+.ls-btn.report{background:linear-gradient(135deg,#00b4db,#0083b0);color:#fff;border:2px solid rgba(255,255,255,.3);font-weight:700}
+
+/* PRESTIGE BUTTON */
+.prestige-btn{background:linear-gradient(135deg,#ffd700,#ff8c00);color:#fff;border:none;border-radius:12px;padding:6px 14px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(255,165,0,.4);transition:transform .2s}
+.prestige-btn:hover{transform:scale(1.05)}
+.lvl-prestige-info{text-align:center;padding:4px 10px;font-size:13px;color:rgba(255,255,255,.85);font-weight:600}
+
+/* PRESTIGE BADGE ON WORLD CARDS */
+.wc-prestige{font-size:12px;font-weight:700;color:#ffd700;margin-top:2px;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+
+/* ACHIEVEMENT MODAL */
+.ach-modal{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;border-radius:22px;padding:20px;max-height:80vh;overflow-y:auto;width:92%;max-width:420px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.ach-modal h2{text-align:center;font-size:22px;margin-bottom:14px}
+.ach-list{display:flex;flex-direction:column;gap:8px}
+.ach-item{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.07);border-radius:12px;padding:10px 12px;transition:opacity .3s}
+.ach-item.locked{opacity:.45}
+.ach-item .ach-icon{font-size:28px;min-width:36px;text-align:center}
+.ach-item .ach-info{flex:1}
+.ach-item .ach-name{font-weight:700;font-size:14px}
+.ach-item .ach-desc{font-size:12px;opacity:.7;margin-top:2px}
+.ach-item .ach-bar{height:6px;background:rgba(255,255,255,.12);border-radius:4px;margin-top:4px;overflow:hidden}
+.ach-item .ach-bar-fill{height:100%;background:linear-gradient(90deg,#ffd700,#ff8c00);border-radius:4px;transition:width .4s}
+.ach-item .ach-reward{font-size:12px;color:#ffd700;font-weight:600;white-space:nowrap}
+
+/* REPORT MODAL */
+.report-modal{background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);color:#fff;border-radius:22px;padding:0;max-height:85vh;overflow:hidden;width:94%;max-width:460px;box-shadow:0 10px 50px rgba(0,0,0,.6);display:flex;flex-direction:column}
+.report-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px 10px;border-bottom:1px solid rgba(255,255,255,.1)}
+.report-header h2{font-size:20px;margin:0}
+.report-tabs{display:flex;gap:4px;padding:8px 12px;overflow-x:auto;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0}
+.report-tab{background:rgba(255,255,255,.08);border:none;color:rgba(255,255,255,.7);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s}
+.report-tab.active{background:linear-gradient(135deg,#00b4db,#0083b0);color:#fff}
+.report-body{flex:1;overflow-y:auto;padding:14px 16px;-webkit-overflow-scrolling:touch}
+.report-section{margin-bottom:18px}
+.report-section-title{font-size:16px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.report-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.report-stat{background:rgba(255,255,255,.08);border-radius:14px;padding:12px;text-align:center}
+.report-stat .stat-value{font-size:22px;font-weight:800;background:linear-gradient(135deg,#ffd700,#ff8c00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.report-stat .stat-label{font-size:11px;opacity:.7;margin-top:2px}
+.report-worlds{display:flex;flex-direction:column;gap:8px}
+.report-world-card{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.07);border-radius:12px;padding:10px 12px}
+.report-world-card .rw-icon{font-size:28px;min-width:36px;text-align:center}
+.report-world-card .rw-info{flex:1}
+.report-world-card .rw-name{font-weight:700;font-size:14px}
+.report-world-card .rw-detail{font-size:12px;opacity:.7;margin-top:2px}
+.report-world-card .rw-bar{height:6px;background:rgba(255,255,255,.12);border-radius:4px;margin-top:4px;overflow:hidden}
+.report-world-card .rw-bar-fill{height:100%;border-radius:4px;transition:width .4s}
+.report-skills{display:flex;flex-direction:column;gap:8px}
+.skill-row{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border-radius:10px;padding:8px 10px}
+.skill-row .sk-name{font-size:13px;font-weight:600;min-width:80px}
+.skill-row .sk-bar{flex:1;height:8px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden}
+.skill-row .sk-bar-fill{height:100%;border-radius:4px;transition:width .4s}
+.skill-row .sk-pct{font-size:12px;font-weight:700;min-width:36px;text-align:right}
+.sk-bar-fill.strong{background:linear-gradient(90deg,#00e676,#69f0ae)}
+.sk-bar-fill.developing{background:linear-gradient(90deg,#ffd740,#ffab00)}
+.sk-bar-fill.weak{background:linear-gradient(90deg,#ff5252,#ff1744)}
+.grade-badge{text-align:center;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:18px;padding:18px;margin:10px 0}
+.grade-badge .grade-value{font-size:36px;font-weight:900}
+.grade-badge .grade-label{font-size:14px;opacity:.85;margin-top:4px}
+.grade-badge .grade-confidence{font-size:12px;opacity:.6;margin-top:6px}
+.strength-list{display:flex;flex-direction:column;gap:6px}
+.strength-item{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:10px;font-size:13px;font-weight:600}
+.strength-item.good{background:rgba(0,230,118,.12);color:#69f0ae}
+.strength-item.weak{background:rgba(255,82,82,.12);color:#ff8a80}
+.report-footer{padding:12px 16px;border-top:1px solid rgba(255,255,255,.1);text-align:center;flex-shrink:0}
+.report-send-btn{background:linear-gradient(135deg,#00b4db,#0083b0);color:#fff;border:none;border-radius:14px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 15px rgba(0,180,219,.3);transition:transform .2s}
+.report-send-btn:hover{transform:scale(1.05)}
+.report-send-btn.sent{background:linear-gradient(135deg,#00e676,#00c853);pointer-events:none}
+
+/* LOGIN TOAST */
+.login-toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:300;animation:toastSlide .5s ease-out}
+.login-toast-inner{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border-radius:16px;padding:10px 20px;display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;box-shadow:0 4px 20px rgba(102,126,234,.5)}
+.login-toast-emoji{font-size:24px}
+@keyframes toastSlide{0%{opacity:0;transform:translateX(-50%) translateY(-30px)}100%{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+/* ACHIEVEMENT TOAST */
+.ach-toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:300;animation:achToastIn .6s cubic-bezier(.34,1.56,.64,1)}
+.ach-toast-inner{background:linear-gradient(135deg,#ffd700,#ff8c00);color:#1a1a2e;border-radius:16px;padding:10px 20px;display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;box-shadow:0 4px 20px rgba(255,215,0,.5)}
+.ach-toast-icon{font-size:26px}
+@keyframes achToastIn{0%{opacity:0;transform:translateX(-50%) scale(.6) translateY(30px)}100%{opacity:1;transform:translateX(-50%) scale(1) translateY(0)}}
+
+/* DONE SCREEN ACHIEVEMENTS */
+.d-achievements{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:6px 0}
+.d-badge.ach-new{background:linear-gradient(135deg,#ffd700,#ff8c00);color:#1a1a2e;animation:achPulse 1s ease-in-out infinite alternate}
+@keyframes achPulse{0%{box-shadow:0 0 0 0 rgba(255,215,0,.4)}100%{box-shadow:0 0 12px 4px rgba(255,215,0,.3)}}
+.d-streak{text-align:center;font-size:14px;font-weight:700;color:#ff6b6b;margin:4px 0}
+.d-fact{background:rgba(255,255,255,.15);backdrop-filter:blur(6px);border-radius:12px;padding:10px 16px;margin:6px auto;max-width:92%;font-size:clamp(12px,2.5vmin,15px);color:rgba(255,255,255,.95);text-align:center;line-height:1.5}
+.d-fact .fact-icon{font-size:18px;margin-inline-end:6px}
+.facts-lib-btn{background:none;border:1px solid rgba(99,102,241,.4);border-radius:8px;color:#818cf8;font-size:14px;padding:4px 10px;margin:6px auto;display:block;cursor:pointer;transition:background .2s}
+.facts-lib-btn:hover{background:rgba(99,102,241,.15)}
+.facts-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;animation:fadeIn .2s}
+.facts-inner{background:#1e1b4b;border-radius:16px;padding:16px;max-width:380px;width:92%;max-height:70vh;display:flex;flex-direction:column}
+.facts-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.facts-title{font-size:18px;font-weight:800;color:#818cf8}
+.facts-close{background:none;border:none;color:#fff;font-size:20px;cursor:pointer;padding:4px 8px}
+.facts-list{overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.facts-item{background:rgba(99,102,241,.1);border-radius:10px;padding:10px 12px;font-size:clamp(12px,2.4vmin,15px);color:rgba(255,255,255,.92);line-height:1.5}
+.facts-item .fi-num{color:#818cf8;font-weight:700;margin-inline-end:6px}
+.story-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(40px);opacity:0;background:rgba(30,20,60,.92);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:14px 20px;display:flex;align-items:center;gap:12px;z-index:9999;max-width:88vw;transition:all .5s cubic-bezier(.34,1.56,.64,1);box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.story-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.story-mascot{font-size:36px;flex-shrink:0}
+.story-text{color:#fff;font-size:clamp(13px,2.8vmin,16px);line-height:1.5}
+
+/* SESSION SUMMARY */
+.d-session{background:rgba(255,255,255,.08);backdrop-filter:blur(8px);border-radius:14px;padding:12px 16px;margin:8px auto;max-width:92%;text-align:center}
+.d-session .session-title{font-size:15px;font-weight:800;margin-bottom:8px;color:#ffd700}
+.d-session .session-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.d-session .session-item{background:rgba(255,255,255,.06);border-radius:10px;padding:6px 8px}
+.d-session .session-item .si-v{font-size:16px;font-weight:800;background:linear-gradient(135deg,#ffd700,#ff8c00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.d-session .session-item .si-l{font-size:11px;opacity:.7;margin-top:1px}
+.d-session .session-msg{margin-top:8px;font-size:14px;font-weight:700;color:#69f0ae;line-height:1.4}
+
+/* MILESTONE POPUP */
+.milestone-popup{position:fixed;top:0;left:0;right:0;bottom:0;z-index:500;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);animation:mileFadeIn .4s ease}
+.milestone-inner{background:linear-gradient(135deg,#ffd700,#ff8c00);color:#1a1a2e;border-radius:24px;padding:28px 36px;text-align:center;max-width:86vw;box-shadow:0 8px 40px rgba(255,215,0,.5);animation:mileScale .6s cubic-bezier(.34,1.56,.64,1)}
+.milestone-icon{font-size:56px;margin-bottom:8px}
+.milestone-text{font-size:20px;font-weight:800;line-height:1.5}
+@keyframes mileFadeIn{0%{opacity:0}100%{opacity:1}}
+@keyframes mileScale{0%{transform:scale(.5)}100%{transform:scale(1)}}
+
+/* QUIZ OVERLAY */
+.quiz-overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:400;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);animation:mileFadeIn .4s ease}
+.quiz-card{background:linear-gradient(135deg,#667eea,#764ba2);border-radius:22px;padding:24px;max-width:88vw;width:340px;box-shadow:0 8px 40px rgba(102,126,234,.5);text-align:center;color:#fff}
+.quiz-header{font-size:20px;font-weight:800;margin-bottom:14px}
+.quiz-question{font-size:16px;font-weight:600;line-height:1.5;margin-bottom:16px;min-height:48px}
+.quiz-answers{display:flex;flex-direction:column;gap:8px}
+.quiz-answer-btn{background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.25);border-radius:14px;padding:10px 16px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s}
+.quiz-answer-btn:hover{background:rgba(255,255,255,.25)}
+.quiz-answer-btn.correct{background:rgba(0,230,118,.3);border-color:#00e676}
+.quiz-answer-btn.wrong{background:rgba(255,82,82,.3);border-color:#ff5252}
+.quiz-result{font-size:15px;font-weight:700;margin-top:12px;padding:8px;border-radius:10px}
+.quiz-result.win{color:#69f0ae}
+.quiz-result.lose{color:#ff8a80}
+
+/* COMEBACK TOAST */
+.comeback-toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:600;animation:comebackIn .6s cubic-bezier(.34,1.56,.64,1)}
+.comeback-inner{background:linear-gradient(135deg,#43e97b,#38f9d7);color:#1a1a2e;border-radius:16px;padding:12px 22px;display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px;box-shadow:0 4px 20px rgba(67,233,123,.4)}
+.comeback-emoji{font-size:28px}
+@keyframes comebackIn{0%{opacity:0;transform:translateX(-50%) translateY(-30px)}100%{opacity:1;transform:translateX(-50%) translateY(0)}}
+@media(max-height:720px){
+  .top-bar{gap:4px}
+  .tb-item{padding:5px 10px;font-size:clamp(12px,2.5vmin,16px)}
+  .ls-btn{padding:8px 14px}
+  .g-top{gap:4px}
+  .gc{padding:clamp(8px,2vmin,14px);max-height:69vh}
+  .ans-grid{gap:clamp(6px,1.3vmin,9px)}
+  .ans-btn{padding:clamp(10px,2.2vmin,14px)}
+}
+/* ===== ACCESSIBILITY: Reduced Motion ===== */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;scroll-behavior:auto !important}
+  .screen.fade-in{animation:none !important}
+}
+/* ===== Focus-visible ring ===== */
+button:focus-visible,.wc:focus-visible,.lc:focus-visible,.np-btn:focus-visible,.ls-btn:focus-visible,.d-btn:focus-visible{outline:3px solid #fbbf24;outline-offset:2px}
+</style>
+</head>
+<body>
+
+<!-- ===== WORLD SELECT ===== -->
+<div id="world-screen" class="screen active" role="region" aria-label="World Select">
+  <div class="top-bar">
+    <div class="tb-item" id="tb-level">⭐ Lv.1</div>
+    <div class="tb-item" id="tb-coins">🪙 0</div>
+    <div class="tb-item" id="tb-lives">❤️ 5</div>
+    <button class="tb-item mute-btn" id="tb-mute" aria-label="Toggle sound">🔊</button>
+    <button class="tb-item" id="tb-perf" style="cursor:pointer" aria-label="Toggle performance mode">⚡</button>
+    <select class="lang-select" id="lang-select" aria-label="Language selector"></select>
+  </div>
+  <div class="xp-bar-wrap">
+    <div class="xp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Experience"><div class="xp-fill" id="xp-fill" style="width:0%"></div></div>
+    <div class="xp-label" id="xp-label">0 / 1000 XP</div>
+  </div>
+  <div class="ls-title" id="ws-t">🧮 مملكة الأرقام</div>
+  <div class="ls-sub" id="ws-sub">اختر عالمك لتبدأ المغامرة!</div>
+  <div class="ls-btns">
+    <button class="ls-btn daily" id="daily-btn">🎯 التحدي اليومي</button>
+    <button class="ls-btn weekly" id="weekly-btn">📅 التحدي الأسبوعي</button>
+    <button class="ls-btn" id="shop-btn">🛒 المتجر</button>
+    <button class="ls-btn ach" id="ach-btn">🏅 الإنجازات</button>
+    <button class="ls-btn report" id="report-btn">📊 التقرير</button>
+  </div>
+  <div class="world-grid" id="world-grid" role="list" aria-label="Worlds"></div>
+</div>
+
+<!-- ===== LEVEL SELECT (within world) ===== -->
+<div id="lvl-screen" class="screen" role="region" aria-label="Level Select">
+  <div class="lvl-header">
+    <button class="lvl-back" id="lvl-back">← العوالم</button>
+    <div class="lvl-world-title" id="lvl-world-title"></div>
+    <button class="prestige-btn" id="prestige-btn" style="display:none">♻️ برستيج</button>
+    <button class="tb-item mute-btn" id="lvl-mute" aria-label="Toggle sound">🔊</button>
+  </div>
+  <div class="lvl-prestige-info" id="lvl-prestige-info" style="display:none"></div>
+  <div class="ls-grid" id="ls-g" role="list" aria-label="Levels"></div>
+</div>
+
+<!-- ===== GAME SCREEN ===== -->
+<div id="game-screen" class="screen" role="region" aria-label="Game">
+  <div class="g-top">
+    <div class="g-lives" id="g-lives" aria-label="Lives"></div>
+    <div class="g-combo" id="g-combo" aria-live="polite">🔥 x1</div>
+    <button class="g-mute" id="g-mute" aria-label="Toggle sound">🔊</button>
+    <button class="g-back" id="g-exit" aria-label="Exit game">✕</button>
+  </div>
+  <div class="boss-bar" id="boss-bar" style="display:none">
+    <div class="boss-hdr">
+      <span class="boss-emoji" id="boss-emoji">🐲</span>
+      <span class="boss-label" id="boss-label">Boss</span>
+      <span class="boss-emoji" id="boss-p-emoji">🛡️</span>
+    </div>
+    <div class="boss-hp" id="boss-hp"></div>
+  </div>
+  <div class="gc" id="gc">
+    <div class="g-hdr"><h1 id="g-t">🧮</h1></div>
+    <div class="g-stats">
+      <div class="g-stat"><span class="g-sv" id="g-sc">0</span><span class="g-sl" id="g-scl">النقاط</span></div>
+      <div class="g-stat"><span class="g-sv" id="g-qn">1/10</span><span class="g-sl" id="g-qnl">السؤال</span></div>
+    </div>
+    <div class="pbar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="10" aria-label="Question progress"><div class="pfill" id="pfill" style="width:10%"></div></div>
+    <div class="timer" id="timer"></div>
+    <div class="q-area">
+      <div class="q-visual" id="q-visual"></div>
+      <div class="q-text" id="q-text">5 + 3 = ?</div>
+      <div class="q-feedback" id="q-feedback"></div>
+    </div>
+    <div class="ans-grid" id="answers" role="group" aria-label="Answer choices"></div>
+    <div class="numpad-wrap" id="numpad-wrap">
+      <div class="numpad-display" id="numpad-display">_</div>
+      <div class="numpad-grid" id="numpad-grid">
+        <button class="np-btn" data-np="1">1</button>
+        <button class="np-btn" data-np="2">2</button>
+        <button class="np-btn" data-np="3">3</button>
+        <button class="np-btn" data-np="4">4</button>
+        <button class="np-btn" data-np="5">5</button>
+        <button class="np-btn" data-np="6">6</button>
+        <button class="np-btn" data-np="7">7</button>
+        <button class="np-btn" data-np="8">8</button>
+        <button class="np-btn" data-np="9">9</button>
+        <button class="np-btn np-del" data-np="del">⌫</button>
+        <button class="np-btn" data-np="0">0</button>
+        <button class="np-btn np-ok" data-np="ok">✅</button>
+      </div>
+    </div>
+    <div class="boosters" id="boosters"></div>
+  </div>
+</div>
+
+<!-- ===== DONE SCREEN ===== -->
+<div id="done-screen" class="screen" role="region" aria-label="Results">
+  <div class="d-emoji" id="d-e">🏆</div>
+  <div class="d-title" id="d-t">أحسنت!</div>
+  <div class="d-stars" id="d-st"></div>
+  <div class="d-sub" id="d-sub"></div>
+  <div class="d-near" id="d-near" style="display:none"></div>
+  <div class="d-stats">
+    <div class="d-st"><div class="d-st-e">✅</div><div class="d-st-v" id="d-cr">0</div><div class="d-st-l" id="d-crl">صحيح</div></div>
+    <div class="d-st"><div class="d-st-e">❌</div><div class="d-st-v" id="d-wr">0</div><div class="d-st-l" id="d-wrl">خطأ</div></div>
+    <div class="d-st"><div class="d-st-e">⏱️</div><div class="d-st-v" id="d-tm">0s</div><div class="d-st-l" id="d-tml">الوقت</div></div>
+    <div class="d-st"><div class="d-st-e">⭐</div><div class="d-st-v" id="d-xp">+0</div><div class="d-st-l">XP</div></div>
+    <div class="d-st"><div class="d-st-e">🪙</div><div class="d-st-v" id="d-cn">+0</div><div class="d-st-l" id="d-cnl">عملات</div></div>
+  </div>
+  <div class="d-badges" id="d-badges"></div>
+  <div class="d-achievements" id="d-achievements"></div>
+  <div class="d-streak" id="d-streak" style="display:none"></div>
+  <div class="d-fact" id="d-fact" style="display:none"></div>
+  <button class="facts-lib-btn" id="facts-lib-btn" style="display:none">📚</button>
+  <!-- Facts Library Overlay -->
+  <div class="facts-overlay" id="facts-overlay" style="display:none">
+    <div class="facts-inner">
+      <div class="facts-header"><span class="facts-title">📚</span><button class="facts-close" id="facts-close">✕</button></div>
+      <div class="facts-list" id="facts-list"></div>
+    </div>
+  </div>
+  <div class="d-session" id="d-session" style="display:none"></div>
+  <div class="d-btns">
+    <button class="d-btn pri" id="d-nx">➡️ التالي</button>
+    <button class="d-btn shr" id="d-sh">📤 مشاركة</button>
+    <button class="d-btn sec" id="d-rp">🔄 إعادة</button>
+    <button class="d-btn sec" id="d-hm">🏠</button>
+  </div>
+</div>
+
+<!-- Milestone Celebration -->
+<div class="milestone-popup" id="milestone-popup" style="display:none">
+  <div class="milestone-inner">
+    <div class="milestone-icon">🏅</div>
+    <div class="milestone-text" id="milestone-text"></div>
+  </div>
+</div>
+
+<!-- Story Quiz Overlay -->
+<div class="quiz-overlay" id="quiz-overlay" style="display:none">
+  <div class="quiz-card">
+    <div class="quiz-header">🧠 <span id="quiz-header-text">Quiz Bonus!</span></div>
+    <div class="quiz-question" id="quiz-question"></div>
+    <div class="quiz-answers" id="quiz-answers"></div>
+    <div class="quiz-result" id="quiz-result" style="display:none"></div>
+  </div>
+</div>
+
+<!-- Comeback Toast -->
+<div class="comeback-toast" id="comeback-toast" style="display:none">
+  <div class="comeback-inner">
+    <span class="comeback-emoji">👋</span>
+    <span class="comeback-text" id="comeback-text"></span>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="lvlup-modal" role="dialog" aria-modal="true" aria-label="Level Up">
+  <div class="modal">
+    <h2 id="lvlup-title">⬆️ Level Up!</h2>
+    <p id="lvlup-msg">Earned: +1 🔨 +1 💡 +1 ❤️</p>
+    <button id="lvlup-ok">👍</button>
+  </div>
+</div>
+<div class="modal-overlay" id="shop-modal" role="dialog" aria-modal="true" aria-label="Shop">
+  <div class="shop-modal">
+    <h2>🛒 المتجر</h2>
+    <div class="shop-coins" id="shop-coins">🪙 0</div>
+    <div class="shop-items" id="shop-items"></div>
+    <button class="shop-close" id="shop-close">✕ إغلاق</button>
+  </div>
+</div>
+<div class="modal-overlay" id="nolives-modal" role="dialog" aria-modal="true" aria-label="No Lives">
+  <div class="modal" style="background:linear-gradient(135deg,#ef4444,#b91c1c)">
+    <h2>❤️ لا أرواح!</h2>
+    <p id="nolives-msg">القلب التالي خلال 10 دقائق</p>
+    <button id="nolives-close">حسناً</button>
+  </div>
+</div>
+
+<!-- Achievement Modal -->
+<div class="modal-overlay" id="ach-modal" role="dialog" aria-modal="true" aria-label="Achievements">
+  <div class="ach-modal">
+    <h2 id="ach-modal-title">🏅 الإنجازات</h2>
+    <div class="ach-list" id="ach-list"></div>
+    <button class="shop-close" id="ach-close">✕ إغلاق</button>
+  </div>
+</div>
+
+<!-- Login Bonus Toast -->
+<div class="login-toast" id="login-toast" style="display:none">
+  <div class="login-toast-inner">
+    <span class="login-toast-emoji">🎁</span>
+    <span class="login-toast-text" id="login-toast-text">مكافأة يومية!</span>
+  </div>
+</div>
+
+<!-- Report Modal -->
+<div class="modal-overlay" id="report-modal" role="dialog" aria-modal="true" aria-label="Performance Report">
+  <div class="report-modal">
+    <div class="report-header">
+      <h2 id="report-title">📊 تقرير الأداء</h2>
+      <button class="shop-close" id="report-close">✕</button>
+    </div>
+    <div class="report-tabs" id="report-tabs"></div>
+    <div class="report-body" id="report-body"></div>
+    <div class="report-footer">
+      <button class="report-send-btn" id="report-send">📤 إرسال للوالدين</button>
+    </div>
+  </div>
+</div>
+
+<!-- Achievement Toast -->
+<div class="ach-toast" id="ach-toast" style="display:none">
+  <div class="ach-toast-inner">
+    <span class="ach-toast-icon" id="ach-toast-icon">🏅</span>
+    <span class="ach-toast-text" id="ach-toast-text">إنجاز جديد!</span>
+  </div>
+</div>
+
+<!-- ===== GAME MODULE ===== -->
+<script type="module">
+import { POOL, CATEGORIES, LANG, SUPPORTED_LANGS, t, I18N, ACTIVE_STRINGS, ACHIEVEMENTS } from './math-modules/config.js';
+import { WORLDS, WORLD_MAP, generateLevelConfig, isWorldUnlocked, getTotalStars, getWorldCompletion, getMasteryIcon, getLevelName, generateDailyChallenge, getPrestigeLevel, canPrestige, applyPrestige, generateWeeklyChallenge, getWeekNum, getLaneForLevel, getLaneTheme, isLaneEnd } from './math-modules/worlds.js';
+import * as Core from './math-modules/core.js';
+import * as Intel from './math-modules/intelligence.js';
+import * as Engage from './math-modules/engagement.js';
+import * as UI from './math-modules/ui.js';
+import * as Econ from './math-modules/economy.js';
+import * as Boss from './math-modules/boss.js';
+import * as Reports from './math-modules/reports.js';
+import * as Story from './math-modules/story.js';
+import { royalCelebration } from './math-modules/effects.js';
+
+// Apply lang
+document.documentElement.lang = LANG;
+document.documentElement.dir = ['ar', 'fa', 'ur'].includes(LANG) ? 'rtl' : 'ltr';
+const T = ACTIVE_STRINGS;
+const displayLocale = LANG === 'ar' ? 'ar-EG' : (LANG === 'pt' ? 'pt-BR' : 'en-US');
+const displayNumber = new Intl.NumberFormat(displayLocale);
+
+function formatDisplayNumber(value) {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return String(value);
+  return displayNumber.format(num);
+}
+
+function localizeMathText(input) {
+  if (input == null) return '';
+  const source = String(input);
+  if (LANG !== 'ar') return source;
+  return source.replace(/\d+(?:\.\d+)?/g, (match) => formatDisplayNumber(Number(match)));
+}
+
+function formatOptionLabel(optionValue) {
+  if (optionValue === '>' || optionValue === '<' || optionValue === '=') {
+    return `\u200E${optionValue}\u200E`;
+  }
+  if (typeof optionValue === 'number') return formatDisplayNumber(optionValue);
+  return localizeMathText(optionValue);
+}
+
+function formatNumpadValue(rawValue) {
+  if (!rawValue) return '_';
+  if (LANG !== 'ar') return String(rawValue);
+  return String(rawValue).replace(/\d/g, (digit) => formatDisplayNumber(Number(digit)));
+}
+
+function applyLanguageSelection(nextLang) {
+  const allowed = SUPPORTED_LANGS;
+  if (!allowed.includes(nextLang)) return;
+  try { localStorage.setItem('classify_math_lang', nextLang); } catch (e) {}
+  const params = new URLSearchParams(window.location.search);
+  params.set('lang', nextLang);
+  window.location.search = params.toString();
+}
+
+const LANGUAGE_LABELS = {
+  ar: 'العربية',
+  en: 'English',
+  pt: 'Português',
+  es: 'Español',
+  fr: 'Français',
+  de: 'Deutsch',
+  it: 'Italiano',
+  ru: 'Русский',
+  zh: '中文',
+  ja: '日本語',
+  ko: '한국어',
+  hi: 'हिन्दी',
+  tr: 'Türkçe',
+  nl: 'Nederlands',
+  sv: 'Svenska',
+  pl: 'Polski',
+  uk: 'Українська',
+  id: 'Bahasa Indonesia',
+  ms: 'Bahasa Melayu',
+  th: 'ไทย',
+  vi: 'Tiếng Việt',
+  fa: 'فارسی',
+  ur: 'اردو',
+  bn: 'বাংলা',
+  sw: 'Kiswahili',
+};
+
+function buildLanguageOptions() {
+  const langSelect = el('lang-select');
+  if (!langSelect) return;
+  langSelect.innerHTML = '';
+  for (const code of SUPPORTED_LANGS) {
+    const option = document.createElement('option');
+    option.value = code;
+    option.textContent = LANGUAGE_LABELS[code] || code.toUpperCase();
+    langSelect.appendChild(option);
+  }
+  langSelect.value = LANG;
+}
+
+// ===== GAME STATE =====
+let progress;
+let currentWorld = null;       // world ID
+let currentLevelIndex = -1;    // level index within world
+let levelConfig = null;        // generated level config
+let currentQ = 0, totalScore = 0, streak = 0, highStreak = 0;
+let questions = [], timerInterval = null, timeLeft = 0, answering = false, startTime = 0;
+let usedHintThisLevel = false, bossState = null, dailyMode = false, weeklyMode = false, questionStartTime = 0;
+let totalCorrect = 0, totalQ = 10, currentTimerMax = 0;
+let missStreak = 0;
+let challengeTracker;
+let sessionTracker;
+let numpadValue = '';
+
+function el(id) { return document.getElementById(id); }
+
+// ===== INIT =====
+function init() {
+  progress = Core.loadProgress();
+  if (!progress.skillData) progress.skillData = { avgResponseTime: 8, accuracyRate: 0.5, highestStreak: 0, totalGamesPlayed: 0, smoothedSkill: 50, typeProfiles: {} };
+  if (!progress.skillData.typeProfiles) progress.skillData.typeProfiles = {};
+  if (!progress.achievementsUnlocked) progress.achievementsUnlocked = [];
+  if (!progress.prestige) progress.prestige = {};
+  if (!progress.loginStreak) progress.loginStreak = { lastDate: null, count: 0 };
+  if (progress.bossesBeaten == null) progress.bossesBeaten = 0;
+  if (progress.perfectGames == null) progress.perfectGames = 0;
+  if (progress.worldsCleared == null) progress.worldsCleared = 0;
+  if (progress.totalPrestige == null) progress.totalPrestige = 0;
+  if (!progress.boosters) progress.boosters = { hammer: 1, shuffle: 1, extraTime: 1, hint: 3 };
+  if (!progress.tutorialShown) progress.tutorialShown = {};
+  if (!progress.purchaseCounts) progress.purchaseCounts = { hammer: 0, shuffle: 0, extraTime: 0, hint: 0 };
+
+  // Init mute state  
+  UI.initMuteState(progress.soundMuted);
+  updateMuteButtons();
+
+  // i18n
+  el('ws-t').textContent = T.title;
+  el('ws-sub').textContent = T.sub;
+  el('g-scl').textContent = T.score;
+  el('g-qnl').textContent = T.question;
+  el('d-crl').textContent = T.correct;
+  el('d-wrl').textContent = T.wrong;
+  el('d-tml').textContent = T.time;
+  el('d-cnl').textContent = T.coins;
+  el('d-sh').textContent = T.share;
+  el('daily-btn').textContent = T.daily;
+  el('lvl-back').textContent = T.backToWorlds;
+  el('weekly-btn').textContent = T.weekly;
+  el('ach-btn').textContent = T.achievements;
+  el('report-btn').textContent = T.report || '📊 التقرير';
+  el('report-send').textContent = T.rSendReport || '📤 إرسال للوالدين';
+
+  buildLanguageOptions();
+
+  document.querySelectorAll('.np-btn[data-np]').forEach((btn) => {
+    const key = btn.dataset.np;
+    if (!key) return;
+    if (/^\d$/.test(key)) {
+      btn.textContent = formatDisplayNumber(Number(key));
+      return;
+    }
+    if (key === 'ok') btn.textContent = T.confirm || '✅';
+    if (key === 'del') btn.textContent = T.delete || '⌫';
+  });
+
+  // Daily login bonus
+  const loginResult = Econ.checkDailyLogin(progress);
+  if (loginResult) {
+    Core.saveProgress(progress);
+    setTimeout(() => showLoginBonus(loginResult), 600);
+  }
+
+  // Comeback message (show welcome-back if player was away)
+  const lastPlay = progress.lastPlayTimestamp || 0;
+  if (lastPlay > 0) {
+    const hoursSince = (Date.now() - lastPlay) / (1000 * 60 * 60);
+    const comebackMsg = Engage.getComebackMessage(hoursSince);
+    if (comebackMsg) {
+      setTimeout(() => {
+        el('comeback-text').textContent = comebackMsg;
+        el('comeback-toast').style.display = '';
+        setTimeout(() => { el('comeback-toast').style.display = 'none'; }, 5000);
+      }, 1200);
+    }
+  }
+  progress.lastPlayTimestamp = Date.now();
+  Core.saveProgress(progress);
+
+  updateDailyBtn();
+  updateWeeklyBtn();
+  renderWorldSelect();
+}
+
+// ===== MUTE =====
+function toggleMuteBtn() {
+  const muted = UI.toggleMute();
+  progress.soundMuted = muted;
+  Core.saveProgress(progress);
+  updateMuteButtons();
+}
+
+function updateMuteButtons() {
+  const icon = UI.isMuted() ? T.soundOff : T.soundOn;
+  ['tb-mute', 'lvl-mute', 'g-mute'].forEach(id => {
+    const e = el(id);
+    if (e) e.textContent = icon;
+  });
+}
+
+// ===== SCREENS =====
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  el(id).classList.add('active');
+  if (id === 'world-screen') { renderWorldSelect(); updateDailyBtn(); updateWeeklyBtn(); UI.stopMusic(); }
+  if (id === 'lvl-screen') { renderLevelSelect(); }
+}
+window.showScreen = showScreen;
+
+// ===== TOP BAR =====
+function updateTopBar() {
+  const lvl = Core.getPlayerLevel(progress);
+  const xpCur = Core.getLevelXPProgress(progress);
+  const xpMax = Core.getXPToNextLevel();
+  el('tb-level').textContent = '⭐ Lv.' + lvl;
+  el('tb-coins').textContent = '🪙 ' + Econ.getCoins(progress);
+  el('tb-lives').textContent = '❤️ ' + Core.getLives(progress);
+  el('xp-fill').style.width = (xpCur / xpMax * 100) + '%';
+  el('xp-label').textContent = xpCur + ' / ' + xpMax + ' XP';
+  el('tb-perf').textContent = UI.isLowPerf() ? '🐢' : '⚡';
+}
+
+function updateDailyBtn() {
+  const today = new Date().toDateString();
+  if (progress.dailyChallengeDate === today && progress.dailyChallengeCompleted) {
+    el('daily-btn').textContent = T.dailyDone;
+    el('daily-btn').disabled = true;
+    el('daily-btn').style.opacity = '.5';
+  }
+}
+
+// ===== WORLD SELECT =====
+function renderWorldSelect() {
+  updateTopBar();
+  const g = el('world-grid');
+  g.innerHTML = '';
+
+  for (const w of WORLDS) {
+    const unlocked = isWorldUnlocked(w.id, progress.worlds);
+    const wp = progress.worlds[w.id] || {};
+    const completion = getWorldCompletion(wp);
+    const masteryIcon = getMasteryIcon(completion.mastery);
+    const worldName = T.worldNames[w.id] || w.id;
+    const worldDesc = T.worldDescs[w.id] || '';
+
+    const card = document.createElement('div');
+    card.className = 'wc' + (unlocked ? '' : ' locked');
+    card.style.background = unlocked ? w.gradient : 'rgba(100,100,140,.35)';
+
+    if (unlocked) {
+      const pLv = getPrestigeLevel(progress, w.id);
+      const prestigeTag = pLv > 0 ? `<div class="wc-prestige">♻️ ${T.prestigeLv || 'Prestige'} ${pLv}</div>` : '';
+      card.innerHTML = `
+        <div class="wc-icon">${w.icon}</div>
+        <div class="wc-name">${worldName}</div>
+        <div class="wc-desc">${worldDesc}</div>
+        <div class="wc-progress">${completion.stars} ⭐ · ${T.level} ${completion.levels}</div>
+        ${masteryIcon ? `<div class="wc-mastery">${masteryIcon} ${T.mastery[completion.mastery] || ''}</div>` : ''}
+        ${prestigeTag}
+      `;
+      card.onclick = () => enterWorld(w.id);
+    } else {
+      const reqWorld = w.unlockReq ? w.unlockReq.world : '';
+      const reqStars = w.unlockReq ? w.unlockReq.starsNeeded : 0;
+      const reqName = T.worldNames[reqWorld] || reqWorld;
+      card.innerHTML = `
+        <div class="wc-icon" style="opacity:.5">${w.icon}</div>
+        <div class="wc-name">${worldName}</div>
+        <div class="wc-desc">${worldDesc}</div>
+        <div class="wc-lock">🔒</div>
+        <div class="wc-lock-text">${T.starsNeeded.replace('{n}', reqStars).replace('{world}', reqName)}</div>
+      `;
+    }
+    g.appendChild(card);
+  }
+}
+
+// ===== ENTER WORLD =====
+function enterWorld(worldId) {
+  currentWorld = worldId;
+  const w = WORLD_MAP[worldId];
+  // Apply world theme to level screen
+  el('lvl-screen').style.background = w.gradient;
+  el('lvl-world-title').textContent = T.worldNames[worldId] || worldId;
+  showScreen('lvl-screen');
+
+  // Story intro toast
+  const intro = Story.getWorldIntro(worldId);
+  if (intro) {
+    const toast = document.createElement('div');
+    toast.className = 'story-toast';
+    toast.innerHTML = '<span class="story-mascot">' + intro.mascot + '</span><div class="story-text">' + intro.text + '</div>';
+    document.body.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('show'));
+    setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 500); }, 4000);
+  }
+}
+window.enterWorld = enterWorld;
+
+function backToWorlds() {
+  currentWorld = null;
+  showScreen('world-screen');
+}
+
+// ===== LEVEL SELECT (within world) =====
+function renderLevelSelect() {
+  if (!currentWorld) return;
+  const w = WORLD_MAP[currentWorld];
+  const laneTop = getLaneForLevel(Math.max(0, (progress.worlds[currentWorld]?.levelReached || 1) - 1));
+  const laneThemeTop = getLaneTheme(Math.max(0, (progress.worlds[currentWorld]?.levelReached || 1) - 1));
+  // Prestige info
+  const pLv = getPrestigeLevel(progress, currentWorld);
+  const pInfo = el('lvl-prestige-info');
+  const pBtn = el('prestige-btn');
+  if (pLv > 0) {
+    pInfo.style.display = '';
+    pInfo.textContent = '♻️ ' + (T.prestigeLv || 'Prestige') + ' ' + pLv + ' — ' + (T.prestigeDesc || 'مكافآت محسّنة!') + ' | ' + laneThemeTop.icon + ' Lane ' + (laneTop + 1);
+  } else {
+    pInfo.style.display = '';
+    pInfo.textContent = laneThemeTop.icon + ' Lane ' + (laneTop + 1);
+  }
+  if (canPrestige(progress, currentWorld)) {
+    pBtn.style.display = '';
+    pBtn.textContent = '♻️ ' + (T.prestige || 'برستيج');
+  } else {
+    pBtn.style.display = 'none';
+  }
+
+  const wp = progress.worlds[currentWorld] || { levelReached: 0, scores: {}, stars: {} };
+  const levelsToShow = Math.max(20, (wp.levelReached || 0) + 4);
+
+  const g = el('ls-g');
+  g.innerHTML = '';
+
+  for (let i = 0; i < levelsToShow; i++) {
+    const unlocked = i < Math.max(1, wp.levelReached || 1);
+    const stars = wp.stars[i] || 0;
+    const isCurr = i === Math.max(0, (wp.levelReached || 1) - 1);
+    const isBoss = (i + 1) % w.bossEvery === 0;
+    const levelName = getLevelName(currentWorld, i, LANG);
+    const lane = getLaneTheme(i);
+    const laneSlot = (i % 10) + 1;
+
+    const card = document.createElement('div');
+    card.className = 'lc' + (unlocked ? '' : ' locked') + (isCurr ? ' current' : '') + (isBoss && unlocked ? ' boss-card' : '');
+
+    if (unlocked) {
+      card.innerHTML = `
+        <div class="lc-num">${isBoss ? '👑' : (i + 1)}</div>
+        <div class="lc-emoji">${isBoss ? '⚔️' : w.emoji}</div>
+        <div class="lc-name">${lane.icon} L${getLaneForLevel(i) + 1}.${laneSlot} ${isBoss ? T.bossBattle : levelName}</div>
+        <div class="lc-stars">${stars>=1?'⭐':'☆'}${stars>=2?'⭐':'☆'}${stars>=3?'⭐':'☆'}</div>
+      `;
+      card.onclick = () => startLevel(currentWorld, i);
+    } else {
+      card.innerHTML = `
+        <div class="lc-num" style="opacity:.4">${i + 1}</div>
+        <div class="lc-lock">🔒</div>
+      `;
+    }
+    g.appendChild(card);
+  }
+}
+
+// ===== LIVES CHECK =====
+function checkLives() {
+  const lives = Core.getLives(progress);
+  if (lives <= 0) {
+    const ms = Core.getTimeToNextLife(progress);
+    const mins = Math.ceil(ms / 60000);
+    el('nolives-msg').textContent = T.livesRegen.replace('{m}', mins);
+    el('nolives-modal').classList.add('show');
+    return false;
+  }
+  return true;
+}
+function closeNoLives() {
+  el('nolives-modal').classList.remove('show');
+}
+
+// ===== QUESTION GENERATION =====
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+
+function pickMultiCatEmoji(cats) {
+  let pool = [];
+  for (const c of cats) pool = pool.concat(POOL[c] || []);
+  return shuffle([...new Set(pool)]);
+}
+
+function rnd(n){return Math.floor(Math.random()*n)}
+function genArith(ops, effR) {
+  let op=ops[rnd(ops.length)];
+  if(['count','fraction','decimal','pattern','geometry','algebra'].includes(op))op=['add','sub','mul'][rnd(3)]||'add';
+  let a,b,ans;
+  switch(op){
+    case'sub':a=rnd(effR)+2;b=rnd(a)+1;ans=a-b;return{a,b,ans,sym:'-',text:`${a} - ${b} = ?`};
+    case'mul':a=rnd(Math.min(effR,12))+1;b=rnd(Math.min(effR,12))+1;ans=a*b;return{a,b,ans,sym:'×',text:`${a} × ${b} = ?`};
+    case'div':{b=rnd(Math.min(effR,12))+1;const q=rnd(Math.min(effR,12))+1;a=b*q;ans=q;return{a,b,ans,sym:'÷',text:`${a} ÷ ${b} = ?`};}
+    default:a=rnd(effR)+1;b=rnd(effR)+1;ans=a+b;return{a,b,ans,sym:'+',text:`${a} + ${b} = ?`};
+  }
+}
+function wrongOpts(correct, count, lo, hi) {
+  const s=new Set();let t=0;
+  while(s.size<count&&t++<60){const off=rnd(10)+1;const w=Math.random()<.5?correct+off:correct-off;if(w!==correct&&w>=(lo||0)&&!s.has(w))s.add(w)}
+  while(s.size<count)s.add(correct+s.size+1);
+  return shuffle([correct,...s]);
+}
+
+function genTypedQuestion(typeId, ops, range, pool, difficulty) {
+  const effR=Intel.getDifficultyRange(range,difficulty);
+  const em=pool[rnd(pool.length)];
+  let text,answer,options,visual='',inputMode='choice';
+  switch(typeId){
+    case'visualCount':{
+      const n=rnd(Math.min(effR,12))+1;text=T.howMany;answer=n;
+      visual=em.repeat(n);options=wrongOpts(n,3,1,20);break;
+    }
+    case'compare':{
+      const a=rnd(effR*2)+1,b=rnd(effR*2)+1;
+      text=`${a}  ⬜  ${b}`;answer=a>b?'>':a<b?'<':'=';
+      options=['>','<','='];inputMode='choice3';
+      if(a<=6&&b<=6)visual=em.repeat(a)+' ? '+em.repeat(b);break;
+    }
+    case'trueFalse':{
+      const ar=genArith(ops,effR);const isTrue=Math.random()>.4;
+      const shown=isTrue?ar.ans:ar.ans+(rnd(5)+1)*(Math.random()>.5?1:-1);
+      text=ar.text.replace('= ?','= '+shown);visual=T.isCorrect;
+      answer=isTrue?T.yes:T.no;options=[T.yes,T.no];inputMode='choice2';break;
+    }
+    case'missingNumber':{
+      const ar=genArith(ops,effR);
+      if(rnd(2)===0){text=`_ ${ar.sym} ${ar.b} = ${ar.ans}`;answer=ar.a;}
+      else{text=`${ar.a} ${ar.sym} _ = ${ar.ans}`;answer=ar.b;}
+      visual=T.findMissing;inputMode='numpad';break;
+    }
+    case'placeValue':{
+      const num=rnd(effR*10)+10;let lbl,ans;
+      if(num>=100&&rnd(3)===0){lbl=T.hundredsDigit;ans=Math.floor(num/100)%10;}
+      else if(num>=10&&rnd(2)===0){lbl=T.tensDigit;ans=Math.floor(num/10)%10;}
+      else{lbl=T.onesDigit;ans=num%10;}
+      text=lbl+' '+num+'?';answer=ans;options=wrongOpts(ans,3,0,9);break;
+    }
+    case'sequence':{
+      const start=rnd(effR)+1,step=rnd(Math.min(effR,5))+1;
+      const seq=[];for(let i=0;i<4;i++)seq.push(start+step*i);
+      answer=start+step*4;text=seq.join(', ')+', _';visual=T.whatNext;inputMode='numpad';break;
+    }
+    case'fractionVisual':{
+      const ds=[2,3,4,5];const d=ds[rnd(ds.length)];const n=rnd(d-1)+1;
+      const whole=(rnd(Math.min(effR,4))+1)*d;answer=Math.round(whole*n/d);
+      text=T.fractionOf+' '+n+'/'+d+' '+(T.of||'of')+' '+whole+'?';
+      visual=em.repeat(Math.min(whole,10));options=wrongOpts(answer,3,1,whole);break;
+    }
+    case'geometry':{
+      const shape=rnd(2),calc=rnd(2);
+      if(shape===0){const s=rnd(effR)+2;
+        text=calc===0?T.perimeter+': '+T.squareSide+' '+s:T.area+': '+T.squareSide+' '+s;
+        answer=calc===0?s*4:s*s;
+      }else{let w=rnd(effR)+2,h=rnd(effR)+2;if(w===h)h++;
+        text=calc===0?T.perimeter+': '+T.rectSides+' '+w+'×'+h:T.area+': '+T.rectSides+' '+w+'×'+h;
+        answer=calc===0?(w+h)*2:w*h;}
+      inputMode='numpad';break;
+    }
+    case'algebra':{
+      const x=rnd(effR)+2,b=rnd(Math.min(x-1,effR))+1;
+      if(rnd(2)===0){text='x + '+b+' = '+(x+b);}else{text='x - '+b+' = '+(x-b);}
+      answer=x;visual=T.solveFor;inputMode='numpad';break;
+    }
+    case'wordProblem':{
+      const tpls=T.wordProblemTemplates,names=T.names;
+      const name=names[rnd(names.length)];
+      let a=rnd(effR)+2,b=rnd(Math.min(a-1,effR))+1;const ti=rnd(tpls.length);
+      if(ti===0)answer=a+b;
+      else if(ti===1)answer=a-b;
+      else if(ti===2){a=rnd(5)+2;b=rnd(5)+2;answer=a*b;}
+      else{b=rnd(4)+2;a=b*(rnd(4)+1);answer=a/b;}
+      text=tpls[ti].replace('{name}',name).replace('{a}',a).replace('{b}',b).replace(/{emoji}/g,em);
+      options=wrongOpts(answer,3,1,Math.max(answer+10,effR*2));break;
+    }
+    case'speedRound':{
+      const ar=genArith(ops,Math.max(2,Math.round(effR*.5)));
+      text=ar.text;answer=ar.ans;
+      const w=ar.ans+(rnd(5)+1)*(Math.random()>.5?1:-1);
+      options=shuffle([ar.ans,w<0?ar.ans+rnd(5)+1:w]);inputMode='choice2';break;
+    }
+    case'estimation':{
+      const ar=genArith(ops,effR);text=ar.text.replace('= ?','≈ ?');
+      visual=T.whichClosest||'';answer=ar.ans;
+      const opts=new Set([ar.ans]);
+      [rnd(3)+1,rnd(10)+5,rnd(15)+8].forEach(off=>opts.add(Math.max(0,ar.ans+off*(Math.random()>.5?1:-1))));
+      let ex=1;while(opts.size<4)opts.add(ar.ans+ex++*5);
+      options=shuffle([...opts]);break;
+    }
+    case'doubles':{
+      const base=rnd(Math.min(effR,20))+1;
+      if(Math.random()>.4){text=(T.double||'Double')+' '+base+' = ?';answer=base*2;
+        visual=em.repeat(Math.min(base,6))+' × 2';}
+      else{const ev=base*2;text=(T.half||'Half')+' '+ev+' = ?';answer=base;
+        visual=em.repeat(Math.min(ev,8))+' ÷ 2';}
+      options=wrongOpts(answer,3,1,Math.max(answer+10,effR));break;
+    }
+    case'ordering':{
+      const hi=Math.max(effR*3,15);const nums=new Set();
+      while(nums.size<4)nums.add(rnd(hi)+1);const arr=[...nums];
+      const big=Math.random()>.5;text=big?(T.biggest||T.whichBigger):(T.smallest||'?');
+      answer=big?Math.max(...arr):Math.min(...arr);options=shuffle(arr);break;
+    }
+    default:{
+      const ar=genArith(ops,effR);text=ar.text;answer=ar.ans;
+      if(ar.sym==='+'&&ar.a<=6&&ar.b<=6)visual=em.repeat(ar.a)+' + '+em.repeat(ar.b);
+      else if(ar.sym==='-'&&ar.a<=8)visual=em.repeat(ar.a)+' - '+em.repeat(ar.b);
+      else if(ar.sym==='×'&&ar.a<=4&&ar.b<=4){const rows=[];for(let i=0;i<ar.a;i++)rows.push(em.repeat(ar.b));visual=rows.join(' ');}
+      else if(ar.sym==='÷'&&ar.a<=12)visual=em.repeat(ar.a)+' ÷ '+ar.b;
+      options=wrongOpts(ar.ans,3,0,ar.ans+effR+5);break;
+    }
+  }
+  return{text,answer,options:options||[],visual,inputMode,typeId};
+}
+
+function genAllQuestions(cfg, isBoss) {
+  const sd = progress.skillData || {};
+  const skill = Intel.getSmoothedSkill(sd);
+  const sOff = Intel.getSessionOffset(sessionTracker);
+  const adjustedRange = Intel.adjustRange(cfg.range, skill, sOff);
+  currentTimerMax = cfg.timer;
+  const pool = pickMultiCatEmoji(cfg.cats);
+  const baseTypes = cfg.questionTypes || ['classic'];
+  const typeSeq = Intel.weightedTypeSelection(sd, baseTypes, cfg.questions);
+  const qs = [];
+  for (let i = 0; i < cfg.questions; i++) {
+    const diff = Intel.getQuestionDifficulty(i, cfg.questions, isBoss, sessionTracker);
+    let ops = cfg.ops;
+    if (isBoss && bossState) ops = Boss.getCurrentPhaseOps(bossState);
+    qs.push(genTypedQuestion(typeSeq[i], ops, adjustedRange, pool, diff));
+  }
+  return qs;
+}
+
+// ===== START LEVEL =====
+function startLevel(worldId, levelIdx) {
+  if (!checkLives()) return;
+  dailyMode = false;
+  weeklyMode = false;
+  currentWorld = worldId;
+  currentLevelIndex = levelIdx;
+
+  const w = WORLD_MAP[worldId];
+  levelConfig = generateLevelConfig(worldId, levelIdx, progress.skillData, progress);
+  if (!levelConfig) return;
+
+  totalQ = levelConfig.questions;
+  const isBoss = levelConfig.boss;
+
+  // Theme
+  UI.applyWorldTheme(levelConfig.gradient, levelConfig.accent, el('game-screen'), el('done-screen'));
+
+  // Boss init
+  if (isBoss) {
+    const bossOps = levelConfig.ops.length > 0 ? levelConfig.ops : ['add'];
+    bossState = Boss.createBossState(levelConfig.bossType, bossOps);
+    totalQ = bossState.totalHP;
+    el('boss-bar').style.display = '';
+    renderBossHP();
+    el('boss-emoji').textContent = Boss.getBossEmoji(bossState);
+    el('boss-label').textContent = Boss.getBossPhaseLabel(bossState);
+  } else {
+    bossState = null;
+    el('boss-bar').style.display = 'none';
+  }
+
+  const levelName = getLevelName(worldId, levelIdx, LANG);
+  const laneTheme = getLaneTheme(levelIdx);
+  const laneN = getLaneForLevel(levelIdx) + 1;
+  el('g-t').textContent = laneTheme.icon + ' L' + laneN + '.' + ((levelIdx % 10) + 1) + ' • ' + (isBoss ? '👑 ' + T.bossBattle : levelName + ' 🧮');
+
+  // Reset state
+  currentQ = 0; totalScore = 0; streak = 0; highStreak = 0;
+  totalCorrect = 0; usedHintThisLevel = false; answering = false;
+  startTime = Date.now();
+  challengeTracker = Engage.createChallengeTracker();
+  sessionTracker = Intel.createSessionTracker();
+  currentTimerMax = levelConfig.timer;
+
+  // Generate questions
+  if (isBoss) {
+    questions = genBossQuestions(levelConfig);
+  } else {
+    questions = genAllQuestions(levelConfig, false);
+  }
+
+  el('g-sc').textContent = '0';
+  renderLives();
+  updateCombo();
+  showScreen('game-screen');
+  if (!UI.isMuted()) UI.startMusic();
+  renderBoosters();
+  showQuestion();
+}
+window.startLevel = startLevel;
+
+function genBossQuestions(cfg) {
+  if (!bossState) return genAllQuestions(cfg, true);
+  const phases = Boss.getPhases(bossState);
+  const sd = progress.skillData || {};
+  const skill = Intel.getSmoothedSkill(sd);
+  const sOff = Intel.getSessionOffset(sessionTracker);
+  const pool = pickMultiCatEmoji(cfg.cats);
+  const baseTypes = cfg.questionTypes || ['classic'];
+  const totalBossQ = phases.reduce((s, p) => s + p.questions, 0);
+  const typeSeq = Intel.weightedTypeSelection(sd, baseTypes, totalBossQ);
+  const qs = [];
+  let qi = 0;
+  for (const phase of phases) {
+    for (let i = 0; i < phase.questions; i++) {
+      const diff = Intel.getQuestionDifficulty(i, phase.questions, true, sessionTracker);
+      qs.push(genTypedQuestion(typeSeq[qi], phase.ops, Intel.adjustRange(cfg.range, skill, sOff), pool, diff));
+      qi++;
+    }
+  }
+  return qs;
+}
+
+// ===== DAILY CHALLENGE =====
+function startDaily() {
+  const today = new Date().toDateString();
+  if (progress.dailyChallengeDate === today && progress.dailyChallengeCompleted) return;
+  if (!checkLives()) return;
+  dailyMode = true;
+  currentWorld = null;
+  currentLevelIndex = -1;
+
+  const dailyCfg = generateDailyChallenge(today, progress.skillData);
+  levelConfig = dailyCfg;
+  totalQ = dailyCfg.questions;
+  currentTimerMax = dailyCfg.timer;
+
+  UI.applyWorldTheme(dailyCfg.gradient, dailyCfg.accent, el('game-screen'), el('done-screen'));
+  el('boss-bar').style.display = 'none';
+  bossState = null;
+  el('g-t').textContent = T.daily + ' 🎯';
+
+  currentQ = 0; totalScore = 0; streak = 0; highStreak = 0;
+  totalCorrect = 0; usedHintThisLevel = false; answering = false;
+  startTime = Date.now();
+  challengeTracker = Engage.createChallengeTracker();
+  sessionTracker = Intel.createSessionTracker();
+
+  const sd = progress.skillData || {};
+  const pool = pickMultiCatEmoji(dailyCfg.cats);
+  const baseTypes = dailyCfg.questionTypes || ['classic'];
+  const typeSeq = Intel.weightedTypeSelection(sd, baseTypes, totalQ);
+  questions = [];
+  for (let i = 0; i < totalQ; i++) {
+    const diff = Intel.getQuestionDifficulty(i, totalQ, false, sessionTracker);
+    questions.push(genTypedQuestion(typeSeq[i], dailyCfg.ops, dailyCfg.range, pool, diff));
+  }
+
+  el('g-sc').textContent = '0';
+  renderLives();
+  updateCombo();
+  showScreen('game-screen');
+  if (!UI.isMuted()) UI.startMusic();
+  renderBoosters();
+  showQuestion();
+}
+
+// ===== SHOW QUESTION =====
+function showQuestion() {
+  if (currentQ >= totalQ) { endGame(); return; }
+  answering = false;
+  questionStartTime = Date.now();
+  const q = questions[currentQ];
+
+  if (bossState) {
+    el('boss-emoji').textContent = Boss.getBossEmoji(bossState);
+    el('boss-label').textContent = Boss.getBossPhaseLabel(bossState);
+    renderBossHP();
+  }
+
+  const qTextEl = el('q-text');
+  qTextEl.textContent = localizeMathText(q.text);
+  qTextEl.style.direction = q.typeId === 'compare' ? 'ltr' : (['ar', 'fa', 'ur'].includes(LANG) ? 'rtl' : 'ltr');
+  qTextEl.style.unicodeBidi = q.typeId === 'compare' ? 'isolate-override' : 'plaintext';
+  const vizEl = el('q-visual');
+  vizEl.textContent = localizeMathText(q.visual || '');
+  UI.bounceElement(vizEl);
+
+  el('q-feedback').textContent = '';
+  el('g-qn').textContent = (currentQ + 1) + '/' + totalQ;
+  el('g-sc').textContent = totalScore;
+  el('pfill').style.width = ((currentQ + 1) / totalQ * 100) + '%';
+
+  const mode = q.inputMode || 'choice';
+  const ans = el('answers');
+  const np = el('numpad-wrap');
+
+  if (mode === 'numpad') {
+    ans.style.display = 'none';
+    np.style.display = '';
+    numpadValue = '';
+    el('numpad-display').textContent = '_';
+    el('numpad-display').className = 'numpad-display';
+    document.querySelectorAll('.np-btn').forEach(b => b.disabled = false);
+  } else {
+    ans.style.display = '';
+    np.style.display = 'none';
+    ans.innerHTML = '';
+    if (mode === 'choice2') ans.style.gridTemplateColumns = '1fr 1fr';
+    else if (mode === 'choice3') ans.style.gridTemplateColumns = '1fr 1fr 1fr';
+    else ans.style.gridTemplateColumns = '1fr 1fr';
+    q.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'ans-btn';
+      if (opt === '>' || opt === '<' || opt === '=') btn.classList.add('symbol-choice');
+      btn.dataset.answerValue = String(opt);
+      btn.textContent = formatOptionLabel(opt);
+      btn.onclick = () => selectAnswer(opt, btn);
+      ans.appendChild(btn);
+    });
+  }
+
+  clearInterval(timerInterval);
+  if (currentTimerMax > 0) {
+    timeLeft = currentTimerMax;
+    updateTimerUI();
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      updateTimerUI();
+      if (timeLeft <= 5) UI.sfxTick();
+      if (timeLeft <= 0) { clearInterval(timerInterval); timeUp(); }
+    }, 1000);
+  } else {
+    el('timer').textContent = '';
+  }
+
+  renderBoosters();
+}
+
+function updateTimerUI() {
+  const tEl = el('timer');
+  tEl.textContent = T.timerTxt(timeLeft);
+  tEl.className = timeLeft <= 5 ? 'timer urgent' : 'timer';
+}
+
+// ===== ANSWER PROCESSING (shared) =====
+function processAnswer(selected, visualCallback) {
+  if (answering) return;
+  answering = true;
+  clearInterval(timerInterval);
+  const q = questions[currentQ];
+  const responseTime = (Date.now() - questionStartTime) / 1000;
+  const correct = (typeof q.answer === 'number') ? Number(selected) === q.answer : String(selected) === String(q.answer);
+
+  visualCallback(correct, q);
+
+  if (correct) {
+    missStreak = 0;
+    totalCorrect++;
+    streak++;
+    if (streak > highStreak) highStreak = streak;
+    const comboMult = Core.getComboMultiplier(streak);
+    const qScore = Core.calculateScore(true, timeLeft, currentTimerMax || 15, comboMult, usedHintThisLevel);
+    totalScore += qScore;
+    const streakMsg = Engage.getStreakMessage(streak);
+    if (streakMsg) el('q-feedback').textContent = streakMsg;
+    UI.sfxCorrect();
+    if (streak > 1) UI.sfxComboUp(streak);
+    UI.sfxCompanionMood(streak >= 4 ? 'wow' : 'happy', 1 + Math.min(streak, 8) * 0.08);
+    if (bossState) { Boss.hitBoss(bossState); UI.sfxBossHit(); renderBossHP(); }
+    Intel.updateSkillData(progress.skillData, true, responseTime);
+    Intel.updateTypeSkill(progress.skillData, q.typeId || 'classic', true, responseTime);
+    Intel.updateSession(sessionTracker, true, responseTime, q.typeId || 'classic');
+  } else {
+    missStreak++;
+    if (streak >= 3) el('q-feedback').textContent = Engage.getWrongAfterStreakMessage(streak);
+    streak = 0;
+    Core.loseLife(progress);
+    renderLives();
+    UI.sfxWrong();
+    UI.sfxCompanionMood(missStreak >= 3 ? 'alert' : 'wrong', 1 + Math.min(missStreak, 5) * 0.1);
+    UI.vibrate(100);
+    UI.shakeElement(el('gc'));
+    if (bossState) {
+      const atk = Boss.bossAttack(bossState);
+      UI.sfxBossAttack();
+      if (atk.gameOver) { setTimeout(() => endGame(), 800); return; }
+    }
+    if (Core.getLives(progress) <= 0 && !bossState) { setTimeout(() => endGame(), 800); return; }
+    Intel.updateSkillData(progress.skillData, false, responseTime);
+    Intel.updateTypeSkill(progress.skillData, q.typeId || 'classic', false, responseTime);
+    Intel.updateSession(sessionTracker, false, responseTime, q.typeId || 'classic');
+  }
+
+  Engage.trackAnswer(challengeTracker, correct, responseTime, false);
+  updateCombo();
+  UI.updateMusicLayers(streak, !!bossState);
+  currentQ++;
+  setTimeout(showQuestion, Intel.getTransitionDelay(responseTime));
+}
+
+// ===== SELECT ANSWER (choice buttons) =====
+function selectAnswer(selected, btn) {
+  processAnswer(selected, (correct, q) => {
+    document.querySelectorAll('.ans-btn').forEach(b => b.disabled = true);
+    if (correct) {
+      btn.classList.add('correct');
+      const rect = btn.getBoundingClientRect();
+      UI.spawnParticles(rect.left + rect.width / 2, rect.top, 4, levelConfig ? levelConfig.particleStyle : '⭐');
+    } else {
+      btn.classList.add('wrong');
+      document.querySelectorAll('.ans-btn').forEach(b => {
+        if ((b.dataset.answerValue || '') === String(q.answer)) b.classList.add('correct');
+      });
+    }
+  });
+}
+
+// ===== NUMPAD INPUT =====
+function numpadPress(n) {
+  if (answering) return;
+  if (numpadValue.length >= 6) return;
+  numpadValue += String(n);
+  el('numpad-display').textContent = formatNumpadValue(numpadValue);
+  UI.sfxTap();
+}
+
+function numpadDel() {
+  if (answering) return;
+  numpadValue = numpadValue.slice(0, -1);
+  el('numpad-display').textContent = formatNumpadValue(numpadValue);
+  UI.sfxTap();
+}
+
+function numpadConfirm() {
+  if (!numpadValue) return;
+  processAnswer(Number(numpadValue), (correct, q) => {
+    document.querySelectorAll('.np-btn').forEach(b => b.disabled = true);
+    const d = el('numpad-display');
+    if (correct) {
+      d.classList.add('np-correct');
+      UI.spawnParticles(innerWidth / 2, innerHeight * 0.4, 4, levelConfig ? levelConfig.particleStyle : '⭐');
+    } else {
+      d.classList.add('np-wrong');
+      d.textContent = formatNumpadValue(numpadValue) + ' → ' + formatDisplayNumber(q.answer);
+    }
+  });
+}
+
+function timeUp() {
+  if (answering) return;
+  answering = true;
+  const q = questions[currentQ];
+
+  if (q.inputMode === 'numpad') {
+    document.querySelectorAll('.np-btn').forEach(b => b.disabled = true);
+    el('numpad-display').textContent = '→ ' + formatDisplayNumber(q.answer);
+    el('numpad-display').classList.add('np-wrong');
+  } else {
+    document.querySelectorAll('.ans-btn').forEach(b => {
+      b.disabled = true;
+      if ((b.dataset.answerValue || '') === String(q.answer)) b.classList.add('correct');
+    });
+  }
+
+  el('q-feedback').textContent = T.timeUp;
+  if (streak >= 3) el('q-feedback').textContent = T.timeUp + ' ' + Engage.getWrongAfterStreakMessage(streak);
+  streak = 0;
+  Core.loseLife(progress);
+  renderLives();
+  UI.vibrate(100);
+
+  if (bossState) Boss.bossAttack(bossState);
+  Engage.trackAnswer(challengeTracker, false, currentTimerMax, false);
+  updateCombo();
+
+  currentQ++;
+  if (Core.getLives(progress) <= 0 && !bossState) {
+    setTimeout(() => endGame(), 800);
+  } else {
+    setTimeout(showQuestion, 1400);
+  }
+}
+
+// ===== UI HELPERS =====
+function renderLives() {
+  const lives = Core.getLives(progress);
+  const max = Core.getMaxLives();
+  let html = '';
+  for (let i = 0; i < max; i++) html += i < lives ? '❤️' : '🖤';
+  el('g-lives').innerHTML = html;
+}
+
+function updateCombo() {
+  const comboEl = el('g-combo');
+  if (streak >= 2) {
+    comboEl.textContent = '🔥 x' + Core.getComboMultiplier(streak).toFixed(1);
+    comboEl.classList.add('show');
+  } else {
+    comboEl.classList.remove('show');
+  }
+}
+
+function renderBossHP() {
+  if (!bossState) return;
+  const segments = Boss.getBossPhaseSegments(bossState);
+  const hpEl = el('boss-hp');
+  hpEl.innerHTML = '';
+  for (const seg of segments) {
+    for (let i = 0; i < seg.total; i++) {
+      const div = document.createElement('div');
+      div.className = 'boss-seg' + (i >= seg.remaining ? ' empty' : '');
+      div.style.background = i < seg.remaining ? seg.color : 'rgba(255,255,255,.1)';
+      div.style.flex = '1';
+      hpEl.appendChild(div);
+    }
+  }
+}
+
+// ===== BOOSTERS =====
+function renderBoosters() {
+  const bEl = el('boosters');
+  bEl.innerHTML = '';
+  const types = [
+    { key: 'hint', icon: '💡', action: useHint },
+    { key: 'hammer', icon: '🔨', action: useHammer },
+    { key: 'shuffle', icon: '🔄', action: useShuffle },
+    { key: 'extraTime', icon: '⏱️', action: useExtraTime },
+  ];
+  for (const bt of types) {
+    const count = Econ.getBoosterCount(progress, bt.key);
+    const btn = document.createElement('button');
+    btn.className = 'bst-btn';
+    btn.disabled = count <= 0 || answering;
+    btn.innerHTML = `${bt.icon}<span class="bst-cnt">${count}</span>`;
+    btn.onclick = bt.action;
+    bEl.appendChild(btn);
+  }
+}
+
+function useHint() {
+  if (answering) return;
+  const q = questions[currentQ];
+  if (q.inputMode === 'numpad') return; // hint not available for numpad
+  if (!Econ.useBooster(progress, 'hint')) return;
+  usedHintThisLevel = true;
+  Core.saveProgress(progress);
+  const btns = [...document.querySelectorAll('.ans-btn')];
+  const wrongBtns = btns.filter(b => String(b.textContent) !== String(q.answer));
+  shuffle(wrongBtns).slice(0, 2).forEach(b => { b.disabled = true; b.style.opacity = '.2'; });
+  renderBoosters();
+}
+
+function useHammer() {
+  if (answering) return;
+  const q = questions[currentQ];
+  if (q.inputMode === 'numpad') return; // hammer not available for numpad
+  if (!Econ.useBooster(progress, 'hammer')) return;
+  Core.saveProgress(progress);
+  const btns = [...document.querySelectorAll('.ans-btn')];
+  const wrongBtns = btns.filter(b => String(b.textContent) !== String(q.answer) && !b.disabled);
+  if (wrongBtns.length > 0) { wrongBtns[0].disabled = true; wrongBtns[0].style.opacity = '.2'; }
+  renderBoosters();
+}
+
+function useShuffle() {
+  if (answering) return;  
+  if (!Econ.useBooster(progress, 'shuffle')) return;
+  Core.saveProgress(progress);
+  if (!levelConfig) return;
+  const pool = pickMultiCatEmoji(levelConfig.cats);
+  const diff = Intel.getQuestionDifficulty(currentQ, totalQ, !!bossState, sessionTracker);
+  const types = levelConfig.questionTypes || ['classic'];
+  const picked = Intel.weightedTypeSelection(progress.skillData, types, 1);
+  questions[currentQ] = genTypedQuestion(picked[0], levelConfig.ops, levelConfig.range, pool, diff);
+  showQuestion();
+}
+
+function useExtraTime() {
+  if (answering || currentTimerMax <= 0) return;
+  if (!Econ.useBooster(progress, 'extraTime')) return;
+  Core.saveProgress(progress);
+  timeLeft += 5;
+  updateTimerUI();
+  renderBoosters();
+}
+
+// ===== END GAME =====
+function endGame() {
+  clearInterval(timerInterval);
+  UI.stopMusic();
+  const elapsed = Math.round((Date.now() - startTime) / 1000);
+  const stars = Core.getStarsForScore(totalCorrect, totalQ);
+  const isPerfect = totalCorrect === totalQ;
+  const noHints = !usedHintThisLevel;
+
+  // Snapshot progress BEFORE updates (for milestone detection)
+  const prevStats = {
+    totalStars: getTotalStars(progress),
+    levelsCleared: Object.values(progress.worlds || {}).reduce((s, w) => s + Object.keys(w.stars || {}).filter(k => w.stars[k] > 0).length, 0),
+    coins: progress.coins || 0,
+  };
+
+  // Prestige multipliers
+  const xpMult = (levelConfig && levelConfig.xpMult) || 1;
+  const coinMult = (levelConfig && levelConfig.coinMult) || 1;
+
+  // Daily streak bonus
+  const dailyStreakBonus = dailyMode ? Econ.getDailyStreakBonus(Econ.getDailyStreak(progress)) : 0;
+
+  let xpGained = Math.round(Core.calculateXP(totalScore, totalQ, isPerfect, noHints, dailyMode) * xpMult);
+  let coinsGained = Math.round((Core.calculateCoins(stars, isPerfect, dailyMode) + dailyStreakBonus) * coinMult);
+  const xpResult = Core.addXP(progress, xpGained);
+  Econ.addCoins(progress, coinsGained);
+  let laneRewardMsg = '';
+
+  // Track stats for achievements
+  if (isPerfect && stars === 3) progress.perfectGames = (progress.perfectGames || 0) + 1;
+  if (bossState && Boss.isBossDefeated(bossState)) progress.bossesBeaten = (progress.bossesBeaten || 0) + 1;
+
+  // Update world progress
+  if (currentWorld && currentLevelIndex >= 0 && !dailyMode) {
+    Core.updateLevelProgress(progress, currentWorld, currentLevelIndex, totalScore, stars);
+
+    if (!weeklyMode && stars >= 1 && isLaneEnd(currentLevelIndex)) {
+      if (!progress.laneRewards) progress.laneRewards = {};
+      if (!progress.laneRewards[currentWorld]) progress.laneRewards[currentWorld] = {};
+      const laneIdx = getLaneForLevel(currentLevelIndex);
+      const alreadyClaimed = !!progress.laneRewards[currentWorld][laneIdx];
+      if (!alreadyClaimed) {
+        const milestoneLane = (laneIdx + 1) % 5 === 0;
+        const laneCoins = milestoneLane ? 60 : 30;
+        const laneHints = milestoneLane ? 2 : 1;
+        Econ.addCoins(progress, laneCoins);
+        progress.boosters.hint = (progress.boosters.hint || 0) + laneHints;
+        progress.laneRewards[currentWorld][laneIdx] = {
+          claimedAt: Date.now(),
+          coins: laneCoins,
+          hints: laneHints,
+          milestone: milestoneLane,
+        };
+        coinsGained += laneCoins;
+        const laneTheme = getLaneTheme(currentLevelIndex);
+        laneRewardMsg = laneTheme.icon + ' Lane ' + (laneIdx + 1) + ' +' + laneCoins + '🪙 +' + laneHints + '💡';
+      }
+    }
+  }
+
+  // Weekly
+  if (weeklyMode) {
+    const wk = getWeekNum(new Date().toDateString());
+    progress.weeklyDate = wk;
+    progress.weeklyCompleted = true;
+  }
+
+  // Daily  
+  if (dailyMode) {
+    progress.dailyChallengeDate = new Date().toDateString();
+    progress.dailyChallengeCompleted = true;
+    if (stars === 0) progress.boosters.hint = (progress.boosters.hint || 0) + 1;
+  }
+
+  // Skill
+  const avgRT = Engage.getAvgResponseTime(challengeTracker);
+  Intel.updateSkillAfterLevel(progress.skillData, totalCorrect / totalQ, avgRT, highStreak, totalQ);
+
+  // Badges
+  const badges = Engage.evaluateBadges(challengeTracker);
+  Engage.saveBadges(progress, badges);
+
+  // Achievements
+  const newAchs = Econ.evaluateAchievements(progress);
+  progress.lastPlayTimestamp = Date.now();
+  Core.saveProgress(progress);
+
+  // Milestone detection (compare before/after)
+  const curStats = {
+    totalStars: getTotalStars(progress),
+    levelsCleared: Object.values(progress.worlds || {}).reduce((s, w) => s + Object.keys(w.stars || {}).filter(k => w.stars[k] > 0).length, 0),
+    coins: progress.coins || 0,
+  };
+  const milestoneMsg = Engage.getMilestoneMessage(curStats, prevStats);
+  const mergedMilestoneMsg = laneRewardMsg && milestoneMsg
+    ? laneRewardMsg + ' • ' + milestoneMsg
+    : (laneRewardMsg || milestoneMsg);
+
+  // Session summary data
+  challengeTracker.coinsEarned = coinsGained;
+  challengeTracker._earnedBadges = badges;
+  const sessionSummary = Engage.getSessionSummary(challengeTracker);
+
+  // ===== RENDER DONE =====
+  let title, emoji;
+  if (isPerfect) { title = T.excellent; emoji = '🏆'; }
+  else if (stars >= 2) { title = T.great; emoji = '🎉'; }
+  else if (stars >= 1) { title = T.good; emoji = '👍'; }
+  else { title = T.tryMore; emoji = '💪'; }
+
+  if (bossState && Boss.isBossDefeated(bossState)) {
+    title = '👑 ' + T.boss + ' - ' + T.excellent;
+    emoji = '👑';
+  }
+
+  el('d-e').textContent = emoji;
+  el('d-t').textContent = title;
+  el('d-sub').textContent = T.done + (dailyMode ? ' ' + T.dailyReward : '') + (weeklyMode ? ' 📅' : '');
+  el('d-cr').textContent = totalCorrect;
+  el('d-wr').textContent = totalQ - totalCorrect;
+  el('d-tm').textContent = elapsed + 's';
+  el('d-xp').textContent = '+' + xpResult.xpGained;
+  el('d-cn').textContent = '+' + coinsGained;
+
+  // Stars
+  const starsEl = el('d-st'); starsEl.innerHTML = '';
+  for (let i = 0; i < 3; i++) {
+    const sp = document.createElement('span');
+    sp.textContent = i < stars ? '⭐' : '☆';
+    sp.style.opacity = i < stars ? '1' : '.3';
+    starsEl.appendChild(sp);
+  }
+
+  // Near miss
+  const nearMiss = Engage.checkNearMiss(totalCorrect, Math.ceil(totalQ * 0.6), totalQ, timeLeft, currentQ >= totalQ);
+  el('d-near').style.display = nearMiss.isNearMiss ? '' : 'none';
+  el('d-near').textContent = nearMiss.isNearMiss ? Engage.getNearMissMessage() : '';
+
+  // Badges
+  const badgesEl = el('d-badges'); badgesEl.innerHTML = '';
+  for (const b of badges) {
+    const span = document.createElement('span');
+    span.className = 'd-badge';
+    span.textContent = b.icon + ' ' + b.label;
+    badgesEl.appendChild(span);
+  }
+  if (isPerfect) {
+    const sp = document.createElement('span');
+    sp.className = 'd-badge';
+    sp.textContent = '🏆 ' + T.perfect;
+    badgesEl.appendChild(sp);
+  }
+  if (noHints && totalQ >= 5) {
+    const sp = document.createElement('span');
+    sp.className = 'd-badge';
+    sp.textContent = '🧠 ' + T.nohint;
+    badgesEl.appendChild(sp);
+  }
+
+  // Achievements on done screen
+  const achEl = el('d-achievements'); achEl.innerHTML = '';
+  if (newAchs && newAchs.length > 0) {
+    for (const a of newAchs) {
+      const sp = document.createElement('span');
+      sp.className = 'd-badge ach-new';
+      sp.textContent = a.icon + ' ' + (T.achNames && T.achNames[a.id] || a.id);
+      achEl.appendChild(sp);
+    }
+  }
+
+  // Daily streak on done screen
+  const streakEl = el('d-streak');
+  const streak = Econ.getDailyStreak(progress);
+  if (streak >= 2) {
+    streakEl.style.display = '';
+    streakEl.textContent = '🔥 ' + T.dailyStreak + ': ' + streak + (dailyStreakBonus > 0 ? ' (+' + dailyStreakBonus + ' 🪙)' : '');
+  } else { streakEl.style.display = 'none'; }
+
+  // Fun fact from Story module + Fact Library
+  const factEl = el('d-fact');
+  const factsLibBtn = el('facts-lib-btn');
+  if (currentWorld != null) {
+    const worldIdx = WORLDS.findIndex(w => w.id === currentWorld);
+    const fact = Story.getRandomFact(worldIdx >= 0 ? worldIdx : 0);
+    if (fact) {
+      factEl.style.display = '';
+      factEl.innerHTML = '<span class="fact-icon">💡</span>' + fact;
+      // Fact Library
+      const allFacts = Story.getAllFacts(worldIdx >= 0 ? worldIdx : 0);
+      if (allFacts && allFacts.length > 1 && factsLibBtn) {
+        factsLibBtn.style.display = '';
+        factsLibBtn.onclick = () => {
+          const list = el('facts-list');
+          list.innerHTML = allFacts.map((f, i) => '<div class="facts-item"><span class="fi-num">' + (i+1) + '.</span>' + f + '</div>').join('');
+          el('facts-overlay').style.display = '';
+        };
+      } else if (factsLibBtn) { factsLibBtn.style.display = 'none'; }
+    } else { factEl.style.display = 'none'; if (factsLibBtn) factsLibBtn.style.display = 'none'; }
+  } else { factEl.style.display = 'none'; if (factsLibBtn) factsLibBtn.style.display = 'none'; }
+  // Close facts overlay
+  const factsCloseEl = el('facts-close');
+  if (factsCloseEl) factsCloseEl.onclick = () => el('facts-overlay').style.display = 'none';
+  const factsOvEl = el('facts-overlay');
+  if (factsOvEl) factsOvEl.addEventListener('click', e => { if (e.target === factsOvEl) factsOvEl.style.display = 'none'; });
+
+  // Session summary
+  const sessionEl = el('d-session');
+  if (sessionSummary) {
+    sessionEl.style.display = '';
+    sessionEl.innerHTML = '<div class="session-title">' + sessionSummary.title + '</div>' +
+      '<div class="session-grid">' + sessionSummary.stats.map(s =>
+        '<div class="session-item"><div class="si-v">' + s.value + '</div><div class="si-l">' + s.label + '</div></div>'
+      ).join('') + '</div>' +
+      '<div class="session-msg">' + sessionSummary.message + '</div>';
+  } else { sessionEl.style.display = 'none'; }
+
+  // Next button: show if playing a world level and got at least 1 star
+  el('d-nx').style.display = (currentWorld && currentLevelIndex >= 0 && !dailyMode && !weeklyMode && stars >= 1) ? '' : 'none';
+  el('d-nx').textContent = T.next;
+
+  UI.sfxComplete();
+  if (stars > 0) UI.sfxStar();
+  if (coinsGained > 0) setTimeout(() => UI.sfxCoin(), 400);
+  if (badges.length > 0) setTimeout(() => UI.sfxBadge(), 800);
+
+  // Apply world theme to done screen
+  if (levelConfig) {
+    el('done-screen').style.background = levelConfig.gradient;
+  }
+  showScreen('done-screen');
+  UI.spawnCelebration(stars * 5 + (isPerfect ? 10 : 0));
+  royalCelebration(stars);
+
+  // Achievement toasts (delayed)
+  if (newAchs && newAchs.length > 0) {
+    newAchs.forEach((a, i) => setTimeout(() => showAchievementToast(a), 2000 + i * 1200));
+  }
+
+  // Milestone celebration popup
+  if (mergedMilestoneMsg) {
+    const mDelay = (newAchs && newAchs.length > 0) ? 2000 + newAchs.length * 1200 + 500 : 2500;
+    setTimeout(() => {
+      el('milestone-text').textContent = mergedMilestoneMsg;
+      el('milestone-popup').style.display = '';
+      setTimeout(() => { el('milestone-popup').style.display = 'none'; }, 4000);
+    }, mDelay);
+  }
+
+  // Story Quiz (show after boss defeat or last level of a world)
+  const worldIdx = currentWorld ? WORLDS.findIndex(w => w.id === currentWorld) : -1;
+  const isBossDefeated = bossState && Boss.isBossDefeated(bossState);
+  const isLastLevel = currentLevelIndex >= 0 && isLaneEnd(currentLevelIndex) && stars > 0;
+  if ((isBossDefeated || isLastLevel) && worldIdx >= 0) {
+    const quiz = Story.getQuiz(worldIdx);
+    if (quiz) {
+      const quizDelay = mergedMilestoneMsg ? 7000 : 4000;
+      setTimeout(() => showStoryQuiz(quiz), quizDelay);
+    }
+  }
+
+  // Level up   
+  if (xpResult.leveledUp) {
+    setTimeout(() => {
+      el('lvlup-title').textContent = T.lvlUp;
+      el('lvlup-msg').textContent = T.newLevel.replace('{n}', xpResult.newLevel) + ' 🎁 +1🔨 +1💡 +1❤️';
+      el('lvlup-modal').classList.add('show');
+      UI.sfxLevelUp();
+    }, 1500);
+  }
+
+  // PostMessage
+  const scaledScore = Math.round(totalCorrect / totalQ * 100);
+  try {
+    window.parent.postMessage({
+      type: 'GAME_COMPLETE', score: scaledScore, total: 100,
+      timeElapsed: elapsed, level: currentLevelIndex >= 0 ? currentLevelIndex + 1 : 0,
+      world: currentWorld, stars
+    }, '*');
+  } catch(e) {}
+}
+
+function closeLvlUp() { el('lvlup-modal').classList.remove('show'); }
+
+// Dismiss milestone popup on click
+el('milestone-popup').addEventListener('click', () => { el('milestone-popup').style.display = 'none'; });
+
+// Story Quiz
+function showStoryQuiz(quiz) {
+  const overlay = el('quiz-overlay');
+  const headerLabels = { ar: '🧠 سؤال إضافي!', en: '🧠 Quiz Bonus!', pt: '🧠 Quiz Bônus!' };
+  el('quiz-header-text').textContent = headerLabels[LANG] || headerLabels.en;
+  el('quiz-question').textContent = quiz.q;
+  el('quiz-result').style.display = 'none';
+  const answersEl = el('quiz-answers');
+  answersEl.innerHTML = '';
+  let answered = false;
+  quiz.a.forEach((ans, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-answer-btn';
+    btn.textContent = ans;
+    btn.addEventListener('click', () => {
+      if (answered) return;
+      answered = true;
+      const resultEl = el('quiz-result');
+      if (i === quiz.correct) {
+        btn.classList.add('correct');
+        const bonusCoins = 10;
+        Econ.addCoins(progress, bonusCoins);
+        Core.saveProgress(progress);
+        const winLabels = { ar: '✅ صحيح! +' + bonusCoins + ' 🪙', en: '✅ Correct! +' + bonusCoins + ' 🪙', pt: '✅ Correto! +' + bonusCoins + ' 🪙' };
+        resultEl.textContent = winLabels[LANG] || winLabels.en;
+        resultEl.className = 'quiz-result win';
+        UI.sfxStar();
+      } else {
+        btn.classList.add('wrong');
+        // Highlight correct
+        answersEl.children[quiz.correct].classList.add('correct');
+        const loseLabels = { ar: '❌ ليست الإجابة الصحيحة', en: '❌ Not quite right', pt: '❌ Não foi desta vez' };
+        resultEl.textContent = loseLabels[LANG] || loseLabels.en;
+        resultEl.className = 'quiz-result lose';
+      }
+      resultEl.style.display = '';
+      setTimeout(() => { overlay.style.display = 'none'; }, 2500);
+    });
+    answersEl.appendChild(btn);
+  });
+  overlay.style.display = '';
+}
+// Dismiss quiz on overlay click (outside card)
+el('quiz-overlay').addEventListener('click', (e) => { if (e.target === el('quiz-overlay')) el('quiz-overlay').style.display = 'none'; });
+
+function nextLevel() {
+  if (currentWorld && currentLevelIndex >= 0) {
+    startLevel(currentWorld, currentLevelIndex + 1);
+  }
+}
+
+function replayLevel() {
+  if (dailyMode) startDaily();
+  else if (weeklyMode) startWeekly();
+  else if (currentWorld && currentLevelIndex >= 0) startLevel(currentWorld, currentLevelIndex);
+}
+
+function exitGame() {
+  clearInterval(timerInterval);
+  UI.stopMusic();
+  if (currentWorld) {
+    showScreen('lvl-screen');
+  } else {
+    showScreen('world-screen');
+  }
+}
+
+// ===== SHARE =====
+function shareResult() {
+  const starsCount = currentWorld && currentLevelIndex >= 0 ? (Core.getWorldProgress(progress, currentWorld).stars[currentLevelIndex] || 0) : 0;
+  try {
+    window.parent.postMessage({
+      type: 'SHARE_ACHIEVEMENT', game: 'math', world: currentWorld,
+      level: currentLevelIndex >= 0 ? currentLevelIndex + 1 : 1,
+      score: totalScore, stars: starsCount
+    }, '*');
+  } catch(e) {}
+  el('d-sh').textContent = '✅';
+  setTimeout(() => el('d-sh').textContent = T.share, 2000);
+}
+
+// ===== SHOP =====
+function openShop() {
+  el('shop-coins').textContent = '🪙 ' + Econ.getCoins(progress);
+  const items = Econ.getShopItems(progress);
+  const grid = el('shop-items'); grid.innerHTML = '';
+  const names = { hammer: T.hammer, shuffle: T.shuffle, extraTime: T.extraTime, hint: T.hint };
+  for (const item of items) {
+    const div = document.createElement('div');
+    div.className = 'shop-item';
+    div.innerHTML = `
+      <div class="shop-item-icon">${item.icon}</div>
+      <div class="shop-item-name">${names[item.type] || item.type}</div>
+      <div class="shop-item-price">🪙 ${item.price}</div>
+      <div class="shop-item-owned">x${item.owned}</div>
+    `;
+    const btn = document.createElement('button');
+    btn.className = 'shop-buy';
+    btn.textContent = T.buy;
+    btn.disabled = !item.canAfford;
+    btn.onclick = () => {
+      const result = Econ.buyBooster(progress, item.type);
+      if (result.success) {
+        Core.saveProgress(progress);
+        openShop();
+        updateTopBar();
+      }
+    };
+    div.appendChild(btn);
+    grid.appendChild(div);
+  }
+  el('shop-modal').classList.add('show');
+}
+
+function closeShop() { el('shop-modal').classList.remove('show'); }
+
+// ===== PERF TOGGLE =====
+function togglePerf() {
+  UI.setLowPerf(!UI.isLowPerf());
+  updateTopBar();
+}
+
+// ===== WEEKLY CHALLENGE =====
+function startWeekly() {
+  const wk = getWeekNum(new Date().toDateString());
+  if (progress.weeklyDate === wk && progress.weeklyCompleted) return;
+  if (!checkLives()) return;
+  weeklyMode = true;
+  dailyMode = false;
+  currentWorld = null;
+  currentLevelIndex = -1;
+
+  const weeklyCfg = generateWeeklyChallenge(new Date().toDateString(), progress.skillData);
+  levelConfig = weeklyCfg;
+  totalQ = weeklyCfg.questions;
+  currentTimerMax = weeklyCfg.timer;
+
+  UI.applyWorldTheme(weeklyCfg.gradient, weeklyCfg.accent || 'rgba(255,255,255,.2)', el('game-screen'), el('done-screen'));
+  el('boss-bar').style.display = 'none';
+  bossState = null;
+  el('g-t').textContent = T.weekly + ' 📅';
+
+  currentQ = 0; totalScore = 0; streak = 0; highStreak = 0;
+  totalCorrect = 0; usedHintThisLevel = false; answering = false;
+  startTime = Date.now();
+  challengeTracker = Engage.createChallengeTracker();
+  sessionTracker = Intel.createSessionTracker();
+
+  const sd = progress.skillData || {};
+  const pool = pickMultiCatEmoji(weeklyCfg.cats || ['animals', 'food']);
+  const baseTypes = weeklyCfg.questionTypes || ['classic'];
+  const typeSeq = Intel.weightedTypeSelection(sd, baseTypes, totalQ);
+  questions = [];
+  for (let i = 0; i < totalQ; i++) {
+    const diff = Intel.getQuestionDifficulty(i, totalQ, false, sessionTracker);
+    questions.push(genTypedQuestion(typeSeq[i], weeklyCfg.ops, weeklyCfg.range, pool, diff));
+  }
+
+  el('g-sc').textContent = '0';
+  renderLives();
+  updateCombo();
+  showScreen('game-screen');
+  if (!UI.isMuted()) UI.startMusic();
+  renderBoosters();
+  showQuestion();
+}
+
+function updateWeeklyBtn() {
+  const btn = el('weekly-btn');
+  if (!btn) return;
+  const wk = getWeekNum(new Date().toDateString());
+  if (progress.weeklyDate === wk && progress.weeklyCompleted) {
+    btn.textContent = T.weeklyDone || '✅ تم';
+    btn.disabled = true;
+    btn.style.opacity = '.5';
+  } else {
+    btn.textContent = T.weekly || '📅 أسبوعي';
+    btn.disabled = false;
+    btn.style.opacity = '1';
+  }
+}
+window.updateWeeklyBtn = updateWeeklyBtn;
+
+// ===== ACHIEVEMENTS =====
+// ===== PARENT REPORT SYSTEM =====
+let currentReportTab = 'overview';
+
+function openReport() {
+  currentReportTab = 'overview';
+  renderReportTabs();
+  renderReport();
+  el('report-title').textContent = T.report || '📊 التقرير';
+  el('report-send').textContent = T.rSendReport || '📤 إرسال للوالدين';
+  el('report-send').classList.remove('sent');
+  el('report-modal').classList.add('show');
+}
+
+function closeReport() { el('report-modal').classList.remove('show'); }
+
+function renderReportTabs() {
+  const tabs = [
+    { id: 'overview', label: T.rOverview || '📊 نظرة عامة' },
+    { id: 'worlds', label: T.rWorlds || '🌍 العوالم' },
+    { id: 'skills', label: T.rSkills || '🧠 المهارات' },
+    { id: 'engagement', label: T.rEngagement || '🔥 النشاط' }
+  ];
+  const container = el('report-tabs');
+  container.innerHTML = tabs.map(t =>
+    `<button class="report-tab${t.id === currentReportTab ? ' active' : ''}" onclick="switchReportTab('${t.id}')">${t.label}</button>`
+  ).join('');
+}
+
+function switchReportTab(tab) {
+  currentReportTab = tab;
+  renderReportTabs();
+  renderReport();
+}
+window.switchReportTab = switchReportTab;
+
+function renderReport() {
+  const body = el('report-body');
+  body.innerHTML = '';
+
+  if (currentReportTab === 'overview') {
+    const ov = Reports.getOverviewReport(progress);
+    const sw = Reports.getStrengthWeakness(progress);
+    const grade = Reports.estimateGradeLevel(progress);
+    const typeName = (id) => (T.typeNames && T.typeNames[id]) || id;
+
+    let html = `<div class="report-section">
+      <div class="report-section-title">📊 ${T.rOverview || 'نظرة عامة'}</div>
+      <div class="report-grid">
+        <div class="report-stat"><div class="stat-value">${ov.playerLevel}</div><div class="stat-label">${T.rLevel || 'المستوى'}</div></div>
+        <div class="report-stat"><div class="stat-value">${ov.totalStars}⭐</div><div class="stat-label">${T.rStars || 'النجوم'}</div></div>
+        <div class="report-stat"><div class="stat-value">${ov.gamesPlayed}</div><div class="stat-label">${T.rGames || 'الألعاب'}</div></div>
+        <div class="report-stat"><div class="stat-value">🔥${ov.highestStreak}</div><div class="stat-label">${T.rStreak || 'أعلى سلسلة'}</div></div>
+        <div class="report-stat"><div class="stat-value">${ov.accuracyRate}%</div><div class="stat-label">${T.rAccuracy || 'الدقة'}</div></div>
+        <div class="report-stat"><div class="stat-value">${ov.avgResponseTime}s</div><div class="stat-label">${T.rSpeed || 'السرعة'}</div></div>
+        <div class="report-stat"><div class="stat-value">${ov.bossesBeaten}</div><div class="stat-label">${T.rBosses || 'الزعماء'}</div></div>
+        <div class="report-stat"><div class="stat-value">${ov.perfectGames}</div><div class="stat-label">${T.rPerfect || 'مثالية'}</div></div>
+      </div>
+    </div>`;
+
+    // Grade estimate
+    html += `<div class="grade-badge">
+      <div class="grade-value">${grade.label}</div>
+      <div class="grade-label">${T.rGrade || 'المستوى التعليمي المقدر'}</div>
+      <div class="grade-confidence">${T.rConfidence || 'الثقة'}: ${grade.confidence}%</div>
+    </div>`;
+
+    // Strengths & Weaknesses
+    if (sw.strengths.length > 0) {
+      html += `<div class="report-section">
+        <div class="report-section-title">💪 ${T.rStrengths || 'نقاط القوة'}</div>
+        <div class="strength-list">
+          ${sw.strengths.map(s => `<div class="strength-item good">✅ ${typeName(s.typeId)} — ${s.mastery}%</div>`).join('')}
+        </div>
+      </div>`;
+    }
+    if (sw.weaknesses.length > 0) {
+      html += `<div class="report-section">
+        <div class="report-section-title">📈 ${T.rWeaknesses || 'يحتاج تمرين'}</div>
+        <div class="strength-list">
+          ${sw.weaknesses.map(s => `<div class="strength-item weak">🔄 ${typeName(s.typeId)} — ${s.mastery}%</div>`).join('')}
+        </div>
+      </div>`;
+    }
+
+    body.innerHTML = html;
+
+  } else if (currentReportTab === 'worlds') {
+    const worlds = Reports.getWorldsReport(progress);
+    const worldName = (id) => (T.worldNames && T.worldNames[id]) || id;
+    let html = `<div class="report-section">
+      <div class="report-section-title">🌍 ${T.rWorlds || 'العوالم'}</div>
+      <div class="report-worlds">`;
+    for (const w of worlds) {
+      const pct = w.levels > 0 ? Math.round((w.levelsPlayed / w.levels) * 100) : 0;
+      const barColor = pct >= 70 ? '#00e676' : pct >= 30 ? '#ffd740' : '#ff5252';
+      html += `<div class="report-world-card">
+        <div class="rw-icon">${w.emoji || w.icon}</div>
+        <div class="rw-info">
+          <div class="rw-name">${worldName(w.id)}${w.prestige > 0 ? ' ✨' + w.prestige : ''}</div>
+          <div class="rw-detail">⭐ ${w.stars} · ${T.rLevel || 'مستوى'} ${w.levelsPlayed}/${w.levels} · ${w.ageRange}</div>
+          <div class="rw-bar"><div class="rw-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+        </div>
+      </div>`;
+    }
+    html += `</div></div>`;
+    body.innerHTML = html;
+
+  } else if (currentReportTab === 'skills') {
+    const skills = Reports.getSkillReport(progress);
+    const typeName = (id) => (T.typeNames && T.typeNames[id]) || id;
+    let html = `<div class="report-section">
+      <div class="report-section-title">🧠 ${T.rSkills || 'المهارات'}</div>`;
+    if (skills.length === 0) {
+      html += `<div style="text-align:center;opacity:.6;padding:20px">${T.rNoData || 'لا توجد بيانات بعد'}</div>`;
+    } else {
+      html += `<div class="report-skills">`;
+      for (const s of skills) {
+        const cls = s.strength === 'strong' ? 'strong' : s.strength === 'developing' ? 'developing' : 'weak';
+        const label = s.strength === 'strong' ? (T.rStrong || 'قوي') : s.strength === 'developing' ? (T.rDeveloping || 'متطور') : (T.rNeedsPractice || 'يحتاج تمرين');
+        html += `<div class="skill-row">
+          <div class="sk-name">${typeName(s.typeId)}</div>
+          <div class="sk-bar"><div class="sk-bar-fill ${cls}" style="width:${s.mastery}%"></div></div>
+          <div class="sk-pct">${s.mastery}%</div>
+        </div>`;
+      }
+      html += `</div>`;
+    }
+    html += `</div>`;
+    body.innerHTML = html;
+
+  } else if (currentReportTab === 'engagement') {
+    const eng = Reports.getEngagementReport(progress);
+    const ov = Reports.getOverviewReport(progress);
+    let html = `<div class="report-section">
+      <div class="report-section-title">🔥 ${T.rEngagement || 'النشاط'}</div>
+      <div class="report-grid">
+        <div class="report-stat"><div class="stat-value">🔥${eng.dailyStreak}</div><div class="stat-label">${T.rStreakDays || 'أيام متتالية'}</div></div>
+        <div class="report-stat"><div class="stat-value">${eng.loginStreak}</div><div class="stat-label">${T.rStreakDays || 'سلسلة الدخول'}</div></div>
+        <div class="report-stat"><div class="stat-value">${ov.achievementsUnlocked}/${ov.achievementsTotal}</div><div class="stat-label">${T.rAchievements || 'الإنجازات'}</div></div>
+        <div class="report-stat"><div class="stat-value">✨${eng.totalPrestige}</div><div class="stat-label">${T.rPrestige || 'البرستيج'}</div></div>
+        <div class="report-stat"><div class="stat-value">${eng.weeklyCompleted ? '✅' : '⏳'}</div><div class="stat-label">${eng.weeklyCompleted ? (T.rWeeklyDone || 'التحدي الأسبوعي ✅') : (T.rWeeklyPending || 'التحدي الأسبوعي ⏳')}</div></div>
+        <div class="report-stat"><div class="stat-value">${eng.gamesPlayed}</div><div class="stat-label">${T.rGames || 'الألعاب'}</div></div>
+      </div>
+    </div>`;
+
+    if (eng.nextAchievement) {
+      const pct = eng.nextAchievement.goal > 0 ? Math.round((eng.nextAchievement.current / eng.nextAchievement.goal) * 100) : 0;
+      html += `<div class="report-section">
+        <div class="report-section-title">🎯 ${T.rNextAch || 'الإنجاز التالي'}</div>
+        <div style="background:rgba(255,255,255,.07);border-radius:12px;padding:12px;text-align:center">
+          <div style="font-size:28px">${eng.nextAchievement.icon}</div>
+          <div style="font-weight:700;margin:6px 0">${T.achNames && T.achNames[eng.nextAchievement.id] || eng.nextAchievement.id}</div>
+          <div class="ach-bar" style="height:8px;margin-top:8px"><div class="ach-bar-fill" style="width:${pct}%"></div></div>
+          <div style="font-size:12px;opacity:.6;margin-top:4px">${eng.nextAchievement.current}/${eng.nextAchievement.goal}</div>
+        </div>
+      </div>`;
+    }
+    body.innerHTML = html;
+  }
+}
+
+function sendReportToParent() {
+  const report = Reports.generateFullReport(progress);
+  try {
+    window.parent.postMessage(report, '*');
+  } catch(e) { /* iframe might not exist */ }
+  // Also try Capacitor bridge if available
+  try {
+    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
+      window.Capacitor.Plugins.App.fireCustomEvent && window.Capacitor.Plugins.App.fireCustomEvent({ type: 'math-report', data: report });
+    }
+  } catch(e) {}
+  const btn = el('report-send');
+  btn.textContent = T.rSent || '✅ تم الإرسال';
+  btn.classList.add('sent');
+}
+
+function openAchievements() {
+  const all = Econ.getAllAchievements(progress);
+  const list = el('ach-list');
+  list.innerHTML = '';
+  el('ach-modal-title').textContent = T.achievements || '🏅 الإنجازات';
+
+  for (const a of all) {
+    const item = document.createElement('div');
+    item.className = 'ach-item' + (a.unlocked ? '' : ' locked');
+    const pct = Math.min(100, Math.round((a.current / a.goal) * 100));
+    item.innerHTML = `
+      <div class="ach-icon">${a.icon}</div>
+      <div class="ach-info">
+        <div class="ach-name">${a.unlocked ? '✅ ' : ''}${T.achNames && T.achNames[a.id] || a.id}</div>
+        <div class="ach-desc">${a.current} / ${a.goal}</div>
+        <div class="ach-bar"><div class="ach-bar-fill" style="width:${pct}%"></div></div>
+      </div>
+      <div class="ach-reward">${a.unlocked ? '✅' : '🪙 ' + a.coins}</div>
+    `;
+    list.appendChild(item);
+  }
+  el('ach-modal').classList.add('show');
+}
+
+function closeAchievements() { el('ach-modal').classList.remove('show'); }
+
+// ===== LOGIN BONUS TOAST =====
+function showLoginBonus(result) {
+  if (!result || !result.coins) return;
+  const toast = el('login-toast');
+  el('login-toast-text').textContent = (T.loginBonus || '🎁 مكافأة يومية') + ': +' + result.coins + ' 🪙' + (result.streak > 1 ? ' (🔥' + result.streak + ')' : '');
+  toast.style.display = '';
+  setTimeout(() => { toast.style.display = 'none'; }, 3500);
+  updateTopBar();
+  Core.saveProgress(progress);
+}
+
+// ===== ACHIEVEMENT TOAST =====
+function showAchievementToast(ach) {
+  if (!ach) return;
+  const toast = el('ach-toast');
+  el('ach-toast-icon').textContent = ach.icon || '🏅';
+  el('ach-toast-text').textContent = (T.achUnlocked || 'إنجاز جديد!') + ' ' + (T.achNames && T.achNames[ach.id] || ach.id);
+  toast.style.display = '';
+  UI.sfxBadge();
+  setTimeout(() => { toast.style.display = 'none'; }, 3000);
+}
+
+// ===== PRESTIGE =====
+function handlePrestige() {
+  if (!currentWorld) return;
+  if (!canPrestige(progress, currentWorld)) return;
+  const pLv = getPrestigeLevel(progress, currentWorld) + 1;
+  const worldName = T.worldNames[currentWorld] || currentWorld;
+  const msg = (T.prestigeDesc || 'إعادة تعيين العالم للحصول على مكافآت أقوى') + '\n\n' + worldName + ' → ' + (T.prestigeLv || 'برستيج') + ' ' + pLv;
+  if (!confirm(msg)) return;
+  applyPrestige(progress, currentWorld);
+  progress.totalPrestige = (progress.totalPrestige || 0) + 1;
+  // Check worldsCleared
+  const wp = progress.worlds[currentWorld] || {};
+  const totalStars = Object.values(wp.stars || {}).reduce((a, b) => a + b, 0);
+  if (totalStars === 0) {
+    // Count worlds that have been prestatiged = "cleared" at least once
+    const clearedCount = Object.keys(progress.prestige || {}).filter(k => (progress.prestige[k] || 0) > 0).length;
+    progress.worldsCleared = clearedCount;
+  }
+  Core.saveProgress(progress);
+  Econ.evaluateAchievements(progress);
+  Core.saveProgress(progress);
+  updateTopBar();
+  renderLevelSelect();
+}
+
+// ===== WIRE BUTTONS (replaces inline onclick handlers) =====
+function wireButtons() {
+  const on = (id, fn) => { const e = document.getElementById(id); if (e) e.addEventListener('click', fn); };
+  // Mute buttons
+  on('tb-mute', toggleMuteBtn);
+  on('lvl-mute', toggleMuteBtn);
+  on('g-mute', toggleMuteBtn);
+  // World screen buttons
+  on('daily-btn', startDaily);
+  on('weekly-btn', startWeekly);
+  on('shop-btn', openShop);
+  on('ach-btn', openAchievements);
+  on('report-btn', openReport);
+  on('tb-perf', togglePerf);
+  const langSelect = document.getElementById('lang-select');
+  if (langSelect) {
+    langSelect.addEventListener('change', (event) => {
+      const target = event.target;
+      if (target && target.value) applyLanguageSelection(target.value);
+    });
+  }
+  // Level screen
+  on('lvl-back', backToWorlds);
+  on('prestige-btn', handlePrestige);
+  // Game screen
+  on('g-exit', exitGame);
+  // Done screen
+  on('d-nx', nextLevel);
+  on('d-sh', shareResult);
+  on('d-rp', replayLevel);
+  on('d-hm', () => showScreen('world-screen'));
+  // Modals
+  on('lvlup-ok', closeLvlUp);
+  on('shop-close', closeShop);
+  on('nolives-close', closeNoLives);
+  on('ach-close', closeAchievements);
+  on('report-close', closeReport);
+  on('report-send', sendReportToParent);
+  // Numpad event delegation
+  const npGrid = document.getElementById('numpad-grid');
+  if (npGrid) npGrid.addEventListener('click', e => {
+    const btn = e.target.closest('[data-np]');
+    if (!btn) return;
+    const val = btn.dataset.np;
+    if (val === 'del') numpadDel();
+    else if (val === 'ok') numpadConfirm();
+    else numpadPress(parseInt(val));
+  });
+}
+
+// ===== BOOT =====
+wireButtons();
+init();
+if (window.parent && window.parent !== window) {
+  window.parent.postMessage({ type: 'GAME_READY' }, '*');
+}
+</script>
+</body>
+</html>
+

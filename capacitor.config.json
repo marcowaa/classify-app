@@ -1,0 +1,35 @@
+{
+  "appId": "com.classi_fy.twa",
+  "appName": "Classify",
+  "webDir": "dist/public",
+  "bundledWebRuntime": false,
+  "server": {
+    "url": "https://classi-fy.com",
+    "androidScheme": "https",
+    "iosScheme": "https",
+    "hostname": "classi-fy.com",
+    "cleartext": false
+  },
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false,
+    "backgroundColor": "#FFFFFF",
+    "overrideUserAgent": "Classify-Android/2.1.0"
+  },
+  "ios": {
+    "contentInset": "automatic",
+    "allowsLinkPreview": true,
+    "scrollEnabled": true,
+    "backgroundColor": "#FFFFFF",
+    "scheme": "classify"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#667eea",
+      "showSpinner": false,
+      "launchAutoHide": true
+    }
+  }
+}

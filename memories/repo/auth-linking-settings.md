@@ -1,0 +1,8 @@
+- Added secure OAuth link flow context using `linkToken` -> validated parentId in `server/routes/auth.ts`.
+- `mode=link` now links provider data to current parent instead of implicitly switching by provider email.
+- Persisted provider identity metadata in `parent_social_identities` during OAuth login/link.
+- Extended `/api/parent/info` with `authProfile` (primary method, linked methods/providers, suggested profile hints).
+- Updated `client/src/pages/Settings.tsx` to show detected auth method badges and use profile suggestions.
+- Added new `settings.authMethod*` keys in all 10 app locales.
+- Verification run: `npx tsc --noEmit`, `npm run build`, `npm run test -- --runInBand`, health response `{"status":"ok"}`.
+- Social login UX hardening: fallback to a default Google provider button when `/api/auth/social-providers` fails/times out (unless backend explicitly reports social login disabled), and clear the OAuth redirect lock after callback errors to avoid stuck loading/disabled social buttons.

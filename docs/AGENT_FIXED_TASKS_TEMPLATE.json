@@ -1,0 +1,87 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Agent Fixed: TypeScript Check",
+      "type": "shell",
+      "command": "npx tsc --noEmit",
+      "group": "test",
+      "problemMatcher": "$tsc",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared",
+        "group": "agent-fixed"
+      }
+    },
+    {
+      "label": "Agent Fixed: Build Production",
+      "type": "shell",
+      "command": "npm run build",
+      "group": "build",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "group": "agent-fixed"
+      }
+    },
+    {
+      "label": "Agent Fixed: Run Tests InBand",
+      "type": "shell",
+      "command": "npm run test -- --runInBand",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "group": "agent-fixed"
+      }
+    },
+    {
+      "label": "Agent Fixed: Validate Core",
+      "dependsOn": [
+        "Agent Fixed: TypeScript Check",
+        "Agent Fixed: Build Production",
+        "Agent Fixed: Run Tests InBand"
+      ],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    },
+    {
+      "label": "Agent Fixed: DB Up",
+      "type": "shell",
+      "command": "docker compose up -d db",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "group": "agent-fixed"
+      }
+    },
+    {
+      "label": "Agent Fixed: Health Check",
+      "type": "shell",
+      "command": "curl.exe -s -i http://127.0.0.1:5000/api/health",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "group": "agent-fixed"
+      }
+    },
+    {
+      "label": "Agent Fixed: DB Down",
+      "type": "shell",
+      "command": "docker compose stop db",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "group": "agent-fixed"
+      }
+    }
+  ]
+}

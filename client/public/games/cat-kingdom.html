@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-0K11FDXNEW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-0K11FDXNEW');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Cat Kingdom — مملكة القطة التعليمية</title>
+<style>
+/* ═══════════════════════════════════════════
+   Cat Kingdom — CSS
+   ═══════════════════════════════════════════ */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Segoe UI',Tahoma,sans-serif;background:#0a0a1a;color:#fff;user-select:none;-webkit-user-select:none}
+
+:root{--accent:#43e97b;--particle-color:#43e97b}
+:root{
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-right:env(safe-area-inset-right,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --safe-left:env(safe-area-inset-left,0px);
+}
+
+body{padding:var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left)}
+
+/* ── Screens ── */
+.screen{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:1;transition:opacity .3s}
+.screen.active{display:flex;animation:fadeIn .3s ease}
+
+/* ── Animations ── */
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes particleFall{0%{transform:translateY(0) rotate(0deg);opacity:.7}100%{transform:translateY(100vh) rotate(360deg);opacity:0}}
+@keyframes catIdle{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+@keyframes catBounce{0%,100%{transform:translateY(0) scale(1)}25%{transform:translateY(-8px) scale(1.05)}75%{transform:translateY(-4px) scale(1.02)}}
+@keyframes catSad{0%,100%{transform:rotate(0)}25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}
+@keyframes catSleep{0%,100%{transform:scale(1) translateY(0)}50%{transform:scale(0.98) translateY(2px)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes timerWarn{0%,100%{color:#fff}50%{color:#f5576c}}
+
+/* ── Buttons ── */
+.btn{display:inline-block;padding:12px 28px;border:none;border-radius:14px;font-family:inherit;font-size:17px;font-weight:700;cursor:pointer;transition:transform .15s,box-shadow .15s;outline:none;color:#fff;touch-action:manipulation}
+.btn:active{transform:scale(.94)}
+.btn-primary{background:linear-gradient(135deg,#43e97b,#38f9d7);color:#060e08;box-shadow:0 4px 18px rgba(67,233,123,.3)}
+.btn-secondary{background:linear-gradient(135deg,#4facfe,#00f2fe);color:#06081e;box-shadow:0 4px 18px rgba(79,172,254,.3)}
+.btn-danger{background:linear-gradient(135deg,#f5576c,#ff6b6b);box-shadow:0 4px 18px rgba(245,87,108,.25)}
+.btn-gold{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#1a1a1a;box-shadow:0 4px 18px rgba(251,191,36,.3)}
+.btn-small{padding:8px 18px;font-size:14px;border-radius:10px}
+.btn-icon{width:40px;height:40px;border-radius:50%;padding:0;display:flex;align-items:center;justify-content:center;font-size:18px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff}
+
+/* ═══════════════════════════════════════════
+   MENU SCREEN
+   ═══════════════════════════════════════════ */
+#menu-screen{background:radial-gradient(ellipse at 50% 30%,#1a2a44 0%,#0a0a1a 100%);gap:8px}
+.menu-cat{font-size:72px;animation:bounce 2s infinite}
+.menu-title{font-size:30px;font-weight:900;background:linear-gradient(135deg,#fbbf24,#f59e0b,#fbbf24);background-size:200%;animation:shimmer 3s linear infinite;-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center}
+.menu-subtitle{font-size:15px;color:#aaa;margin-bottom:12px}
+.menu-cat-stats{display:flex;gap:10px;font-size:13px;color:#ccc;margin:8px 0}
+.menu-btns{display:flex;flex-direction:column;gap:10px;align-items:center;width:80%;max-width:280px}
+.menu-btns .btn{width:100%}
+.menu-row{display:flex;gap:10px;margin-top:8px}
+#comeback-msg{font-size:13px;color:#fbbf24;margin-bottom:8px;display:none;text-align:center}
+
+/* ═══════════════════════════════════════════
+   WORLD MAP SCREEN
+   ═══════════════════════════════════════════ */
+#worldMap-screen{background:radial-gradient(ellipse at 50% 20%,#1a1a3e 0%,#0a0a1a 100%);overflow-y:auto;justify-content:flex-start;padding:12px}
+.wm-header{display:flex;width:100%;max-width:500px;justify-content:space-between;align-items:center;padding:4px 0;flex-shrink:0}
+.wm-stat{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.1);border-radius:12px;padding:6px 14px;font-size:15px;font-weight:700;backdrop-filter:blur(4px)}
+.wm-title{font-size:22px;font-weight:800;margin:8px 0;flex-shrink:0;text-align:center}
+#world-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:500px;padding:4px 0}
+.world-card{position:relative;border-radius:18px;padding:16px 10px;text-align:center;cursor:pointer;transition:all .3s cubic-bezier(.34,1.56,.64,1);border:2px solid rgba(255,255,255,.2);overflow:hidden;min-height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.world-card:active:not(.locked){transform:scale(.95)}
+.world-card.locked{opacity:.4;cursor:default;filter:grayscale(.8)}
+.wc-emoji{font-size:32px}
+.wc-name{font-size:14px;font-weight:700}
+.wc-subject{font-size:11px;color:rgba(255,255,255,.7)}
+.wc-progress{font-size:12px;color:rgba(255,255,255,.6);margin-top:2px}
+.wc-stars{font-size:11px;color:#fbbf24}
+
+/* ═══════════════════════════════════════════
+   LEVEL SELECT SCREEN
+   ═══════════════════════════════════════════ */
+#levelSelect-screen{background:radial-gradient(ellipse at 50% 30%,#1a1a3e 0%,#0a0a1a 100%);overflow-y:auto;justify-content:flex-start;padding:16px}
+.ls-header{text-align:center;margin-bottom:12px;flex-shrink:0}
+#ls-world-name{font-size:22px;font-weight:800}
+#ls-subject{font-size:13px;color:rgba(255,255,255,.6)}
+#level-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;width:100%;max-width:400px}
+.level-card{padding:10px 4px;border-radius:14px;border:2px solid rgba(255,255,255,.15);text-align:center;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.04);display:flex;flex-direction:column;align-items:center;gap:2px}
+.level-card:active:not(.locked){transform:scale(.92)}
+.level-card.locked{opacity:.35;cursor:default}
+.level-card.boss-card{grid-column:span 5;border-color:rgba(255,87,108,.4);background:rgba(255,87,108,.08)}
+.lc-num{font-size:20px;font-weight:900}
+.lc-label{font-size:10px;color:rgba(255,255,255,.6)}
+.lc-stars{font-size:11px;letter-spacing:1px}
+.lc-best{font-size:10px;color:#aaa}
+
+/* ═══════════════════════════════════════════
+   BOSS INTRO SCREEN
+   ═══════════════════════════════════════════ */
+#bossIntro-screen{background:radial-gradient(ellipse at 50% 50%,#3d0c02,#0a0a1a 80%)}
+#boss-emoji{font-size:80px;animation:bounce 1s infinite}
+#boss-name{font-size:26px;font-weight:900;color:#f5576c;margin-top:12px}
+.boss-alert{font-size:18px;color:#fbbf24;animation:pulse 1s infinite}
+
+/* ═══════════════════════════════════════════
+   GAMEPLAY SCREEN
+   ═══════════════════════════════════════════ */
+#gameplay-screen{justify-content:flex-start;padding:8px 12px;gap:6px}
+
+/* HUD */
+.hud{display:flex;width:100%;max-width:500px;justify-content:space-between;align-items:center;padding:6px 0;flex-shrink:0;font-size:14px;font-weight:700}
+.hud-item{display:flex;align-items:center;gap:4px;background:rgba(0,0,0,.3);border-radius:10px;padding:5px 10px;backdrop-filter:blur(4px)}
+#hud-cat{font-size:20px;animation:catIdle 2s infinite}
+.timer-warning{animation:timerWarn .5s infinite !important;color:#f5576c !important;font-weight:900 !important}
+
+/* Question area */
+.q-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;max-width:500px;gap:10px}
+#q-counter{font-size:12px;color:rgba(255,255,255,.5)}
+.q-progress{width:100%;height:6px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden}
+#q-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),#38f9d7);border-radius:99px;transition:width .4s}
+#q-emoji{font-size:48px;margin:6px 0}
+#q-text{font-size:20px;font-weight:700;text-align:center;line-height:1.4;min-height:50px;display:flex;align-items:center}
+
+/* Options */
+#q-options{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;max-width:400px}
+.opt-btn{padding:14px 8px;border:2px solid rgba(255,255,255,.15);border-radius:14px;background:rgba(255,255,255,.06);color:#fff;font-size:16px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit;text-align:center;word-break:break-word}
+.opt-btn:active:not(:disabled){transform:scale(.95)}
+.opt-btn:disabled{cursor:default}
+.opt-btn.correct{border-color:#43e97b;background:rgba(67,233,123,.2);box-shadow:0 0 16px rgba(67,233,123,.3);animation:pulse .3s}
+.opt-btn.wrong{border-color:#f5576c;background:rgba(245,87,108,.2);box-shadow:0 0 16px rgba(245,87,108,.3)}
+
+/* Timer */
+.q-timer-wrap{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;flex-shrink:0}
+
+/* ═══════════════════════════════════════════
+   RESULTS SCREEN
+   ═══════════════════════════════════════════ */
+#results-screen{background:radial-gradient(ellipse at 50% 40%,#1a1a3e 0%,#0a0a1a 100%)}
+.results-box{text-align:center;max-width:340px;padding:20px;animation:fadeIn .5s}
+#results-cat{font-size:56px;animation:catBounce 1.5s infinite}
+#results-cat-msg{font-size:14px;color:#fbbf24;margin:4px 0}
+#results-title{font-size:26px;font-weight:900;margin:8px 0}
+#results-stars{display:flex;justify-content:center;gap:4px;margin:12px 0;min-height:40px}
+#results-score{font-size:18px;font-weight:700;color:#ccc;margin:8px 0}
+#results-details{font-size:13px;color:#999;line-height:1.8;margin:8px 0}
+.results-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+
+/* ═══════════════════════════════════════════
+   STORE SCREEN
+   ═══════════════════════════════════════════ */
+#store-screen{background:radial-gradient(ellipse at 50% 30%,#1a2a44 0%,#0a0a1a 100%);overflow-y:auto;justify-content:flex-start;padding:16px}
+.store-header{text-align:center;margin-bottom:12px;flex-shrink:0}
+#store-coins{font-size:18px;font-weight:700;color:#fbbf24}
+#store-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;max-width:400px}
+.store-card{padding:12px 6px;border-radius:14px;border:2px solid rgba(255,255,255,.1);text-align:center;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.04)}
+.store-card:active{transform:scale(.95)}
+.store-card.equipped{border-color:#fbbf24;background:rgba(251,191,36,.1)}
+.sc-emoji{font-size:32px}
+.sc-name{font-size:11px;color:rgba(255,255,255,.7);margin-top:2px}
+.sc-price{font-size:12px;font-weight:700;color:#fbbf24;margin-top:2px}
+
+/* ═══════════════════════════════════════════
+   TOAST
+   ═══════════════════════════════════════════ */
+#toast{position:fixed;top:calc(var(--safe-top) + 16px);left:50%;transform:translateX(-50%) translateY(-60px);background:rgba(0,0,0,.85);color:#fff;padding:10px 22px;border-radius:12px;font-size:15px;font-weight:700;z-index:99999;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.1);text-align:center;white-space:nowrap}
+#toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ═══════════════════════════════════════════
+   STORY INTRO SCREEN
+   ═══════════════════════════════════════════ */
+#storyIntro-screen{background:radial-gradient(ellipse at 50% 30%,#1a2a44 0%,#0a0a1a 100%);gap:14px;padding:24px;text-align:center}
+#story-emoji{font-size:72px;animation:bounce 2s infinite}
+#story-title{font-size:22px;font-weight:900;color:#fbbf24}
+#story-text{font-size:15px;line-height:1.8;color:#ddd;max-width:400px;text-align:center}
+#story-tip{font-size:14px;color:#43e97b;margin-top:8px}
+
+/* ═══════════════════════════════════════════
+   REPORTS SCREEN
+   ═══════════════════════════════════════════ */
+#reports-screen{background:radial-gradient(ellipse at 50% 30%,#1a1a3e 0%,#0a0a1a 100%);overflow-y:auto;justify-content:flex-start;padding:16px}
+#reports-content{width:100%;max-width:500px}
+
+/* ═══════════════════════════════════════════
+   STORE TABS
+   ═══════════════════════════════════════════ */
+.store-tabs{display:flex;gap:6px;margin:8px 0}
+.store-tab{padding:8px 18px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:2px solid rgba(255,255,255,.15);background:rgba(255,255,255,.04);color:#aaa;transition:all .2s;font-family:inherit}
+.store-tab.active{background:rgba(251,191,36,.15);border-color:#fbbf24;color:#fbbf24}
+
+/* ═══════════════════════════════════════════
+   POWERUP HUD (in gameplay)
+   ═══════════════════════════════════════════ */
+#powerup-hud{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.powerup-btn{position:relative !important}
+
+/* ═══════════════════════════════════════════
+   DAILY INFO
+   ═══════════════════════════════════════════ */
+#menu-daily-info{font-size:12px;color:#43e97b;margin:4px 0;display:none;text-align:center}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════ */
+@media(max-height:600px){
+  .menu-cat{font-size:52px}
+  .menu-title{font-size:24px}
+  #q-emoji{font-size:36px}
+  #q-text{font-size:17px}
+  .opt-btn{padding:10px 6px;font-size:14px}
+  #results-cat{font-size:42px}
+  #results-title{font-size:22px}
+}
+@media(max-width:360px){
+  #level-grid{grid-template-columns:repeat(4,1fr)}
+  .level-card.boss-card{grid-column:span 4}
+  #store-grid{grid-template-columns:repeat(2,1fr)}
+  #q-options{gap:6px}
+  .opt-btn{padding:10px 4px;font-size:14px}
+}
+
+/* ═══════════════════════════════════════════
+   CHALLENGE / PROFILE / SETTINGS SCREENS
+   ═══════════════════════════════════════════ */
+#challenge-screen,#profile-screen,#settings-screen,#achievements-screen,#catcare-screen,#leaderboard-screen{background:radial-gradient(ellipse at 50% 30%,#1a1a3e 0%,#0a0a1a 100%);overflow-y:auto;justify-content:flex-start;padding:16px}
+#challenge-content,#profile-content,#settings-content,#achievements-content,#catcare-content,#leaderboard-content{width:100%;max-width:500px}
+
+/* Menu recommendation */
+#menu-recommendation{font-size:13px;color:#43e97b;margin:4px 0;display:none;text-align:center;cursor:pointer;padding:6px 12px;border-radius:10px;background:rgba(67,233,123,.08);border:1px solid rgba(67,233,123,.2)}
+
+/* ═══════════════════════════════════════════
+   TUTORIAL OVERLAY
+   ═══════════════════════════════════════════ */
+#tutorial-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:99998;display:none;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+
+/* C1: Boss HP bar animation */
+#boss-hp-bar{display:none;margin:4px auto;max-width:500px;width:100%}
+.boss-hp-fill{transition:width .4s ease}
+@keyframes bossHPPulse{0%,100%{box-shadow:0 0 0 rgba(245,87,108,0)}50%{box-shadow:0 0 12px rgba(245,87,108,.5)}}
+
+/* C3: Pause overlay */
+#pause-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:99997;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;backdrop-filter:blur(6px)}
+#pause-overlay .pause-title{font-size:48px;font-weight:900;color:#fbbf24}
+
+/* C4: Question transition */
+.q-area{transition:opacity .2s ease}
+.q-area.q-transitioning{opacity:0;transform:translateY(8px)}
+
+/* C8: Cat mood reactions in HUD */
+@keyframes catMoodPop{0%{transform:scale(1)}50%{transform:scale(1.3)}100%{transform:scale(1)}}
+.cat-mood-pop{animation:catMoodPop .3s ease!important}
+@keyframes catMoodShake{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+.cat-mood-shake{animation:catMoodShake .3s ease!important}
+
+/* C9: Calendar grid */
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;max-width:280px;margin:8px auto}
+.calendar-cell{width:100%;aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
+.calendar-cell.claimed{background:rgba(67,233,123,.15);border-color:rgba(67,233,123,.3)}
+.calendar-cell.today{border-color:#fbbf24;box-shadow:0 0 6px rgba(251,191,36,.3)}
+
+/* C7: Practice mode btn */
+#btn-practice{display:none}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ MENU ═══════════════════════════ -->
+<div id="menu-screen" class="screen active">
+  <div class="menu-cat" id="menu-cat-emoji">🐱</div>
+  <div class="menu-title" id="menu-title">مملكة القطة التعليمية</div>
+  <div class="menu-subtitle" id="menu-subtitle">مغامرة تعلّم مع القطة!</div>
+  <div id="comeback-msg"></div>
+  <div id="menu-cat-notify" style="font-size:13px;color:#f5576c;margin:4px 0;display:none;text-align:center;padding:6px 12px;border-radius:10px;background:rgba(245,87,108,.08);border:1px solid rgba(245,87,108,.2);cursor:pointer"></div>
+  <div id="menu-daily-info"></div>
+  <div id="menu-recommendation"></div>
+  <div class="menu-cat-stats" id="menu-cat-stats"></div>
+  <div class="menu-btns">
+    <button class="btn btn-primary" id="btn-play" aria-label="Play">ابدأ المغامرة</button>
+    <div style="display:flex;gap:8px;width:100%">
+      <button class="btn btn-gold" id="btn-store" style="flex:1" aria-label="Store">🛒️</button>
+      <button class="btn btn-secondary" id="btn-report" style="flex:1" aria-label="Reports">📋</button>
+    </div>
+    <div style="display:flex;gap:8px;width:100%">
+      <button class="btn btn-danger" id="btn-challenge" style="flex:1" aria-label="Challenge">🎯</button>
+      <button class="btn btn-secondary" id="btn-profile" style="flex:1" aria-label="Profile">👤</button>
+      <button class="btn btn-icon" id="btn-settings" style="flex:none;width:44px;height:44px" aria-label="Settings">⚙️</button>
+    </div>
+    <div style="display:flex;gap:8px;width:100%">
+      <button class="btn btn-small btn-gold" id="btn-achievements" style="flex:1" aria-label="Achievements">🏆</button>
+      <button class="btn btn-small btn-secondary" id="btn-catcare" style="flex:1" aria-label="Cat Care">🐱</button>
+      <button class="btn btn-small btn-secondary" id="btn-leaderboard" style="flex:1" aria-label="Leaderboard">🏅</button>
+    </div>
+    <button class="btn btn-small btn-secondary" id="btn-practice" style="width:100%" aria-label="Practice">📝</button>
+  </div>
+  <div class="menu-row">
+    <button class="btn-icon" id="btn-mute" aria-label="Toggle Sound">🔊</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ WORLD MAP ═══════════════════════════ -->
+<div id="worldMap-screen" class="screen">
+  <div class="wm-header">
+    <div class="wm-stat" id="wm-total-stars">⭐ 0</div>
+    <div class="wm-stat" id="wm-coins">🪙 0</div>
+    <button class="btn-icon" data-action="back-menu">🏠</button>
+  </div>
+  <div class="wm-title">🗺️</div>
+  <div id="world-grid"></div>
+</div>
+
+<!-- ═══════════════════════════ LEVEL SELECT ═══════════════════════════ -->
+<div id="levelSelect-screen" class="screen">
+  <div class="ls-header">
+    <div id="ls-world-name"></div>
+    <div id="ls-subject"></div>
+  </div>
+  <div id="level-grid"></div>
+  <button class="btn btn-small btn-secondary" data-action="back-worldmap" style="margin-top:12px">◀</button>
+</div>
+
+<!-- ═══════════════════════════ BOSS INTRO ═══════════════════════════ -->
+<div id="bossIntro-screen" class="screen">
+  <div class="boss-alert">⚔️</div>
+  <div id="boss-emoji">👹</div>
+  <div id="boss-name"></div>
+</div>
+
+<!-- ═══════════════════════════ GAMEPLAY ═══════════════════════════ -->
+<div id="gameplay-screen" class="screen">
+  <div class="hud">
+    <div class="hud-item"><span id="hud-cat">🐱</span> <span id="hud-world"></span></div>
+    <div class="hud-item" id="hud-streak"></div>
+    <div class="hud-item"><span id="hud-lives">❤️❤️❤️</span></div>
+    <div class="q-timer-wrap"><span id="q-timer">15</span></div>
+    <button class="btn-icon" id="btn-pause" aria-label="Pause" style="margin-inline-start:4px">⏸️</button>
+  </div>
+  <div id="boss-hp-bar"></div>
+  <div class="hud" style="justify-content:center">
+    <span id="hud-level" style="font-size:12px;color:rgba(255,255,255,.5)"></span>
+  </div>
+  <div id="powerup-hud"></div>
+  <div class="q-area">
+    <div id="q-counter"></div>
+    <div class="q-progress"><div id="q-progress-fill"></div></div>
+    <div id="q-emoji">❓</div>
+    <div id="q-text"></div>
+    <div id="hud-score" style="font-size:22px;font-weight:900;color:var(--accent)">0</div>
+    <div id="q-options"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ RESULTS ═══════════════════════════ -->
+<div id="results-screen" class="screen">
+  <div class="results-box">
+    <div id="results-cat">🐱</div>
+    <div id="results-cat-msg"></div>
+    <div id="results-title"></div>
+    <div id="results-stars"></div>
+    <div id="results-score"></div>
+    <div id="results-details"></div>
+    <div class="results-btns">
+      <button class="btn btn-small btn-primary" id="btn-next" aria-label="Next Level">▶</button>
+      <button class="btn btn-small btn-secondary" id="btn-retry" aria-label="Retry">🔄</button>
+      <button class="btn btn-small btn-danger" id="btn-home" aria-label="Home">🏠</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ STORE ═══════════════════════════ -->
+<div id="store-screen" class="screen">
+  <div class="store-header">
+    <div style="font-size:24px;font-weight:800">🛍️</div>
+    <div id="store-coins">🪙 0</div>
+  </div>
+  <div class="store-tabs" id="store-tabs" data-active="skins">
+    <button class="store-tab active" id="tab-skins">🐱</button>
+    <button class="store-tab" id="tab-powerups">⚡</button>
+  </div>
+  <div id="store-grid"></div>
+  <button class="btn btn-small btn-secondary" data-action="back-menu" style="margin-top:12px">◀</button>
+</div>
+
+<!-- ═══════════════════════════ STORY INTRO ═══════════════════════════ -->
+<div id="storyIntro-screen" class="screen">
+  <div id="story-emoji">🌟</div>
+  <div id="story-title"></div>
+  <div id="story-text"></div>
+  <div id="story-tip"></div>
+  <button class="btn btn-primary" id="btn-story-go">🚀</button>
+</div>
+
+<!-- ═══════════════════════════ REPORTS ═══════════════════════════ -->
+<div id="reports-screen" class="screen">
+  <div id="reports-content"></div>
+  <button class="btn btn-small btn-secondary" data-action="back-menu" style="margin-top:12px">◀</button>
+</div>
+
+<!-- ═══════════════════════════ CHALLENGE ═══════════════════════════ -->
+<div id="challenge-screen" class="screen">
+  <div id="challenge-content"></div>
+  <button class="btn btn-small btn-secondary" data-action="back-menu" style="margin-top:12px">◀</button>
+</div>
+
+<!-- ═══════════════════════════ PROFILE ═══════════════════════════ -->
+<div id="profile-screen" class="screen">
+  <div id="profile-content"></div>
+  <button class="btn btn-small btn-secondary" data-action="back-menu" style="margin-top:12px">◀</button>
+</div>
+
+<!-- ═══════════════════════════ SETTINGS ═══════════════════════════ -->
+<div id="settings-screen" class="screen">
+  <div id="settings-content"></div>
+  <button class="btn btn-small btn-secondary" data-action="back-menu" style="margin-top:12px">◀</button>
+</div>
+
+<!-- ═══════════════════════════ ACHIEVEMENTS ═══════════════════════════ -->
+<div id="achievements-screen" class="screen">
+  <div id="achievements-content"></div>
+  <button class="btn btn-small btn-secondary" data-action="back-menu" style="margin-top:12px">◀</button>
+</div>
+
+<!-- ═══════════════════════════ CAT CARE ═══════════════════════════ -->
+<div id="catcare-screen" class="screen">
+  <div id="catcare-content"></div>
+  <button class="btn btn-small btn-secondary" data-action="back-menu" style="margin-top:12px">◀</button>
+</div>
+
+<!-- ═══════════════════════════ LEADERBOARD ═══════════════════════════ -->
+<div id="leaderboard-screen" class="screen">
+  <div id="leaderboard-content"></div>
+  <button class="btn btn-small btn-secondary" data-action="back-menu" style="margin-top:12px">◀</button>
+</div>
+
+<!-- ═══════════════════════════ TUTORIAL OVERLAY ═══════════════════════════ -->
+<div id="tutorial-overlay"></div>
+
+<!-- ═══════════════════════════ PAUSE OVERLAY ═══════════════════════════ -->
+<div id="pause-overlay">
+  <div class="pause-title">⏸️</div>
+  <button class="btn btn-primary" id="btn-resume">▶️</button>
+  <button class="btn btn-danger" id="btn-quit-game">🏠</button>
+</div>
+
+<!-- ═══════════════════════════ BOOT ═══════════════════════════ -->
+<script type="module">
+  import { init } from './cat-kingdom-modules/engine.js';
+  init();
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: 'GAME_READY' }, '*');
+  }
+</script>
+</body>
+</html>
+

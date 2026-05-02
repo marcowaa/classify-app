@@ -1,0 +1,11 @@
+# Placeholder — place Cairo font files here
+# Download from: https://fonts.google.com/specimen/Cairo
+# Required files:
+#   - Cairo-Light.ttf (weight: 300)
+#   - Cairo-Regular.ttf
+#   - Cairo-Medium.ttf (weight: 500)
+#   - Cairo-SemiBold.ttf (weight: 600)
+#   - Cairo-Bold.ttf (weight: 700)
+#
+# Note: If fonts are not placed here, the app falls back to google_fonts package
+# which downloads Cairo at runtime.

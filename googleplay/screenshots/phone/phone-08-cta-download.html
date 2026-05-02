@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>Phone 08 — CTA Download | 1080×1920</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1080px; height: 1920px; overflow: hidden; font-family: 'Cairo', sans-serif; background: #0A0618; }
+  .screen { width: 1080px; height: 1920px; background: linear-gradient(160deg, #0A0618 0%, #130A2A 50%, #0D1521 100%); display: flex; flex-direction: column; align-items: center; position: relative; overflow: hidden; }
+  .glow-1 { position: absolute; width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(124,58,237,0.22) 0%, transparent 70%); top: -100px; right: -100px; pointer-events: none; }
+  .glow-2 { position: absolute; width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle, rgba(76,208,128,0.15) 0%, transparent 70%); bottom: 100px; left: -100px; pointer-events: none; }
+  .dots { position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 52px 52px; pointer-events: none; }
+
+  /* App icon + name */
+  .app-brand { padding: 70px 60px 10px; text-align: center; position: relative; z-index: 10; width: 100%; }
+  .icon-wrap { width: 130px; height: 130px; background: linear-gradient(135deg, #7C3AED, #4CD080); border-radius: 34px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 40px rgba(124,58,237,0.5); }
+  .icon-wrap span { font-size: 64px; font-weight: 900; color: white; }
+  .app-name { font-size: 50px; font-weight: 900; color: white; }
+  .app-tagline { font-size: 26px; color: #A78BFA; font-weight: 600; margin-top: 8px; }
+
+  /* Rating */
+  .rating-row { display: flex; align-items: center; gap: 14px; justify-content: center; margin-top: 18px; position: relative; z-index: 10; }
+  .stars { font-size: 30px; color: #FCD34D; letter-spacing: 4px; }
+  .rating-num { font-size: 28px; font-weight: 800; color: #FCD34D; }
+  .rating-count { font-size: 22px; color: #64748B; font-weight: 600; }
+
+  /* Features mini grid */
+  .features-grid { margin: 30px 50px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; position: relative; z-index: 10; width: calc(100% - 100px); }
+  .feat-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 22px; padding: 20px 18px; display: flex; align-items: center; gap: 14px; }
+  .feat-card .ficon { font-size: 34px; flex-shrink: 0; }
+  .feat-card .ftext { }
+  .feat-card .ftitle { font-size: 21px; font-weight: 800; color: white; }
+  .feat-card .fdesc { font-size: 17px; color: #64748B; font-weight: 600; margin-top: 2px; }
+
+  /* Social proof */
+  .social-proof { margin: 24px 50px 0; position: relative; z-index: 10; width: calc(100% - 100px); }
+  .sp-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 24px 28px; }
+  .sp-header { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+  .sp-avatar { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #7C3AED, #EC4899); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900; color: white; }
+  .sp-name { font-size: 22px; font-weight: 800; color: white; }
+  .sp-stars { font-size: 18px; color: #FCD34D; margin-top: 2px; }
+  .sp-text { font-size: 21px; color: #94A3B8; font-weight: 600; line-height: 1.5; }
+  .sp-text em { color: #C4B5FD; font-style: normal; font-weight: 700; }
+
+  /* Stats row -->
+  .stats-row { margin: 20px 50px 0; display: flex; gap: 16px; position: relative; z-index: 10; width: calc(100% - 100px); }
+  .stat-badge { flex: 1; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 20px 14px; text-align: center; }
+  .stat-badge .num { font-size: 32px; font-weight: 900; color: white; }
+  .stat-badge.g .num { color: #4CD080; }
+  .stat-badge.p .num { color: #A78BFA; }
+  .stat-badge.o .num { color: #F97316; }
+  .stat-badge .lbl { font-size: 17px; color: #64748B; font-weight: 600; margin-top: 4px; }
+
+  /* Download CTA */
+  .cta-section { margin: 24px 50px 0; position: relative; z-index: 10; width: calc(100% - 100px); }
+  .dl-btn { width: 100%; height: 100px; background: linear-gradient(135deg, #7C3AED, #5B21B6); border-radius: 28px; display: flex; align-items: center; justify-content: center; gap: 14px; box-shadow: 0 8px 36px rgba(124,58,237,0.55); margin-bottom: 14px; }
+  .dl-btn span { font-size: 32px; font-weight: 900; color: white; }
+  .free-note { text-align: center; font-size: 22px; color: #64748B; font-weight: 600; }
+  .free-note span { color: #4CD080; font-weight: 800; }
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="glow-1"></div>
+  <div class="glow-2"></div>
+  <div class="dots"></div>
+
+  <!-- Brand -->
+  <div class="app-brand">
+    <div class="icon-wrap"><span>C</span></div>
+    <div class="app-name">Classify</div>
+    <div class="app-tagline">المنصة التعليمية الأولى للأسرة العربية</div>
+  </div>
+
+  <!-- Rating -->
+  <div class="rating-row">
+    <span class="stars">★★★★★</span>
+    <span class="rating-num">4.9</span>
+    <span class="rating-count">(2,400+ تقييم)</span>
+  </div>
+
+  <!-- Features Mini Grid -->
+  <div class="features-grid">
+    <div class="feat-card">
+      <span class="ficon">🌳</span>
+      <div class="ftext"><div class="ftitle">شجرة النمو</div><div class="fdesc">20 مرحلة فريدة</div></div>
+    </div>
+    <div class="feat-card">
+      <span class="ficon">🎮</span>
+      <div class="ftext"><div class="ftitle">ألعاب تعليمية</div><div class="fdesc">15+ لعبة</div></div>
+    </div>
+    <div class="feat-card">
+      <span class="ficon">📚</span>
+      <div class="ftext"><div class="ftitle">سوق المعلمين</div><div class="fdesc">1,200+ مهمة</div></div>
+    </div>
+    <div class="feat-card">
+      <span class="ficon">👨‍👩‍👧</span>
+      <div class="ftext"><div class="ftitle">رقابة أبوية</div><div class="fdesc">تحكم كامل</div></div>
+    </div>
+    <div class="feat-card">
+      <span class="ficon">💰</span>
+      <div class="ftext"><div class="ftitle">نقاط ومكافآت</div><div class="fdesc">تحفيز حقيقي</div></div>
+    </div>
+    <div class="feat-card">
+      <span class="ficon">🔒</span>
+      <div class="ftext"><div class="ftitle">آمن 100%</div><div class="fdesc">بدون إعلانات</div></div>
+    </div>
+  </div>
+
+  <!-- Social Proof -->
+  <div class="social-proof">
+    <div class="sp-card">
+      <div class="sp-header">
+        <div class="sp-avatar">أ</div>
+        <div>
+          <div class="sp-name">أم ريان — الرياض</div>
+          <div class="sp-stars">★★★★★</div>
+        </div>
+      </div>
+      <div class="sp-text">"<em>شجرة النمو</em> غيّرت علاقة ولدي بالدراسة. أصبح يطلب مهام إضافية بنفسه!"</div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-badge g"><div class="num">10+</div><div class="lbl">لغات</div></div>
+    <div class="stat-badge p"><div class="num">533+</div><div class="lbl">ميزة</div></div>
+    <div class="stat-badge o"><div class="num">5</div><div class="lbl">أدوار</div></div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-section">
+    <div class="dl-btn">
+      <span>▶ ابدأ رحلة طفلك اليوم</span>
+    </div>
+    <div class="free-note">مجاني تماماً • <span>بدون إعلانات</span> • تثبيت فوري</div>
+  </div>
+</div>
+</body>
+</html>

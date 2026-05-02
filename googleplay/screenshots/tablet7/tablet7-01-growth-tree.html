@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>Tablet 7" — Growth Tree | 1200×1920</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1200px; height: 1920px; overflow: hidden; font-family: 'Cairo', sans-serif; background: #0A0618; }
+  .screen { width: 1200px; height: 1920px; background: linear-gradient(160deg, #0A0618 0%, #130A2A 45%, #0D1B2A 100%); display: flex; position: relative; overflow: hidden; }
+  .glow-r { position: absolute; width: 700px; height: 700px; border-radius: 50%; background: radial-gradient(circle, rgba(76,208,128,0.2) 0%, transparent 70%); top: 300px; right: -100px; pointer-events: none; }
+  .glow-l { position: absolute; width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 70%); top: 200px; left: -50px; pointer-events: none; }
+  .dots { position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; }
+
+  /* Left panel: info */
+  .left-panel { width: 520px; padding: 80px 50px 60px 60px; display: flex; flex-direction: column; justify-content: space-between; position: relative; z-index: 10; }
+  .user-profile { display: flex; align-items: center; gap: 18px; margin-bottom: 36px; }
+  .avatar { width: 86px; height: 86px; border-radius: 50%; background: linear-gradient(135deg, #7C3AED, #4CD080); display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 900; color: white; border: 3px solid rgba(124,58,237,0.5); }
+  .user-info .name { font-size: 34px; font-weight: 900; color: white; }
+  .user-info .level { font-size: 22px; color: #A78BFA; font-weight: 600; }
+
+  .big-headline h1 { font-size: 66px; font-weight: 900; color: white; line-height: 1.15; margin-bottom: 16px; }
+  .big-headline h1 .green { color: #4CD080; }
+  .big-headline p { font-size: 26px; color: #94A3B8; font-weight: 600; line-height: 1.5; }
+
+  /* Stage progress */
+  .stage-info { margin: 30px 0; }
+  .stage-top { display: flex; justify-content: space-between; margin-bottom: 10px; }
+  .stage-top span { font-size: 22px; font-weight: 700; color: #C4B5FD; }
+  .stage-top .current { color: #4CD080; font-size: 26px; font-weight: 900; }
+  .prog-track { height: 14px; background: rgba(255,255,255,0.1); border-radius: 7px; overflow: hidden; }
+  .prog-fill { height: 100%; width: 75%; background: linear-gradient(90deg, #7C3AED, #4CD080); border-radius: 7px; }
+  .stage-dots { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .sdot { width: 16px; height: 16px; border-radius: 50%; background: rgba(255,255,255,0.1); }
+  .sdot.done { background: #4CD080; }
+  .sdot.now { background: #7C3AED; transform: scale(1.3); }
+
+  /* Stats */
+  .stats-list { display: flex; flex-direction: column; gap: 14px; }
+  .stat-row { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 18px; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; }
+  .stat-row .slabel { font-size: 22px; color: #94A3B8; font-weight: 600; }
+  .stat-row .svalue { font-size: 28px; font-weight: 900; }
+  .stat-row .svalue.green { color: #4CD080; }
+  .stat-row .svalue.orange { color: #F97316; }
+  .stat-row .svalue.yellow { color: #FCD34D; }
+
+  .water-btn { background: linear-gradient(135deg, #7C3AED, #5B21B6); border-radius: 24px; padding: 24px 30px; display: flex; align-items: center; justify-content: center; gap: 14px; box-shadow: 0 8px 32px rgba(124,58,237,0.5); margin-top: 16px; }
+  .water-btn span { font-size: 28px; font-weight: 900; color: white; }
+
+  /* Right panel: tree */
+  .right-panel { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; z-index: 10; }
+  .tree-glow { position: absolute; width: 550px; height: 550px; border-radius: 50%; background: radial-gradient(circle, rgba(76,208,128,0.22) 0%, rgba(124,58,237,0.1) 55%, transparent 75%); top: 50%; left: 50%; transform: translate(-50%, -50%); }
+  .biome-chip { position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); background: rgba(76,208,128,0.15); border: 1px solid rgba(76,208,128,0.4); border-radius: 28px; padding: 14px 32px; }
+  .biome-chip span { font-size: 22px; color: #4CD080; font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="glow-r"></div>
+  <div class="glow-l"></div>
+  <div class="dots"></div>
+
+  <!-- Left Panel -->
+  <div class="left-panel">
+    <div>
+      <div class="user-profile">
+        <div class="avatar">ي</div>
+        <div class="user-info">
+          <div class="name">يوسف أحمد</div>
+          <div class="level">⭐ المستوى 12 — بطل التعلم</div>
+        </div>
+      </div>
+      <div class="big-headline">
+        <h1>شجرة النمو<br><span class="green">🌳 الفريدة</span></h1>
+        <p>مشاهدة النمو الحقيقي لطفلك — مرحلة تلو مرحلة، مهمة تلو مهمة</p>
+      </div>
+      <div class="stage-info">
+        <div class="stage-top"><span>تقدم الشجرة</span><span class="current">المرحلة 15/20</span></div>
+        <div class="prog-track"><div class="prog-fill"></div></div>
+        <div class="stage-dots">
+          <div class="sdot done"></div><div class="sdot done"></div><div class="sdot done"></div><div class="sdot done"></div><div class="sdot done"></div>
+          <div class="sdot done"></div><div class="sdot done"></div><div class="sdot done"></div><div class="sdot done"></div><div class="sdot done"></div>
+          <div class="sdot done"></div><div class="sdot done"></div><div class="sdot done"></div><div class="sdot done"></div><div class="sdot done"></div>
+          <div class="sdot now"></div><div class="sdot"></div><div class="sdot"></div><div class="sdot"></div><div class="sdot"></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="stats-list">
+        <div class="stat-row"><span class="slabel">🏆 النقاط الكلية</span><span class="svalue yellow">2,450</span></div>
+        <div class="stat-row"><span class="slabel">✅ مهام منجزة</span><span class="svalue green">48 مهمة</span></div>
+        <div class="stat-row"><span class="slabel">🔥 سلسلة يومية</span><span class="svalue orange">14 يوم</span></div>
+      </div>
+      <div class="water-btn"><span>💧 اسقِ شجرتك (+50 نقطة)</span></div>
+    </div>
+  </div>
+
+  <!-- Right Panel: Tree -->
+  <div class="right-panel">
+    <div class="tree-glow"></div>
+    <svg width="580" height="800" viewBox="0 0 580 800" fill="none">
+      <ellipse cx="290" cy="778" rx="170" ry="22" fill="rgba(0,0,0,0.4)"/>
+      <path d="M262 752 Q268 670 278 600 L302 600 Q312 670 318 752 Z" fill="#6B3E1A"/>
+      <path d="M278 600 Q283 650 287 710 L293 710 Q294 650 298 600 Z" fill="#8B5E3C" opacity="0.5"/>
+      <path d="M278 740 Q238 758 200 750" stroke="#6B3E1A" stroke-width="12" stroke-linecap="round" fill="none" opacity="0.7"/>
+      <path d="M302 740 Q342 758 380 750" stroke="#6B3E1A" stroke-width="12" stroke-linecap="round" fill="none" opacity="0.7"/>
+      <ellipse cx="290" cy="545" rx="210" ry="125" fill="#14532D" opacity="0.8"/>
+      <ellipse cx="290" cy="528" rx="200" ry="115" fill="#16A34A" opacity="0.88"/>
+      <ellipse cx="290" cy="510" rx="186" ry="106" fill="#22C55E"/>
+      <ellipse cx="290" cy="405" rx="178" ry="110" fill="#15803D" opacity="0.9"/>
+      <ellipse cx="290" cy="388" rx="165" ry="100" fill="#22C55E" opacity="0.9"/>
+      <ellipse cx="290" cy="370" rx="152" ry="92" fill="#4ADE80"/>
+      <ellipse cx="290" cy="265" rx="138" ry="100" fill="#16A34A" opacity="0.95"/>
+      <ellipse cx="290" cy="248" rx="128" ry="90" fill="#22C55E" opacity="0.9"/>
+      <ellipse cx="290" cy="232" rx="114" ry="82" fill="#4ADE80"/>
+      <ellipse cx="290" cy="140" rx="90" ry="76" fill="#22C55E" opacity="0.95"/>
+      <ellipse cx="290" cy="122" rx="80" ry="66" fill="#4ADE80" opacity="0.9"/>
+      <ellipse cx="290" cy="108" rx="66" ry="54" fill="#86EFAC"/>
+      <ellipse cx="290" cy="52" rx="44" ry="38" fill="#4CD080"/>
+      <ellipse cx="290" cy="40" rx="26" ry="22" fill="#A7F3D0" opacity="0.8"/>
+      <circle cx="370" cy="358" r="20" fill="#F97316" opacity="0.95"/>
+      <circle cx="205" cy="375" r="17" fill="#EC4899" opacity="0.9"/>
+      <circle cx="400" cy="470" r="19" fill="#F59E0B" opacity="0.95"/>
+      <circle cx="175" cy="488" r="15" fill="#EF4444" opacity="0.9"/>
+      <circle cx="385" cy="232" r="17" fill="#F97316" opacity="0.9"/>
+      <circle cx="192" cy="245" r="14" fill="#EC4899" opacity="0.9"/>
+      <circle cx="348" cy="128" r="14" fill="#F59E0B" opacity="0.9"/>
+      <path d="M290 10 L297 27 L316 29 L302 42 L306 61 L290 52 L274 61 L278 42 L264 29 L283 27 Z" fill="#FCD34D" opacity="0.95"/>
+      <path d="M460 185 L465 197 L477 202 L465 207 L460 219 L455 207 L443 202 L455 197 Z" fill="#FCD34D" opacity="0.8"/>
+      <path d="M118 230 L122 240 L132 244 L122 248 L118 258 L114 248 L104 244 L114 240 Z" fill="#A78BFA" opacity="0.7"/>
+    </svg>
+    <div class="biome-chip"><span>🌿 بيئة الربيع — المرحلة الذهبية</span></div>
+  </div>
+</div>
+</body>
+</html>

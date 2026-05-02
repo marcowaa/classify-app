@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>Phone 02 — Parent Dashboard | 1080×1920</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1080px; height: 1920px; overflow: hidden; font-family: 'Cairo', sans-serif; background: #F1F5F9; }
+  .screen { width: 1080px; height: 1920px; background: #F1F5F9; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+
+  /* Top hero */
+  .hero { background: linear-gradient(135deg, #4C1D95, #7C3AED, #5B21B6); padding: 70px 60px 50px; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%); top: -200px; left: -100px; }
+  .hero-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 36px; }
+  .greeting { }
+  .greeting .hi { font-size: 26px; color: rgba(255,255,255,0.7); font-weight: 600; }
+  .greeting .name { font-size: 44px; font-weight: 900; color: #FFFFFF; }
+  .notif-btn { width: 64px; height: 64px; background: rgba(255,255,255,0.15); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 28px; position: relative; }
+  .notif-dot { position: absolute; top: 10px; left: 10px; width: 16px; height: 16px; background: #EF4444; border-radius: 50%; border: 3px solid #5B21B6; }
+
+  /* Quick stats */
+  .quick-stats { display: flex; gap: 20px; }
+  .q-stat { flex: 1; background: rgba(255,255,255,0.12); border-radius: 20px; padding: 20px 16px; text-align: center; border: 1px solid rgba(255,255,255,0.15); }
+  .q-stat .num { font-size: 36px; font-weight: 900; color: #FFFFFF; }
+  .q-stat .lbl { font-size: 17px; color: rgba(255,255,255,0.7); font-weight: 600; margin-top: 4px; }
+  .q-stat.highlight { background: rgba(76,208,128,0.25); border-color: rgba(76,208,128,0.5); }
+  .q-stat.highlight .num { color: #4CD080; }
+
+  /* Section title */
+  .section-title { padding: 36px 60px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .section-title h2 { font-size: 34px; font-weight: 800; color: #1E1B4B; }
+  .section-title a { font-size: 22px; color: #7C3AED; font-weight: 700; }
+
+  /* Child cards */
+  .children-list { padding: 0 40px; display: flex; flex-direction: column; gap: 20px; }
+  .child-card { background: #FFFFFF; border-radius: 28px; padding: 28px 30px; display: flex; align-items: center; gap: 24px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); border: 1px solid rgba(124,58,237,0.06); }
+  .child-avatar { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 900; color: white; flex-shrink: 0; }
+  .child-avatar.purple { background: linear-gradient(135deg, #7C3AED, #5B21B6); }
+  .child-avatar.green { background: linear-gradient(135deg, #059669, #10B981); }
+  .child-avatar.blue { background: linear-gradient(135deg, #2563EB, #3B82F6); }
+  .child-info { flex: 1; }
+  .child-info .cname { font-size: 28px; font-weight: 800; color: #1E293B; }
+  .child-info .cage { font-size: 20px; color: #64748B; font-weight: 600; }
+  .child-progress { margin-top: 10px; }
+  .progress-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+  .progress-row span { font-size: 18px; color: #64748B; font-weight: 600; }
+  .progress-row .pct { color: #7C3AED; font-weight: 800; }
+  .prog-bar { height: 10px; background: #F1F5F9; border-radius: 5px; overflow: hidden; }
+  .prog-fill { height: 100%; border-radius: 5px; }
+  .prog-fill.purple { background: linear-gradient(90deg, #7C3AED, #A78BFA); }
+  .prog-fill.green { background: linear-gradient(90deg, #059669, #10B981); }
+  .prog-fill.blue { background: linear-gradient(90deg, #2563EB, #60A5FA); }
+  .child-right { text-align: left; }
+  .pts-chip { background: #FEF3C7; border-radius: 14px; padding: 8px 16px; }
+  .pts-chip span { font-size: 22px; font-weight: 800; color: #D97706; }
+  .tree-level { font-size: 18px; color: #4CD080; font-weight: 700; margin-top: 8px; text-align: center; }
+
+  /* Activity chart placeholder */
+  .chart-section { padding: 0 40px; margin-top: 16px; }
+  .chart-card { background: #FFFFFF; border-radius: 28px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.07); }
+  .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  .chart-header h3 { font-size: 28px; font-weight: 800; color: #1E293B; }
+  .chart-tabs { display: flex; gap: 10px; }
+  .tab { padding: 8px 18px; border-radius: 14px; font-size: 18px; font-weight: 700; cursor: pointer; }
+  .tab.active { background: #7C3AED; color: white; }
+  .tab.inactive { background: #F1F5F9; color: #64748B; }
+  .chart-bars { display: flex; align-items: flex-end; gap: 16px; height: 140px; }
+  .bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .bar { width: 100%; border-radius: 8px 8px 0 0; }
+  .bar.a { background: linear-gradient(180deg, #7C3AED, #A78BFA); }
+  .bar.b { background: linear-gradient(180deg, #4CD080, #86EFAC); }
+  .bar-label { font-size: 17px; color: #94A3B8; font-weight: 600; }
+
+  /* Bottom headline */
+  .bottom-headline { padding: 24px 60px 40px; text-align: center; }
+  .bottom-headline p { font-size: 30px; font-weight: 800; color: #1E1B4B; line-height: 1.4; }
+  .bottom-headline p span { color: #7C3AED; }
+</style>
+</head>
+<body>
+<div class="screen">
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-top">
+      <div class="greeting">
+        <div class="hi">مرحباً بك، والد متميز 👋</div>
+        <div class="name">لوحة تحكم الأسرة</div>
+      </div>
+      <div class="notif-btn">🔔<div class="notif-dot"></div></div>
+    </div>
+    <div class="quick-stats">
+      <div class="q-stat">
+        <div class="num">48</div>
+        <div class="lbl">مهمة منجزة</div>
+      </div>
+      <div class="q-stat highlight">
+        <div class="num">87%</div>
+        <div class="lbl">نسبة الإنجاز</div>
+      </div>
+      <div class="q-stat">
+        <div class="num">4,850</div>
+        <div class="lbl">إجمالي النقاط</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section: Children -->
+  <div class="section-title">
+    <h2>👧👦 أطفالك</h2>
+    <a>إدارة ←</a>
+  </div>
+  <div class="children-list">
+    <div class="child-card">
+      <div class="child-avatar purple">ي</div>
+      <div class="child-info">
+        <div class="cname">يوسف أحمد</div>
+        <div class="cage">10 سنوات • المرحلة 15</div>
+        <div class="child-progress">
+          <div class="progress-row"><span>إنجاز اليوم</span><span class="pct">90%</span></div>
+          <div class="prog-bar"><div class="prog-fill purple" style="width:90%"></div></div>
+        </div>
+      </div>
+      <div class="child-right">
+        <div class="pts-chip"><span>⭐ 2,450</span></div>
+        <div class="tree-level">🌳 شجرة متقدمة</div>
+      </div>
+    </div>
+    <div class="child-card">
+      <div class="child-avatar green">س</div>
+      <div class="child-info">
+        <div class="cname">سارة أحمد</div>
+        <div class="cage">8 سنوات • المرحلة 9</div>
+        <div class="child-progress">
+          <div class="progress-row"><span>إنجاز اليوم</span><span class="pct">75%</span></div>
+          <div class="prog-bar"><div class="prog-fill green" style="width:75%"></div></div>
+        </div>
+      </div>
+      <div class="child-right">
+        <div class="pts-chip"><span>⭐ 1,380</span></div>
+        <div class="tree-level">🌿 شجرة صغيرة</div>
+      </div>
+    </div>
+    <div class="child-card">
+      <div class="child-avatar blue">ع</div>
+      <div class="child-info">
+        <div class="cname">عمر أحمد</div>
+        <div class="cage">6 سنوات • المرحلة 4</div>
+        <div class="child-progress">
+          <div class="progress-row"><span>إنجاز اليوم</span><span class="pct">60%</span></div>
+          <div class="prog-bar"><div class="prog-fill blue" style="width:60%"></div></div>
+        </div>
+      </div>
+      <div class="child-right">
+        <div class="pts-chip"><span>⭐ 620</span></div>
+        <div class="tree-level">🌱 بذرة تنمو</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activity Chart -->
+  <div class="chart-section">
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3>📊 النشاط الأسبوعي</h3>
+        <div class="chart-tabs">
+          <div class="tab active">أسبوع</div>
+          <div class="tab inactive">شهر</div>
+        </div>
+      </div>
+      <div class="chart-bars">
+        <div class="bar-group"><div class="bar a" style="height:70px"></div><span class="bar-label">أحد</span></div>
+        <div class="bar-group"><div class="bar a" style="height:95px"></div><span class="bar-label">إثن</span></div>
+        <div class="bar-group"><div class="bar b" style="height:110px"></div><span class="bar-label">ثلا</span></div>
+        <div class="bar-group"><div class="bar a" style="height:80px"></div><span class="bar-label">أرب</span></div>
+        <div class="bar-group"><div class="bar b" style="height:130px"></div><span class="bar-label">خمس</span></div>
+        <div class="bar-group"><div class="bar a" style="height:60px"></div><span class="bar-label">جمع</span></div>
+        <div class="bar-group"><div class="bar b" style="height:50px"></div><span class="bar-label">سبت</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom headline -->
+  <div class="bottom-headline">
+    <p>تابع كل شيء من<br><span>مكان واحد</span> 👨‍👩‍👧</p>
+  </div>
+</div>
+</body>
+</html>

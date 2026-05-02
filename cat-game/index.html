@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="description" content="Game interaktif lucu untuk anak-anak! Beri makan kucing dengan ikan dan susu." />
+    <title>Main dengan Kucing 🐱</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="app">
+      <!-- Header -->
+      <header class="game-header">
+        <h1 class="game-title">🐱 Main dengan Kucing! 🐱</h1>
+        <div class="score-display">
+          <span class="score-label">❤️</span>
+          <span class="score-value" id="score">0</span>
+        </div>
+      </header>
+
+      <!-- Main Game Area -->
+      <main class="game-container">
+        <!-- Cat Character -->
+        <div class="cat-area">
+          <div class="cat-wrapper" id="catWrapper">
+            <img src="/images/cat.png" alt="Kucing Lucu" class="cat-image" id="catImage">
+            <div class="cat-status" id="catStatus">😺</div>
+          </div>
+          <p class="instruction">Klik kucing untuk bermain!</p>
+        </div>
+
+        <!-- Food Selection -->
+        <div class="food-selection">
+          <h2 class="food-title">Beri Makan Kucing:</h2>
+          <div class="food-buttons">
+            <button class="food-btn" id="fishBtn" data-food="fish">
+              <img src="/images/fish.png" alt="Ikan" class="food-icon">
+              <span class="food-name">Ikan</span>
+            </button>
+            <button class="food-btn" id="milkBtn" data-food="milk">
+              <img src="/images/milk.png" alt="Susu" class="food-icon">
+              <span class="food-name">Susu</span>
+            </button>
+          </div>
+        </div>
+      </main>
+
+      <!-- Particle Container for animations -->
+      <div id="particleContainer"></div>
+    </div>
+    
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

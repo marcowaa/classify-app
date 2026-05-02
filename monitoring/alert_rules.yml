@@ -1,0 +1,54 @@
+groups:
+  - name: classify-availability
+    rules:
+      - alert: ClassifyAppDown
+        expr: up{job="classify-app"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: classify-app
+        annotations:
+          summary: "Classify app target is down"
+          description: "Prometheus cannot scrape classify-app for more than 2 minutes."
+
+      - alert: RedisExporterDown
+        expr: up{job="redis"} == 0
+        for: 5m
+        labels:
+          severity: high
+          service: redis
+        annotations:
+          summary: "Redis exporter target is down"
+          description: "Prometheus cannot scrape redis exporter for more than 5 minutes."
+
+      - alert: PostgresExporterDown
+        expr: up{job="postgres"} == 0
+        for: 5m
+        labels:
+          severity: high
+          service: postgres
+        annotations:
+          summary: "Postgres exporter target is down"
+          description: "Prometheus cannot scrape postgres exporter for more than 5 minutes."
+
+  - name: classify-host-health
+    rules:
+      - alert: HostCpuHigh
+        expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
+        for: 10m
+        labels:
+          severity: high
+          service: host
+        annotations:
+          summary: "Host CPU usage is high"
+          description: "CPU usage has been above 90% for 10 minutes on {{ $labels.instance }}."
+
+      - alert: HostMemoryLow
+        expr: (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100 < 10
+        for: 10m
+        labels:
+          severity: high
+          service: host
+        annotations:
+          summary: "Host memory is low"
+          description: "Available memory has been below 10% for 10 minutes on {{ $labels.instance }}."

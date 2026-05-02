@@ -1,0 +1,4 @@
+HEALTH_OK_AT_ATTEMPT:3
+FINAL_HEALTH_RESPONSE:{"status":"ok","checks":{"database":"healthy"}}
+TEMP_HEALTH_LOGS_REMAINING:none
+STEP4_EXIT_CODE:0

@@ -1,0 +1,8 @@
+Copyright (c) 2026 proomness company
+All Rights Reserved.
+
+This software and its source code are the exclusive property of [proomness].
+No permission is granted to use, copy, modify, merge, publish, distribute, sublicense,
+or sell copies of this software, in whole or in part.
+
+Unauthorized use of this software in any form is strictly prohibited.

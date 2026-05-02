@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>Phone 10 — Progress Reports | 1080×1920</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1080px; height: 1920px; overflow: hidden; font-family: 'Cairo', sans-serif; background: #F8FAFC; }
+  .screen { width: 1080px; height: 1920px; background: #F8FAFC; display: flex; flex-direction: column; overflow: hidden; }
+
+  .hero { background: linear-gradient(135deg, #0F172A, #1E1B4B, #312E81); padding: 70px 60px 40px; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle, rgba(99,102,241,0.3), transparent 70%); top: -200px; right: -100px; }
+  .hero-row { display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 2; margin-bottom: 28px; }
+  .hero-text .label { font-size: 22px; color: rgba(255,255,255,0.65); font-weight: 600; }
+  .hero-text h1 { font-size: 46px; font-weight: 900; color: white; margin-top: 4px; }
+  .child-select { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 18px; padding: 12px 20px; display: flex; align-items: center; gap: 10px; }
+  .cs-av { width: 44px; height: 44px; background: linear-gradient(135deg, #7C3AED, #5B21B6); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 900; color: white; }
+  .cs-name { font-size: 20px; color: white; font-weight: 700; }
+  .period-tabs { display: flex; gap: 10px; position: relative; z-index: 2; }
+  .ptab { padding: 10px 24px; border-radius: 16px; font-size: 20px; font-weight: 800; }
+  .ptab.active { background: rgba(255,255,255,0.2); color: white; }
+  .ptab.inactive { color: rgba(255,255,255,0.4); }
+
+  /* Summary cards */
+  .summary-row { padding: 24px 40px 0; display: flex; gap: 16px; }
+  .sum-card { flex: 1; background: white; border-radius: 22px; padding: 22px 18px; text-align: center; box-shadow: 0 3px 16px rgba(0,0,0,0.07); border-top: 4px solid transparent; }
+  .sum-card.p { border-top-color: #7C3AED; }
+  .sum-card.g { border-top-color: #10B981; }
+  .sum-card.o { border-top-color: #F97316; }
+  .sum-card.b { border-top-color: #3B82F6; }
+  .sum-num { font-size: 40px; font-weight: 900; }
+  .sum-num.p { color: #7C3AED; }
+  .sum-num.g { color: #10B981; }
+  .sum-num.o { color: #F97316; }
+  .sum-num.b { color: #3B82F6; }
+  .sum-lbl { font-size: 16px; color: #64748B; font-weight: 600; margin-top: 4px; }
+  .sum-trend { font-size: 15px; font-weight: 700; color: #10B981; margin-top: 4px; }
+
+  /* Subjects breakdown */
+  .section-title { padding: 24px 60px 12px; display: flex; justify-content: space-between; align-items: center; }
+  .section-title h2 { font-size: 30px; font-weight: 800; color: #1E293B; }
+  .section-title span { font-size: 20px; color: #7C3AED; font-weight: 700; }
+
+  .subjects { padding: 0 40px; display: flex; flex-direction: column; gap: 14px; }
+  .subj-card { background: white; border-radius: 22px; padding: 22px 26px; box-shadow: 0 3px 14px rgba(0,0,0,0.06); }
+  .subj-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .subj-left { display: flex; align-items: center; gap: 14px; }
+  .subj-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+  .si-p { background: #EDE9FE; }
+  .si-g { background: #D1FAE5; }
+  .si-b { background: #DBEAFE; }
+  .si-o { background: #FEF3C7; }
+  .si-pk { background: #FCE7F3; }
+  .subj-name { font-size: 24px; font-weight: 800; color: #1E293B; }
+  .subj-tasks { font-size: 17px; color: #64748B; font-weight: 600; margin-top: 2px; }
+  .subj-pct { font-size: 32px; font-weight: 900; }
+  .pct-p { color: #7C3AED; }
+  .pct-g { color: #10B981; }
+  .pct-b { color: #3B82F6; }
+  .pct-o { color: #F97316; }
+  .pct-pk { color: #EC4899; }
+  .subj-bar { height: 10px; background: #F1F5F9; border-radius: 5px; overflow: hidden; }
+  .sb-fill { height: 100%; border-radius: 5px; }
+  .sf-p { background: linear-gradient(90deg, #7C3AED, #A78BFA); }
+  .sf-g { background: linear-gradient(90deg, #059669, #10B981); }
+  .sf-b { background: linear-gradient(90deg, #2563EB, #60A5FA); }
+  .sf-o { background: linear-gradient(90deg, #F97316, #FB923C); }
+  .sf-pk { background: linear-gradient(90deg, #EC4899, #F472B6); }
+
+  /* Bottom CTA */
+  .bottom-cta { padding: 16px 40px 50px; }
+  .cta-card { background: linear-gradient(135deg, #1E1B4B, #7C3AED); border-radius: 28px; padding: 28px 32px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 8px 32px rgba(124,58,237,0.4); }
+  .cta-text h3 { font-size: 26px; font-weight: 900; color: white; }
+  .cta-text p { font-size: 18px; color: rgba(255,255,255,0.7); font-weight: 600; margin-top: 6px; }
+  .cta-icon { font-size: 60px; }
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="hero">
+    <div class="hero-row">
+      <div class="hero-text">
+        <div class="label">📈 تقارير التقدم</div>
+        <h1>أداء يوسف<br>هذا الأسبوع</h1>
+      </div>
+      <div class="child-select">
+        <div class="cs-av">ي</div>
+        <div class="cs-name">يوسف ▾</div>
+      </div>
+    </div>
+    <div class="period-tabs">
+      <div class="ptab inactive">يوم</div>
+      <div class="ptab active">أسبوع</div>
+      <div class="ptab inactive">شهر</div>
+      <div class="ptab inactive">سنة</div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="summary-row">
+    <div class="sum-card p"><div class="sum-num p">48</div><div class="sum-lbl">مهمة منجزة</div><div class="sum-trend">↑ +12</div></div>
+    <div class="sum-card g"><div class="sum-num g">90%</div><div class="sum-lbl">نسبة الإنجاز</div><div class="sum-trend">↑ +5%</div></div>
+    <div class="sum-card o"><div class="sum-num o">14</div><div class="sum-lbl">يوم متواصل</div><div class="sum-trend">🔥 سجل!</div></div>
+  </div>
+
+  <!-- Subjects -->
+  <div class="section-title"><h2>📚 الأداء حسب المادة</h2><span>الكل ←</span></div>
+  <div class="subjects">
+    <div class="subj-card">
+      <div class="subj-top">
+        <div class="subj-left"><div class="subj-icon si-p">🧮</div><div><div class="subj-name">رياضيات</div><div class="subj-tasks">18 مهمة • 3 ألعاب</div></div></div>
+        <div class="subj-pct pct-p">94%</div>
+      </div>
+      <div class="subj-bar"><div class="sb-fill sf-p" style="width:94%"></div></div>
+    </div>
+    <div class="subj-card">
+      <div class="subj-top">
+        <div class="subj-left"><div class="subj-icon si-g">📖</div><div><div class="subj-name">لغة عربية</div><div class="subj-tasks">12 مهمة • 4 ألعاب</div></div></div>
+        <div class="subj-pct pct-g">88%</div>
+      </div>
+      <div class="subj-bar"><div class="sb-fill sf-g" style="width:88%"></div></div>
+    </div>
+    <div class="subj-card">
+      <div class="subj-top">
+        <div class="subj-left"><div class="subj-icon si-b">🔬</div><div><div class="subj-name">علوم</div><div class="subj-tasks">8 مهام • 2 لعبة</div></div></div>
+        <div class="subj-pct pct-b">82%</div>
+      </div>
+      <div class="subj-bar"><div class="sb-fill sf-b" style="width:82%"></div></div>
+    </div>
+    <div class="subj-card">
+      <div class="subj-top">
+        <div class="subj-left"><div class="subj-icon si-o">🔤</div><div><div class="subj-name">English</div><div class="subj-tasks">6 مهام • 5 ألعاب</div></div></div>
+        <div class="subj-pct pct-o">76%</div>
+      </div>
+      <div class="subj-bar"><div class="sb-fill sf-o" style="width:76%"></div></div>
+    </div>
+    <div class="subj-card">
+      <div class="subj-top">
+        <div class="subj-left"><div class="subj-icon si-pk">🌍</div><div><div class="subj-name">جغرافيا</div><div class="subj-tasks">4 مهام</div></div></div>
+        <div class="subj-pct pct-pk">90%</div>
+      </div>
+      <div class="subj-bar"><div class="sb-fill sf-pk" style="width:90%"></div></div>
+    </div>
+  </div>
+
+  <div class="bottom-cta">
+    <div class="cta-card">
+      <div class="cta-text">
+        <h3>📊 تقرير شهري مفصّل</h3>
+        <p>أرسل للمعلم أو احتفظ به<br>كمرجع للتحسين المستمر</p>
+      </div>
+      <div class="cta-icon">📤</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

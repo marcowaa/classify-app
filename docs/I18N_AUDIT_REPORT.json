@@ -1,0 +1,93 @@
+{
+  "generatedAt": "2026-03-21T05:35:54.367Z",
+  "baseLocale": "en.json",
+  "locales": {
+    "ar.json": {
+      "keyCount": 4293,
+      "missingCount": 0,
+      "extraCount": 0,
+      "placeholderMismatchCount": 0,
+      "missing": [],
+      "extra": [],
+      "placeholderMismatches": []
+    },
+    "pt.json": {
+      "keyCount": 4293,
+      "missingCount": 0,
+      "extraCount": 0,
+      "placeholderMismatchCount": 0,
+      "missing": [],
+      "extra": [],
+      "placeholderMismatches": []
+    },
+    "es.json": {
+      "keyCount": 4293,
+      "missingCount": 0,
+      "extraCount": 0,
+      "placeholderMismatchCount": 0,
+      "missing": [],
+      "extra": [],
+      "placeholderMismatches": []
+    },
+    "fr.json": {
+      "keyCount": 4293,
+      "missingCount": 0,
+      "extraCount": 0,
+      "placeholderMismatchCount": 0,
+      "missing": [],
+      "extra": [],
+      "placeholderMismatches": []
+    },
+    "de.json": {
+      "keyCount": 4293,
+      "missingCount": 0,
+      "extraCount": 0,
+      "placeholderMismatchCount": 0,
+      "missing": [],
+      "extra": [],
+      "placeholderMismatches": []
+    },
+    "tr.json": {
+      "keyCount": 4293,
+      "missingCount": 0,
+      "extraCount": 0,
+      "placeholderMismatchCount": 0,
+      "missing": [],
+      "extra": [],
+      "placeholderMismatches": []
+    },
+    "ru.json": {
+      "keyCount": 4293,
+      "missingCount": 0,
+      "extraCount": 0,
+      "placeholderMismatchCount": 0,
+      "missing": [],
+      "extra": [],
+      "placeholderMismatches": []
+    },
+    "zh.json": {
+      "keyCount": 4293,
+      "missingCount": 0,
+      "extraCount": 0,
+      "placeholderMismatchCount": 0,
+      "missing": [],
+      "extra": [],
+      "placeholderMismatches": []
+    },
+    "hi.json": {
+      "keyCount": 4293,
+      "missingCount": 0,
+      "extraCount": 0,
+      "placeholderMismatchCount": 0,
+      "missing": [],
+      "extra": [],
+      "placeholderMismatches": []
+    }
+  },
+  "summary": {
+    "totalBaseKeys": 4293,
+    "localesWithMissingKeys": 0,
+    "localesWithExtraKeys": 0,
+    "localesWithPlaceholderMismatches": 0
+  }
+}

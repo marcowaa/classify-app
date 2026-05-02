@@ -1,0 +1,332 @@
+name: ${COMPOSE_PROJECT_NAME:-classify-http}
+
+services:
+  traefik:
+    image: traefik:v2.11
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.constraints=Label(`com.docker.compose.project`,`${COMPOSE_PROJECT_NAME:-classify}`)"
+      - "--entryPoints.web.address=:80"
+      - "--ping=true"
+      - "--ping.entryPoint=web"
+    ports:
+      - "${CLASSIFY_TRAEFIK_BIND_IP:-127.0.0.1}:${TRAEFIK_HTTP_PORT:-18080}:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: unless-stopped
+    networks:
+      - classify-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/ping"]
+      interval: ${TRAEFIK_CONTAINER_HEALTHCHECK_INTERVAL:-45s}
+      timeout: ${TRAEFIK_CONTAINER_HEALTHCHECK_TIMEOUT:-8s}
+      retries: 3
+      start_period: 10s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.classify-app.rule=Host(`classi-fy.com`) || Host(`www.classi-fy.com`) || PathPrefix(`/`)"
+      - "traefik.http.routers.classify-app.entrypoints=web"
+      - "traefik.http.routers.classify-app-upload.rule=(Host(`classi-fy.com`) || Host(`www.classi-fy.com`)) && PathPrefix(`/api/admin/mobile-apk-builds/upload`)"
+      - "traefik.http.routers.classify-app-upload.entrypoints=web"
+      - "traefik.http.routers.classify-app-upload.priority=200"
+      - "traefik.http.routers.classify-app-upload.service=classify-app"
+      - "traefik.http.services.classify-app.loadbalancer.server.port=5000"
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - HOST=0.0.0.0
+      - DATABASE_URL=postgresql://${POSTGRES_USER:?POSTGRES_USER is required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}@db:5432/${POSTGRES_DB:-classify_db}
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=${JWT_SECRET:?JWT_SECRET is required}
+      - SESSION_SECRET=${SESSION_SECRET:?SESSION_SECRET is required}
+      - VAPID_PUBLIC_KEY=${VAPID_PUBLIC_KEY:-}
+      - VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY:-}
+      - VAPID_SUBJECT=${VAPID_SUBJECT:-mailto:info@classi-fy.com}
+      - RESEND_API_KEY=${RESEND_API_KEY:-}
+      - ADMIN_EMAIL=${ADMIN_EMAIL:?ADMIN_EMAIL is required}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:?ADMIN_PASSWORD is required}
+      - ADMIN_PANEL_PASSWORD=${ADMIN_PANEL_PASSWORD:-}
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID:-}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN:-}
+      - TWILIO_PHONE_NUMBER=${TWILIO_PHONE_NUMBER:-}
+      - SMTP_HOST=${SMTP_HOST:-}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+      - SMTP_FROM=${SMTP_FROM:-}
+      - CORS_ORIGIN=${CORS_ORIGIN:-https://classi-fy.com}
+      - PRERENDER_ENABLED=${PRERENDER_ENABLED:-auto}
+      - PRERENDER_TOKEN=${PRERENDER_TOKEN:-}
+      - PRERENDER_SERVICE_URL=${PRERENDER_SERVICE_URL:-}
+      - INHOME_SHIPPING_ENABLED=${INHOME_SHIPPING_ENABLED:-false}
+      - INHOME_SHIPPING_BASE_URL=${INHOME_SHIPPING_BASE_URL:-https://inhome.classi-fy.com}
+      - INHOME_SHIPPING_API_KEY=${INHOME_SHIPPING_API_KEY:-}
+      - INHOME_SHIPPING_TIMEOUT_MS=${INHOME_SHIPPING_TIMEOUT_MS:-5000}
+      - INHOME_SHIPPING_WEBHOOK_SECRET=${INHOME_SHIPPING_WEBHOOK_SECRET:-}
+      - INHOME_ALLOW_PRIVATE_HOSTS=${INHOME_ALLOW_PRIVATE_HOSTS:-false}
+      - PUBLIC_BASE_URL=${PUBLIC_BASE_URL:-https://classi-fy.com}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - OBJECT_STORAGE_PROVIDER=s3
+      - MINIO_ENDPOINT=minio
+      - MINIO_PORT=9000
+      - MINIO_USE_SSL=false
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-classifyminio}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-classifyminio123}
+      - MINIO_BUCKET=classify-media
+      - MINIO_PREFIX=private
+      - MINIO_PUBLIC_URL=
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - app_uploads:/app/uploads
+      - app_logs:/app/logs
+    networks:
+      - classify-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: ${APP_CONTAINER_HEALTHCHECK_INTERVAL:-45s}
+      timeout: ${APP_CONTAINER_HEALTHCHECK_TIMEOUT:-8s}
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+
+  db:
+    image: postgres:15.7-alpine
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:?POSTGRES_USER is required}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      - POSTGRES_DB=${POSTGRES_DB:-classify_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:${POSTGRES_HOST_PORT:-5434}:5432"
+    restart: unless-stopped
+    networks:
+      - classify-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB:-classify_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  redis:
+    image: redis:7.2-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    networks:
+      - classify-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+
+  # ========== MONITORING & MANAGEMENT TOOLS ==========
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${PORTAINER_WEB_PORT:-19000}:9000"
+      - "127.0.0.1:${PORTAINER_EDGE_PORT:-18000}:8000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - classify-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${ADMIN_EMAIL:-admin@classiv3.com}
+      PGADMIN_DEFAULT_PASSWORD: ${ADMIN_PASSWORD:-admin123}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    ports:
+      - "127.0.0.1:${PGADMIN_PORT:-15050}:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - classify-network
+    depends_on:
+      - db
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    restart: unless-stopped
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "127.0.0.1:${REDIS_COMMANDER_PORT:-18081}:8081"
+    networks:
+      - classify-network
+    depends_on:
+      - redis
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+
+  prometheus:
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=30d"
+    ports:
+      - "127.0.0.1:${PROMETHEUS_PORT:-19090}:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - classify-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  grafana:
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    ports:
+      - "127.0.0.1:${GRAFANA_PORT:-13000}:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+    networks:
+      - classify-network
+    depends_on:
+      - prometheus
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  loki:
+    image: grafana/loki:3.0.0
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${LOKI_PORT:-13100}:3100"
+    volumes:
+      - loki_data:/loki
+    networks:
+      - classify-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY:-classifyminio}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY:-classifyminio123}
+    ports:
+      - "127.0.0.1:${MINIO_API_PORT:-9102}:9000"
+      - "127.0.0.1:${MINIO_CONSOLE_PORT:-9101}:9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - classify-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${MAILHOG_SMTP_PORT:-11025}:1025"
+      - "127.0.0.1:${MAILHOG_UI_PORT:-18025}:8025"
+    networks:
+      - classify-network
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+
+networks:
+  classify-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  app_uploads:
+  app_logs:
+  portainer_data:
+  pgadmin_data:
+  prometheus_data:
+  grafana_data:
+  loki_data:
+  minio_data:

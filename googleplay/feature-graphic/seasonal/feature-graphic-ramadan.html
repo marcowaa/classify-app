@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1024">
+<title>Classify — Feature Graphic Ramadan Edition 1024×500</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1024px; height: 500px; overflow: hidden; font-family: 'Cairo', sans-serif; }
+  .container {
+    width: 1024px; height: 500px; position: relative; overflow: hidden;
+    background: linear-gradient(135deg, #0C1445 0%, #1A2060 30%, #0D3060 60%, #0A1A40 100%);
+    display: flex; align-items: center; justify-content: space-between; padding: 0 70px;
+  }
+  /* Stars */
+  .stars { position: absolute; inset: 0; }
+  .star { position: absolute; background: white; border-radius: 50%; animation: twinkle 3s infinite; }
+  @keyframes twinkle { 0%,100% { opacity: 0.8; } 50% { opacity: 0.2; } }
+  /* Crescent moon */
+  .moon-section { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); }
+  /* Golden arch decorations */
+  .arch-left { position: absolute; left: 0; bottom: 0; }
+  .arch-right { position: absolute; right: 0; bottom: 0; }
+  /* Lanterns */
+  .lanterns { position: absolute; top: 0; left: 50%; transform: translateX(-50%); display: flex; gap: 80px; }
+  /* Glow effects */
+  .glow-gold { position: absolute; width: 600px; height: 300px; border-radius: 50%; background: radial-gradient(ellipse, rgba(212,175,55,0.15) 0%, transparent 70%); top: -50px; left: 50%; transform: translateX(-50%); pointer-events: none; }
+  .glow-blue { position: absolute; width: 400px; height: 400px; border-radius: 50%; background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%); bottom: -100px; right: -50px; pointer-events: none; }
+
+  /* Content */
+  .text-content { position: relative; z-index: 10; text-align: right; flex: 1; }
+  .ramadan-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(212,175,55,0.2); border: 1px solid rgba(212,175,55,0.5); border-radius: 20px; padding: 6px 16px; margin-bottom: 16px; }
+  .ramadan-badge span { font-size: 15px; color: #FDE68A; font-weight: 700; letter-spacing: 1px; }
+  .main-title { font-size: 58px; font-weight: 900; color: white; line-height: 1.15; margin-bottom: 10px; text-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+  .main-title .gold { color: #FDE68A; }
+  .sub-text { font-size: 19px; color: rgba(255,255,255,0.8); font-weight: 600; margin-bottom: 22px; line-height: 1.5; }
+  .features-row { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+  .fpill { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 18px; padding: 5px 14px; }
+  .fpill span { font-size: 13px; color: #E2E8F0; font-weight: 600; }
+
+  /* Visual right side */
+  .visual-section { position: relative; z-index: 10; width: 260px; height: 420px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+  /* App brand top */
+  .app-brand { position: absolute; top: 24px; right: 70px; display: flex; align-items: center; gap: 10px; z-index: 10; }
+  .app-icon-box { width: 48px; height: 48px; background: linear-gradient(135deg, #7C3AED, #5B21B6); border-radius: 13px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; color: white; box-shadow: 0 6px 20px rgba(124,58,237,0.5); }
+  .app-brand-name { font-size: 19px; font-weight: 900; color: white; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="glow-gold"></div>
+  <div class="glow-blue"></div>
+
+  <!-- Stars background -->
+  <div class="stars">
+    <div class="star" style="width:3px;height:3px;top:8%;left:10%;animation-delay:0s"></div>
+    <div class="star" style="width:2px;height:2px;top:15%;left:25%;animation-delay:0.5s"></div>
+    <div class="star" style="width:3px;height:3px;top:6%;left:40%;animation-delay:1s"></div>
+    <div class="star" style="width:2px;height:2px;top:20%;left:55%;animation-delay:0.3s"></div>
+    <div class="star" style="width:3px;height:3px;top:10%;left:70%;animation-delay:0.8s"></div>
+    <div class="star" style="width:2px;height:2px;top:25%;left:82%;animation-delay:0.2s"></div>
+    <div class="star" style="width:2px;height:2px;top:5%;left:90%;animation-delay:1.2s"></div>
+    <div class="star" style="width:3px;height:3px;top:35%;left:5%;animation-delay:0.7s"></div>
+    <div class="star" style="width:2px;height:2px;top:45%;left:18%;animation-delay:1.5s"></div>
+    <div class="star" style="width:3px;height:3px;top:30%;left:88%;animation-delay:0.4s"></div>
+    <div class="star" style="width:2px;height:2px;top:60%;left:78%;animation-delay:0.9s"></div>
+    <div class="star" style="width:3px;height:3px;top:70%;left:92%;animation-delay:0.6s"></div>
+  </div>
+
+  <!-- Crescent + Lanterns SVG decoration -->
+  <svg style="position:absolute;top:0;left:50%;transform:translateX(-50%);pointer-events:none;z-index:5" width="500" height="120" viewBox="0 0 500 120">
+    <!-- Crescent moon -->
+    <path d="M250 15 Q290 35 280 70 Q260 85 240 78 Q220 70 225 45 Q228 22 250 15Z" fill="#FDE68A" opacity="0.9"/>
+    <path d="M255 18 Q288 38 278 72 Q258 86 245 80" fill="#0C1445" opacity="0.85"/>
+    <!-- Hanging strings -->
+    <line x1="160" y1="0" x2="165" y2="80" stroke="rgba(212,175,55,0.4)" stroke-width="1.5"/>
+    <line x1="340" y1="0" x2="335" y2="80" stroke="rgba(212,175,55,0.4)" stroke-width="1.5"/>
+    <!-- Lantern left -->
+    <rect x="148" y="70" width="34" height="50" rx="6" fill="rgba(212,175,55,0.25)" stroke="rgba(212,175,55,0.6)" stroke-width="1.5"/>
+    <rect x="155" y="75" width="20" height="38" rx="4" fill="rgba(212,175,55,0.15)"/>
+    <ellipse cx="165" cy="120" rx="10" ry="4" fill="rgba(212,175,55,0.3)"/>
+    <!-- Lantern right -->
+    <rect x="318" y="70" width="34" height="50" rx="6" fill="rgba(212,175,55,0.25)" stroke="rgba(212,175,55,0.6)" stroke-width="1.5"/>
+    <rect x="325" y="75" width="20" height="38" rx="4" fill="rgba(212,175,55,0.15)"/>
+    <ellipse cx="335" cy="120" rx="10" ry="4" fill="rgba(212,175,55,0.3)"/>
+    <!-- Stars near moon -->
+    <path d="M310 20 L312 26 L318 28 L312 30 L310 36 L308 30 L302 28 L308 26 Z" fill="#FDE68A" opacity="0.8"/>
+    <path d="M195 25 L196.5 29.5 L201 31 L196.5 32.5 L195 37 L193.5 32.5 L189 31 L193.5 29.5 Z" fill="#FDE68A" opacity="0.7"/>
+  </svg>
+
+  <!-- App brand -->
+  <div class="app-brand">
+    <div class="app-icon-box">C</div>
+    <span class="app-brand-name">Classify</span>
+  </div>
+
+  <!-- Tree visual -->
+  <div class="visual-section">
+    <svg width="220" height="380" viewBox="0 0 220 380" fill="none">
+      <!-- Golden glow under tree -->
+      <ellipse cx="110" cy="368" rx="90" ry="10" fill="rgba(212,175,55,0.2)"/>
+      <!-- Trunk -->
+      <rect x="100" y="290" width="18" height="75" rx="9" fill="#6B3E1A" opacity="0.9"/>
+      <!-- Canopy — golden tipped for Ramadan -->
+      <ellipse cx="109" cy="275" rx="72" ry="44" fill="#14532D" opacity="0.7"/>
+      <ellipse cx="109" cy="264" rx="68" ry="40" fill="#16A34A" opacity="0.88"/>
+      <ellipse cx="109" cy="252" rx="63" ry="37" fill="#22C55E"/>
+      <ellipse cx="109" cy="208" rx="55" ry="38" fill="#15803D" opacity="0.9"/>
+      <ellipse cx="109" cy="196" rx="51" ry="34" fill="#22C55E" opacity="0.9"/>
+      <ellipse cx="109" cy="183" rx="47" ry="31" fill="#4ADE80"/>
+      <ellipse cx="109" cy="142" rx="40" ry="32" fill="#22C55E" opacity="0.95"/>
+      <ellipse cx="109" cy="130" rx="37" ry="28" fill="#4ADE80" opacity="0.9"/>
+      <ellipse cx="109" cy="118" rx="32" ry="24" fill="#86EFAC"/>
+      <ellipse cx="109" cy="82" rx="24" ry="20" fill="#4CD080" opacity="0.95"/>
+      <ellipse cx="109" cy="72" rx="18" ry="15" fill="#A7F3D0" opacity="0.9"/>
+      <!-- Golden crescent star at top instead of regular star -->
+      <path d="M109 50 Q125 60 120 78 Q110 85 100 80 Q90 74 95 58 Q97 50 109 50Z" fill="#FDE68A" opacity="0.95"/>
+      <path d="M112 52 Q125 62 120 78 Q112 84 106 80" fill="rgba(12,20,69,0.5)" opacity="0.6"/>
+      <!-- Gold-tipped fruits (dates for Ramadan) -->
+      <circle cx="145" cy="180" r="9" fill="#B45309" opacity="0.9"/>
+      <circle cx="70" cy="192" r="7" fill="#92400E" opacity="0.9"/>
+      <circle cx="148" cy="222" r="9" fill="#D97706" opacity="0.95"/>
+      <circle cx="66" cy="232" r="7" fill="#B45309" opacity="0.9"/>
+      <circle cx="140" cy="134" r="7" fill="#F59E0B" opacity="0.9"/>
+      <circle cx="74" cy="140" r="6" fill="#D97706" opacity="0.9"/>
+      <!-- Sparkles — gold -->
+      <path d="M174 92 L177 100 L185 103 L177 106 L174 114 L171 106 L163 103 L171 100 Z" fill="#FDE68A" opacity="0.85"/>
+      <path d="M40 120 L42 127 L49 130 L42 133 L40 140 L38 133 L31 130 L38 127 Z" fill="#FDE68A" opacity="0.7"/>
+      <!-- Hanging lantern from tree -->
+      <line x1="109" y1="72" x2="80" y2="108" stroke="rgba(212,175,55,0.5)" stroke-width="1.5"/>
+      <rect x="71" y="108" width="18" height="26" rx="4" fill="rgba(212,175,55,0.3)" stroke="rgba(212,175,55,0.6)" stroke-width="1.5"/>
+    </svg>
+  </div>
+
+  <!-- Text content -->
+  <div class="text-content">
+    <div class="ramadan-badge">
+      <span>🌙 رمضان كريم</span>
+    </div>
+    <div class="main-title">
+      علّم طفلك<br>في <span class="gold">رمضان</span>
+    </div>
+    <div class="sub-text">
+      اجعل الشهر الكريم موسم تعلم<br>ونمو حقيقي مع Classify
+    </div>
+    <div class="features-row">
+      <div class="fpill"><span>🌙 مهام رمضانية</span></div>
+      <div class="fpill"><span>🌳 شجرة النمو</span></div>
+      <div class="fpill"><span>🎮 ألعاب تعليمية</span></div>
+      <div class="fpill"><span>🔒 بدون إعلانات</span></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

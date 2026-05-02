@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Classify</string>
+    <string name="title_activity_main">Classify</string>
+    <string name="package_name">com.classi_fy.twa</string>
+    <string name="custom_url_scheme">com.classi_fy.twa</string>
+</resources>

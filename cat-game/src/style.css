@@ -1,0 +1,449 @@
+/* ================================
+   CSS Reset & Base Styles
+   ================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Color Palette - Vibrant & Child-Friendly */
+  --primary-pink: #FF6B9D;
+  --primary-purple: #C44DFF;
+  --primary-orange: #FF9F43;
+  --primary-yellow: #FFC837;
+  --primary-blue: #5F9FFF;
+  --bg-gradient-1: #FFE5F1;
+  --bg-gradient-2: #E5F0FF;
+  --text-dark: #5A3A6B;
+  --white: #FFFFFF;
+  --shadow: rgba(0, 0, 0, 0.1);
+  
+  /* Spacing */
+  --spacing-xs: 8px;
+  --spacing-sm: 16px;
+  --spacing-md: 24px;
+  --spacing-lg: 32px;
+  --spacing-xl: 48px;
+  
+  /* Border Radius */
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 30px;
+  --radius-full: 50%;
+}
+
+body {
+  font-family: 'Fredoka', sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 100%);
+  background-image: url('/images/background.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: var(--text-dark);
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ================================
+   App Container
+   ================================ */
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-sm);
+}
+
+/* ================================
+   Header Section
+   ================================ */
+.game-header {
+  background: linear-gradient(135deg, var(--primary-pink), var(--primary-purple));
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  box-shadow: 0 8px 24px var(--shadow);
+  backdrop-filter: blur(10px);
+  animation: slideDown 0.6s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.game-title {
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  font-weight: 700;
+  color: var(--white);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  margin: 0 0 var(--spacing-sm) 0;
+  animation: bounce 1s ease infinite alternate;
+}
+
+@keyframes bounce {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.05);
+  }
+}
+
+.score-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  background: var(--white);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  box-shadow: 0 4px 12px var(--shadow);
+  margin: 0 auto;
+  max-width: 200px;
+}
+
+.score-label {
+  font-size: 2rem;
+  animation: heartbeat 1.2s ease infinite;
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.score-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary-pink);
+}
+
+/* ================================
+   Main Game Container
+   ================================ */
+.game-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ================================
+   Cat Area
+   ================================ */
+.cat-area {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: 0 8px 32px var(--shadow);
+  text-align: center;
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.cat-wrapper {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.cat-wrapper:active {
+  transform: scale(0.95);
+}
+
+.cat-image {
+  width: clamp(200px, 50vw, 350px);
+  height: auto;
+  filter: drop-shadow(0 8px 16px var(--shadow));
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.cat-wrapper:hover .cat-image {
+  transform: scale(1.05);
+}
+
+/* Cat bounce animation */
+.cat-bounce {
+  animation: catBounce 0.6s ease;
+}
+
+@keyframes catBounce {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-20px) rotate(-5deg); }
+  50% { transform: translateY(-30px) rotate(0deg); }
+  75% { transform: translateY(-20px) rotate(5deg); }
+}
+
+/* Cat eating animation */
+.cat-eating {
+  animation: catEating 0.8s ease;
+}
+
+@keyframes catEating {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.1) rotate(-3deg); }
+  50% { transform: scale(1.05); }
+  75% { transform: scale(1.1) rotate(3deg); }
+}
+
+.cat-status {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  font-size: 3rem;
+  animation: float 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.instruction {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--primary-purple);
+  margin-top: var(--spacing-md);
+  animation: pulse 2s ease infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* ================================
+   Food Selection
+   ================================ */
+.food-selection {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: 0 8px 32px var(--shadow);
+  animation: fadeIn 1s ease-out 0.3s both;
+}
+
+.food-title {
+  font-size: clamp(1.3rem, 4vw, 1.8rem);
+  font-weight: 700;
+  color: var(--primary-purple);
+  margin-bottom: var(--spacing-md);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.food-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--spacing-md);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.food-btn {
+  background: linear-gradient(135deg, var(--primary-orange), var(--primary-yellow));
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(255, 159, 67, 0.3);
+  min-height: 140px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.food-btn:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 8px 24px rgba(255, 159, 67, 0.5);
+}
+
+.food-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+#milkBtn {
+  background: linear-gradient(135deg, var(--primary-pink), var(--primary-purple));
+  box-shadow: 0 4px 16px rgba(255, 107, 157, 0.3);
+}
+
+#milkBtn:hover {
+  box-shadow: 0 8px 24px rgba(255, 107, 157, 0.5);
+}
+
+.food-icon {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  pointer-events: none;
+}
+
+.food-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--white);
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+/* Button selected state */
+.food-btn.selected {
+  animation: btnSelected 0.5s ease;
+  border: 4px solid var(--white);
+}
+
+@keyframes btnSelected {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* ================================
+   Particle System
+   ================================ */
+#particleContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.particle {
+  position: absolute;
+  font-size: 2rem;
+  animation: particleFloat 2s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes particleFloat {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-150px) scale(1.5) rotate(360deg);
+  }
+}
+
+.food-particle {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  animation: foodFloat 1.5s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes foodFloat {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100px) scale(0.5);
+  }
+}
+
+/* ================================
+   Responsive Design
+   ================================ */
+@media (min-width: 768px) {
+  #app {
+    padding: var(--spacing-md);
+  }
+  
+  .game-header {
+    padding: var(--spacing-lg);
+  }
+  
+  .food-buttons {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .game-container {
+    gap: var(--spacing-md);
+  }
+  
+  .cat-area,
+  .food-selection {
+    padding: var(--spacing-md);
+  }
+  
+  .food-btn {
+    min-height: 120px;
+    padding: var(--spacing-sm);
+  }
+  
+  .food-icon {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+/* ================================
+   Accessibility & Touch Improvements
+   ================================ */
+@media (hover: none) and (pointer: coarse) {
+  /* Touch devices */
+  .food-btn {
+    min-height: 140px;
+    padding: var(--spacing-md);
+  }
+  
+  .cat-wrapper:active .cat-image {
+    transform: scale(0.95);
+  }
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

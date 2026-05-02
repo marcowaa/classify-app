@@ -1,0 +1,27 @@
+- Runtime platform: Hostinger hPanel > Docker Manager > Compose project `classify`.
+- Confirmed from screenshot (2026-03-22): running containers include `classify-app-1`, `classify-db-1`, `classify-redis-1`, `classify-minio-1`, `classify-apprise-api-1`, `classify-dozzle-1`, `classify-uptime-kuma-1`.
+- DB host port exposure observed in UI: `5434:5432` (matches compose default `${POSTGRES_HOST_PORT:-5434}:5432`).
+- App runtime topology (from `docker-compose.yml`):
+  - App internal port 5000, health endpoint `/api/health`.
+  - App DB DSN points to internal service host `db:5432`.
+  - Redis internal host `redis:6379`.
+  - MinIO internal host `minio:9000`.
+- Reverse proxy routing relies on external Traefik network `traefik-gemj_default` and labels in app/minio/apprise/dozzle/kuma services.
+- Stability knobs now relevant for this environment:
+  - `NODE_CLUSTER_ENABLED` and `WEB_CONCURRENCY` for worker count.
+  - `DB_POOL_MAX`, `DB_POOL_MIN`, `DB_POOL_IDLE_TIMEOUT_MS`, `DB_POOL_CONNECT_TIMEOUT_MS`.
+  - `DB_PUSH_ON_BOOT=false` recommended to avoid schema push pressure every restart.
+- Operational note: screenshot confirms logs are monitored from Hostinger UI (`Logs` tab focused on app container), so incident triage should start there before local assumptions.
+- User directive (2026-03-27): treat this workspace as production-first context, not local-first.
+- Android OAuth production reference:
+  - Client ID: `277976106301-nf8suuhm601fs9cm3rshi48k555uqqqd.apps.googleusercontent.com`
+  - Package: `com.classi_fy.twa`
+  - SHA-1: `53:F1:13:91:95:A1:C5:17:C6:25:AC:80:3A:C4:1E:F9:EC:51:BB:97`
+- Android release refresh (2026-03-29): old app artifacts cleaned, new `classify-app-latest.apk` and `classify-googleplay-latest.aab` published to `client/public/apps` with archive tag `v2026.03.29-b1774768106`; pushed in commit `019fd6d`.
+- Prerender live verification (2026-03-29): crawler requests to `https://classi-fy.com/`, `/parent-login`, and `/child-login` returned `200` with `X-Prerender-*` headers (`X-Prerender-Requestid`, `X-Prerender-External-Lb`, `X-Prerender-Int-Type`), confirming active prerender processing in production.
+- Canonical check (2026-03-29): `https://www.classi-fy.com/` returns `301` to `https://classi-fy.com/`; HTTPS apex returns `200`.
+- Soft-404 mitigation (2026-03-29): server fallback now returns real `404` (+ `X-Robots-Tag: noindex, nofollow`) for any request path containing `404check` in both production/static and development/vite fallbacks.
+- Route normalization hardening (2026-03-31): canonical middleware now permanently redirects legacy auth aliases on managed hosts: `/parent-login`, `/parent-signin`, `/login`, `/signin` -> `/parent-auth`; `/child-login`, `/child-signin` -> `/child-link`.
+- UX recovery hardening (2026-03-31): frontend 404 page and 500 fallback now choose context-aware recovery destinations (parent, child, library, teacher, school, admin) instead of always sending users to root.
+- Android artifact incident (2026-04-01): 134-byte downloads were Git LFS pointer files being served instead of real APK/AAB binaries when deploy environment did not resolve LFS objects.
+- Guardrails added (2026-04-01): `check-mobile-release-assets.cjs` now fails on LFS pointer signatures, and deployment scripts run `git lfs pull` for `/client/public/apps/*.apk|*.aab` before strict validation/build.

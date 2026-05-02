@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>Phone 07 — Security & Privacy | 1080×1920</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1080px; height: 1920px; overflow: hidden; font-family: 'Cairo', sans-serif; background: #030712; }
+  .screen { width: 1080px; height: 1920px; background: linear-gradient(160deg, #030712 0%, #0A0A1A 40%, #040812 100%); display: flex; flex-direction: column; align-items: center; position: relative; overflow: hidden; }
+
+  /* Shield glow */
+  .shield-glow { position: absolute; width: 700px; height: 700px; border-radius: 50%; background: radial-gradient(circle, rgba(16,185,129,0.15) 0%, rgba(124,58,237,0.08) 50%, transparent 75%); top: 250px; left: 50%; transform: translateX(-50%); pointer-events: none; }
+  .dots { position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px); background-size: 50px 50px; pointer-events: none; }
+
+  /* Header */
+  .header { padding: 80px 60px 20px; text-align: center; position: relative; z-index: 10; width: 100%; }
+  .header h1 { font-size: 58px; font-weight: 900; color: white; line-height: 1.2; }
+  .header h1 span { color: #10B981; }
+  .header p { font-size: 26px; color: #64748B; font-weight: 600; margin-top: 12px; }
+
+  /* Big shield */
+  .shield-section { position: relative; z-index: 10; margin: 20px 0 10px; }
+  .shield-outer { width: 260px; height: 300px; position: relative; display: flex; align-items: center; justify-content: center; }
+  .shield-svg { filter: drop-shadow(0 0 40px rgba(16,185,129,0.5)); }
+
+  /* Security features */
+  .features { padding: 10px 50px; position: relative; z-index: 10; width: 100%; display: flex; flex-direction: column; gap: 16px; flex: 1; }
+  .feat-row { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 22px; padding: 22px 26px; display: flex; align-items: center; gap: 20px; }
+  .feat-row.green-border { border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.05); }
+  .feat-row.purple-border { border-color: rgba(124,58,237,0.3); background: rgba(124,58,237,0.05); }
+  .feat-icon { width: 64px; height: 64px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; }
+  .feat-icon.green { background: rgba(16,185,129,0.2); }
+  .feat-icon.purple { background: rgba(124,58,237,0.2); }
+  .feat-icon.blue { background: rgba(59,130,246,0.2); }
+  .feat-icon.gold { background: rgba(245,158,11,0.2); }
+  .feat-text .title { font-size: 26px; font-weight: 800; color: #FFFFFF; }
+  .feat-text .desc { font-size: 19px; color: #64748B; font-weight: 600; margin-top: 4px; }
+  .feat-check { margin-right: auto; width: 40px; height: 40px; background: linear-gradient(135deg, #059669, #10B981); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; font-weight: 900; flex-shrink: 0; }
+
+  /* Badges row */
+  .badges { padding: 16px 50px; display: flex; gap: 16px; justify-content: center; position: relative; z-index: 10; }
+  .badge-card { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 18px 12px; text-align: center; }
+  .badge-card .bicon { font-size: 36px; margin-bottom: 8px; }
+  .badge-card .bname { font-size: 17px; font-weight: 700; color: #E2E8F0; }
+  .badge-card .bsub { font-size: 15px; color: #64748B; font-weight: 600; margin-top: 4px; }
+  .badge-card.verified { border-color: rgba(16,185,129,0.4); }
+
+  /* Bottom -->
+  .bottom-note { padding: 16px 60px 50px; text-align: center; position: relative; z-index: 10; }
+  .bottom-note p { font-size: 30px; font-weight: 800; color: white; line-height: 1.4; }
+  .bottom-note p span { color: #10B981; }
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="shield-glow"></div>
+  <div class="dots"></div>
+
+  <div class="header">
+    <h1>بيئة آمنة <span>100%</span><br>🔒 بدون إعلانات</h1>
+    <p>خصوصية طفلك أمانة — لا مساومة</p>
+  </div>
+
+  <!-- Big Shield -->
+  <div class="shield-section">
+    <div class="shield-outer">
+      <svg class="shield-svg" width="240" height="280" viewBox="0 0 240 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M120 10 L210 45 L210 130 Q210 200 120 270 Q30 200 30 130 L30 45 Z" fill="url(#shieldGrad)" opacity="0.95"/>
+        <path d="M120 10 L210 45 L210 130 Q210 200 120 270 Q30 200 30 130 L30 45 Z" stroke="url(#strokeGrad)" stroke-width="3" fill="none"/>
+        <!-- Check mark -->
+        <path d="M75 140 L105 170 L165 105" stroke="white" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <defs>
+          <linearGradient id="shieldGrad" x1="120" y1="10" x2="120" y2="270" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#059669"/>
+            <stop offset="100%" stop-color="#047857"/>
+          </linearGradient>
+          <linearGradient id="strokeGrad" x1="120" y1="10" x2="120" y2="270" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#34D399"/>
+            <stop offset="100%" stop-color="#059669"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <div class="features">
+    <div class="feat-row green-border">
+      <div class="feat-icon green">🚫</div>
+      <div class="feat-text">
+        <div class="title">بدون إعلانات تماماً</div>
+        <div class="desc">تجربة نظيفة 100% — لا إعلانات مطلقاً</div>
+      </div>
+      <div class="feat-check">✓</div>
+    </div>
+    <div class="feat-row green-border">
+      <div class="feat-icon green">🔐</div>
+      <div class="feat-text">
+        <div class="title">تشفير HTTPS الكامل</div>
+        <div class="desc">جميع البيانات مشفّرة أثناء النقل والتخزين</div>
+      </div>
+      <div class="feat-check">✓</div>
+    </div>
+    <div class="feat-row purple-border">
+      <div class="feat-icon purple">👥</div>
+      <div class="feat-text">
+        <div class="title">تحقق ثنائي للوالدين</div>
+        <div class="desc">حماية إضافية لحساب الأسرة (2FA)</div>
+      </div>
+      <div class="feat-check">✓</div>
+    </div>
+    <div class="feat-row green-border">
+      <div class="feat-icon blue">🚷</div>
+      <div class="feat-text">
+        <div class="title">لا مشاركة بيانات الأطفال</div>
+        <div class="desc">بيانات طفلك لا تُشارك مع أي طرف خارجي</div>
+      </div>
+      <div class="feat-check">✓</div>
+    </div>
+    <div class="feat-row purple-border">
+      <div class="feat-icon gold">⚙️</div>
+      <div class="feat-text">
+        <div class="title">الطفل لا يغير الإعدادات</div>
+        <div class="desc">كل تغيير يحتاج موافقة الوالدين</div>
+      </div>
+      <div class="feat-check">✓</div>
+    </div>
+  </div>
+
+  <!-- Compliance Badges -->
+  <div class="badges">
+    <div class="badge-card verified">
+      <div class="bicon">👶</div>
+      <div class="bname">COPPA</div>
+      <div class="bsub">متوافق</div>
+    </div>
+    <div class="badge-card verified">
+      <div class="bicon">🇪🇺</div>
+      <div class="bname">GDPR</div>
+      <div class="bsub">متوافق</div>
+    </div>
+    <div class="badge-card verified">
+      <div class="bicon">🛡️</div>
+      <div class="bname">Families</div>
+      <div class="bsub">Policy ✓</div>
+    </div>
+    <div class="badge-card verified">
+      <div class="bicon">🚫</div>
+      <div class="bname">بدون</div>
+      <div class="bsub">إعلانات</div>
+    </div>
+  </div>
+
+  <div class="bottom-note">
+    <p>خصوصية طفلك <span>أمانتنا</span><br>لا مساومة ولا تنازل 🔒</p>
+  </div>
+</div>
+</body>
+</html>

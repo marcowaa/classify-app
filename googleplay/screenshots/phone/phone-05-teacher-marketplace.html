@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>Phone 05 — Teacher Marketplace | 1080×1920</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1080px; height: 1920px; overflow: hidden; font-family: 'Cairo', sans-serif; background: #0F172A; }
+  .screen { width: 1080px; height: 1920px; background: linear-gradient(180deg, #0F172A 0%, #1E1B4B 50%, #0F172A 100%); display: flex; flex-direction: column; overflow: hidden; position: relative; }
+  .glow { position: absolute; width: 700px; height: 400px; border-radius: 50%; background: radial-gradient(ellipse, rgba(124,58,237,0.2) 0%, transparent 70%); top: 100px; left: 50%; transform: translateX(-50%); pointer-events: none; }
+
+  /* Header */
+  .header { padding: 70px 60px 30px; position: relative; z-index: 10; }
+  .header h1 { font-size: 56px; font-weight: 900; color: white; line-height: 1.2; }
+  .header h1 .accent { color: #A78BFA; }
+  .header p { font-size: 24px; color: #94A3B8; font-weight: 600; margin-top: 10px; }
+  .stats-chips { display: flex; gap: 16px; margin-top: 20px; flex-wrap: wrap; }
+  .chip { padding: 10px 22px; border-radius: 20px; font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .chip.purple { background: rgba(124,58,237,0.2); color: #A78BFA; border: 1px solid rgba(124,58,237,0.4); }
+  .chip.green { background: rgba(76,208,128,0.15); color: #4CD080; border: 1px solid rgba(76,208,128,0.3); }
+  .chip.orange { background: rgba(249,115,22,0.15); color: #FB923C; border: 1px solid rgba(249,115,22,0.3); }
+
+  /* Search */
+  .search-bar { margin: 20px 40px 10px; height: 74px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); border-radius: 20px; display: flex; align-items: center; padding: 0 30px; gap: 16px; position: relative; z-index: 10; }
+  .search-bar span { font-size: 28px; }
+  .search-bar p { font-size: 22px; color: #64748B; font-weight: 600; }
+
+  /* Subject filter */
+  .subjects { padding: 10px 40px; display: flex; gap: 14px; overflow: hidden; position: relative; z-index: 10; }
+  .sub-btn { padding: 12px 24px; border-radius: 18px; font-size: 20px; font-weight: 700; flex-shrink: 0; }
+  .sub-btn.active { background: linear-gradient(135deg, #7C3AED, #5B21B6); color: white; box-shadow: 0 4px 14px rgba(124,58,237,0.4); }
+  .sub-btn.inactive { background: rgba(255,255,255,0.06); color: #64748B; border: 1px solid rgba(255,255,255,0.1); }
+
+  /* Task cards */
+  .tasks-list { padding: 10px 40px; display: flex; flex-direction: column; gap: 18px; flex: 1; position: relative; z-index: 10; }
+  .task-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 26px; padding: 26px 28px; display: flex; gap: 20px; position: relative; }
+  .task-card.featured { border-color: rgba(245,158,11,0.5); background: rgba(245,158,11,0.05); }
+  .featured-badge { position: absolute; top: 18px; left: 18px; background: linear-gradient(135deg, #F59E0B, #F97316); color: white; font-size: 16px; font-weight: 800; padding: 4px 12px; border-radius: 10px; }
+  .free-badge { position: absolute; top: 18px; left: 18px; background: linear-gradient(135deg, #059669, #10B981); color: white; font-size: 16px; font-weight: 800; padding: 4px 12px; border-radius: 10px; }
+  .task-icon { width: 70px; height: 70px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 32px; flex-shrink: 0; }
+  .icon-math { background: linear-gradient(135deg, rgba(124,58,237,0.3), rgba(124,58,237,0.1)); }
+  .icon-arabic { background: linear-gradient(135deg, rgba(16,185,129,0.3), rgba(16,185,129,0.1)); }
+  .icon-science { background: linear-gradient(135deg, rgba(59,130,246,0.3), rgba(59,130,246,0.1)); }
+  .task-info { flex: 1; }
+  .task-name { font-size: 24px; font-weight: 800; color: #FFFFFF; margin-bottom: 6px; }
+  .task-teacher { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .teacher-dot { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #7C3AED, #4CD080); display: flex; align-items: center; justify-content: center; font-size: 14px; color: white; font-weight: 800; }
+  .teacher-name { font-size: 19px; color: #94A3B8; font-weight: 600; }
+  .task-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .ttag { padding: 4px 12px; border-radius: 10px; font-size: 17px; font-weight: 700; background: rgba(255,255,255,0.08); color: #C4B5FD; }
+  .task-right { display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; }
+  .stars { font-size: 16px; color: #FCD34D; }
+  .price { font-size: 28px; font-weight: 900; color: #FFFFFF; }
+  .price.free { color: #4CD080; }
+  .buy-btn { background: linear-gradient(135deg, #7C3AED, #5B21B6); color: white; font-size: 18px; font-weight: 800; padding: 10px 18px; border-radius: 14px; }
+
+  /* Bottom */
+  .bottom-note { padding: 16px 60px 44px; text-align: center; position: relative; z-index: 10; }
+  .bottom-note p { font-size: 28px; font-weight: 800; color: #E2E8F0; line-height: 1.4; }
+  .bottom-note p span { color: #A78BFA; }
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="glow"></div>
+
+  <div class="header">
+    <h1>سوق<br><span class="accent">المهام التعليمية</span> 📚</h1>
+    <p>مهام من معلمين محترفين — مراجعة ومُعتمدة</p>
+    <div class="stats-chips">
+      <div class="chip purple">📚 +1,200 مهمة</div>
+      <div class="chip green">👩‍🏫 340+ معلم</div>
+      <div class="chip orange">⭐ 4.9 تقييم</div>
+    </div>
+  </div>
+
+  <div class="search-bar">
+    <span>🔍</span>
+    <p>ابحث عن مهام، معلمين، مواد...</p>
+  </div>
+
+  <div class="subjects">
+    <div class="sub-btn active">الكل</div>
+    <div class="sub-btn inactive">رياضيات</div>
+    <div class="sub-btn inactive">عربي</div>
+    <div class="sub-btn inactive">علوم</div>
+    <div class="sub-btn inactive">English</div>
+  </div>
+
+  <div class="tasks-list">
+    <div class="task-card featured">
+      <div class="featured-badge">⭐ مميز</div>
+      <div class="task-icon icon-math">🧮</div>
+      <div class="task-info">
+        <div class="task-name">الكسور والأعداد العشرية — الصف الرابع</div>
+        <div class="task-teacher">
+          <div class="teacher-dot">ف</div>
+          <span class="teacher-name">أ. فاطمة الزهراء • ⭐ 4.9</span>
+        </div>
+        <div class="task-tags">
+          <div class="ttag">رياضيات</div>
+          <div class="ttag">الصف 4</div>
+          <div class="ttag">892 مشترٍ</div>
+        </div>
+      </div>
+      <div class="task-right">
+        <div class="stars">★★★★★</div>
+        <div class="price">25 ر.س</div>
+        <div class="buy-btn">أضف ←</div>
+      </div>
+    </div>
+
+    <div class="task-card">
+      <div class="free-badge">مجاني</div>
+      <div class="task-icon icon-arabic">📖</div>
+      <div class="task-info">
+        <div class="task-name">تعبير كتابي — أصف غرفتي</div>
+        <div class="task-teacher">
+          <div class="teacher-dot">ن</div>
+          <span class="teacher-name">أ. نورة العتيبي • ⭐ 4.8</span>
+        </div>
+        <div class="task-tags">
+          <div class="ttag">لغة عربية</div>
+          <div class="ttag">الصف 3-5</div>
+        </div>
+      </div>
+      <div class="task-right">
+        <div class="stars">★★★★★</div>
+        <div class="price free">مجاني</div>
+        <div class="buy-btn">أضف ←</div>
+      </div>
+    </div>
+
+    <div class="task-card">
+      <div class="task-icon icon-science">🔬</div>
+      <div class="task-info">
+        <div class="task-name">النظام الشمسي — 10 أسئلة تفاعلية</div>
+        <div class="task-teacher">
+          <div class="teacher-dot">م</div>
+          <span class="teacher-name">أ. محمد السيد • ⭐ 4.7</span>
+        </div>
+        <div class="task-tags">
+          <div class="ttag">علوم</div>
+          <div class="ttag">الصف 5-6</div>
+          <div class="ttag">445 مشترٍ</div>
+        </div>
+      </div>
+      <div class="task-right">
+        <div class="stars">★★★★★</div>
+        <div class="price">20 ر.س</div>
+        <div class="buy-btn">أضف ←</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-note">
+    <p>1,200+ مهمة من<br><span>340+ معلم متخصص</span> 👩‍🏫</p>
+  </div>
+</div>
+</body>
+</html>

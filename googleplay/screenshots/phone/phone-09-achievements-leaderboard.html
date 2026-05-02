@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>Phone 09 — Achievements & Leaderboard | 1080×1920</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1080px; height: 1920px; overflow: hidden; font-family: 'Cairo', sans-serif; background: #0A0618; }
+  .screen { width: 1080px; height: 1920px; background: linear-gradient(160deg, #0A0618 0%, #1A0A2E 45%, #0D1521 100%); display: flex; flex-direction: column; position: relative; overflow: hidden; }
+  .glow-top { position: absolute; width: 700px; height: 400px; border-radius: 50%; background: radial-gradient(ellipse, rgba(245,158,11,0.2) 0%, transparent 70%); top: -100px; left: 50%; transform: translateX(-50%); pointer-events: none; }
+  .dots { position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px); background-size: 52px 52px; pointer-events: none; }
+
+  /* Header */
+  .header { padding: 70px 60px 20px; position: relative; z-index: 10; }
+  .header h1 { font-size: 56px; font-weight: 900; color: white; line-height: 1.2; }
+  .header h1 .gold { color: #FCD34D; }
+  .header p { font-size: 24px; color: #94A3B8; font-weight: 600; margin-top: 10px; }
+
+  /* Tabs */
+  .tabs { padding: 20px 40px 10px; display: flex; gap: 12px; position: relative; z-index: 10; }
+  .tab { padding: 12px 28px; border-radius: 20px; font-size: 22px; font-weight: 800; }
+  .tab.active { background: linear-gradient(135deg, #F59E0B, #F97316); color: white; box-shadow: 0 4px 16px rgba(245,158,11,0.4); }
+  .tab.inactive { background: rgba(255,255,255,0.07); color: #64748B; border: 1px solid rgba(255,255,255,0.1); }
+
+  /* Leaderboard */
+  .leaderboard { padding: 10px 40px; display: flex; flex-direction: column; gap: 14px; position: relative; z-index: 10; }
+
+  /* Top 3 podium */
+  .podium { display: flex; align-items: flex-end; justify-content: center; gap: 16px; padding: 20px 40px 10px; position: relative; z-index: 10; }
+  .podium-item { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .p-avatar { border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; color: white; border: 4px solid transparent; position: relative; }
+  .p-avatar.rank1 { width: 110px; height: 110px; font-size: 40px; background: linear-gradient(135deg, #7C3AED, #5B21B6); border-color: #FCD34D; box-shadow: 0 8px 24px rgba(252,211,77,0.4); }
+  .p-avatar.rank2 { width: 90px; height: 90px; font-size: 34px; background: linear-gradient(135deg, #059669, #10B981); border-color: #C0C0C0; }
+  .p-avatar.rank3 { width: 80px; height: 80px; font-size: 28px; background: linear-gradient(135deg, #2563EB, #3B82F6); border-color: #CD7F32; }
+  .crown { position: absolute; top: -24px; font-size: 32px; }
+  .p-name { font-size: 20px; font-weight: 800; color: white; text-align: center; }
+  .p-pts { font-size: 18px; font-weight: 700; color: #F59E0B; }
+  .p-bar { border-radius: 8px 8px 0 0; width: 100%; }
+  .bar-1 { height: 100px; background: linear-gradient(180deg, rgba(124,58,237,0.6), rgba(124,58,237,0.2)); border: 1px solid rgba(124,58,237,0.4); width: 160px; }
+  .bar-2 { height: 75px; background: linear-gradient(180deg, rgba(16,185,129,0.5), rgba(16,185,129,0.15)); border: 1px solid rgba(16,185,129,0.4); width: 130px; }
+  .bar-3 { height: 55px; background: linear-gradient(180deg, rgba(59,130,246,0.5), rgba(59,130,246,0.15)); border: 1px solid rgba(59,130,246,0.4); width: 120px; }
+  .rank-badge { position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 900; border: 3px solid #0A0618; }
+  .rb-1 { background: #FCD34D; color: #78350F; }
+  .rb-2 { background: #C0C0C0; color: #374151; }
+  .rb-3 { background: #CD7F32; color: white; }
+
+  /* Rest of leaderboard */
+  .lb-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 22px; padding: 20px 24px; display: flex; align-items: center; gap: 20px; }
+  .lb-card.me { background: rgba(124,58,237,0.15); border-color: rgba(124,58,237,0.4); box-shadow: 0 4px 16px rgba(124,58,237,0.2); }
+  .lb-rank { font-size: 26px; font-weight: 900; color: #64748B; width: 36px; text-align: center; flex-shrink: 0; }
+  .lb-rank.me { color: #A78BFA; }
+  .lb-av { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; color: white; flex-shrink: 0; }
+  .lb-info { flex: 1; }
+  .lb-name { font-size: 24px; font-weight: 800; color: white; }
+  .lb-name.me { color: #C4B5FD; }
+  .lb-sub { font-size: 17px; color: #64748B; font-weight: 600; margin-top: 2px; }
+  .lb-pts { font-size: 26px; font-weight: 900; color: #F59E0B; flex-shrink: 0; }
+  .lb-tree { font-size: 16px; color: #4CD080; font-weight: 700; margin-top: 2px; }
+
+  /* Badges section */
+  .badges-section { padding: 20px 40px 0; position: relative; z-index: 10; }
+  .badges-title { font-size: 28px; font-weight: 800; color: white; margin-bottom: 14px; }
+  .badges-row { display: flex; gap: 14px; }
+  .badge-item { flex: 1; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 16px 12px; text-align: center; }
+  .badge-item.earned { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.4); }
+  .badge-icon { font-size: 40px; margin-bottom: 8px; }
+  .badge-name { font-size: 17px; font-weight: 800; color: white; }
+  .badge-sub { font-size: 14px; color: #64748B; font-weight: 600; margin-top: 3px; }
+  .badge-item.earned .badge-sub { color: #F59E0B; }
+
+  .bottom-note { padding: 18px 60px 50px; text-align: center; position: relative; z-index: 10; }
+  .bottom-note p { font-size: 28px; font-weight: 800; color: white; line-height: 1.4; }
+  .bottom-note p span { color: #FCD34D; }
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="glow-top"></div>
+  <div class="dots"></div>
+
+  <div class="header">
+    <h1>🏆 المتصدرون<br><span class="gold">و الإنجازات</span></h1>
+    <p>تنافس بصحة وانجز أهدافك</p>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active">المتصدرون</div>
+    <div class="tab inactive">إنجازاتي</div>
+    <div class="tab inactive">الأصدقاء</div>
+  </div>
+
+  <!-- Podium -->
+  <div class="podium">
+    <!-- Rank 2 -->
+    <div class="podium-item">
+      <div class="p-avatar rank2" style="position:relative">
+        <span>س</span>
+        <div class="rank-badge rb-2">2</div>
+      </div>
+      <div class="p-name">سلمى م.</div>
+      <div class="p-pts">1,820 ⭐</div>
+      <div class="p-bar bar-2"></div>
+    </div>
+    <!-- Rank 1 -->
+    <div class="podium-item">
+      <div class="p-avatar rank1" style="position:relative">
+        <div class="crown">👑</div>
+        <span>ي</span>
+        <div class="rank-badge rb-1">1</div>
+      </div>
+      <div class="p-name">يوسف أ.</div>
+      <div class="p-pts">2,450 ⭐</div>
+      <div class="p-bar bar-1"></div>
+    </div>
+    <!-- Rank 3 -->
+    <div class="podium-item">
+      <div class="p-avatar rank3" style="position:relative">
+        <span>ع</span>
+        <div class="rank-badge rb-3">3</div>
+      </div>
+      <div class="p-name">عمر ك.</div>
+      <div class="p-pts">1,540 ⭐</div>
+      <div class="p-bar bar-3"></div>
+    </div>
+  </div>
+
+  <!-- Ranks 4-6 + current user -->
+  <div class="leaderboard">
+    <div class="lb-card">
+      <div class="lb-rank">4</div>
+      <div class="lb-av" style="background:linear-gradient(135deg,#EC4899,#F43F5E)">ل</div>
+      <div class="lb-info"><div class="lb-name">لينا ح.</div><div class="lb-sub">المرحلة 11 • 🌳</div></div>
+      <div class="lb-pts">1,390</div>
+    </div>
+    <div class="lb-card">
+      <div class="lb-rank">5</div>
+      <div class="lb-av" style="background:linear-gradient(135deg,#F59E0B,#F97316)">ن</div>
+      <div class="lb-info"><div class="lb-name">نواف س.</div><div class="lb-sub">المرحلة 9 • 🌿</div></div>
+      <div class="lb-pts">1,210</div>
+    </div>
+    <div class="lb-card me">
+      <div class="lb-rank me">أنت</div>
+      <div class="lb-av" style="background:linear-gradient(135deg,#7C3AED,#5B21B6)">أ</div>
+      <div class="lb-info"><div class="lb-name me">أنت — طفلك</div><div class="lb-tree">🌳 المرحلة 7 • جارٍ النمو</div></div>
+      <div class="lb-pts">950</div>
+    </div>
+  </div>
+
+  <!-- Badges -->
+  <div class="badges-section">
+    <div class="badges-title">🎖️ آخر الإنجازات</div>
+    <div class="badges-row">
+      <div class="badge-item earned"><div class="badge-icon">🔥</div><div class="badge-name">7 أيام</div><div class="badge-sub">سلسلة ذهبية</div></div>
+      <div class="badge-item earned"><div class="badge-icon">🧮</div><div class="badge-name">رياضيات</div><div class="badge-sub">90% إنجاز</div></div>
+      <div class="badge-item earned"><div class="badge-icon">🌳</div><div class="badge-name">مرحلة 7</div><div class="badge-sub">شجرة ناضجة</div></div>
+      <div class="badge-item"><div class="badge-icon">👑</div><div class="badge-name">متصدر</div><div class="badge-sub">قريباً...</div></div>
+    </div>
+  </div>
+
+  <div class="bottom-note">
+    <p>التنافس الصحي<br>يُخرج <span>أفضل ما في طفلك 🏆</span></p>
+  </div>
+</div>
+</body>
+</html>

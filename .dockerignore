@@ -1,0 +1,91 @@
+# ============================================================================
+# Classify - Docker Ignore File
+# ============================================================================
+
+# Dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Build output (built inside container)
+dist
+build
+
+# Development files
+*.log
+
+# IDE and editor files
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Test files
+coverage
+__tests__
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+jest.config.*
+
+# Documentation
+*.md
+!README.md
+ADMIN_*.txt
+*.txt
+
+# Arabic docs
+شرح*.md
+تقرير*.txt
+دليل*.txt
+
+# Temporary files
+tmp
+temp
+*.tmp
+*.temp
+logs
+
+# Cache
+.cache
+.npm
+.eslintcache
+
+# Replit specific
+.replit
+replit.nix
+replit.md
+
+# Mobile builds
+flutter_app
+android-release
+ios-release
+capacitor.config.json
+
+# Other folders not needed
+deployment
+nginx
+scripts
+!scripts/docker-entrypoint.sh
+!scripts/repair-object-urls.js
+server-production
+attached_assets
+
+# SSL and backups
+docker/ssl/*
+docker/backups/*

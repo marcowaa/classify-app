@@ -1,0 +1,29 @@
+http:
+  routers:
+    classify-http:
+      entryPoints:
+        - web
+      rule: "Host(`classi-fy.com`) || Host(`www.classi-fy.com`)"
+      middlewares:
+        - classify-https-redirect
+      service: noop@internal
+
+    classify-https:
+      entryPoints:
+        - websecure
+      rule: "Host(`classi-fy.com`) || Host(`www.classi-fy.com`)"
+      service: classify-service
+      tls: {}
+
+  middlewares:
+    classify-https-redirect:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
+  services:
+    classify-service:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: "http://classify-app-1:5000"

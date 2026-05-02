@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-0K11FDXNEW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-0K11FDXNEW');
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#6B4D9D">
+  <title>Classify — بدون اتصال</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#667eea 0%,#764ba2 50%,#f093fb 100%);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans Arabic',sans-serif;color:#fff;overflow:hidden}
+    .container{text-align:center;padding:2rem;max-width:420px;position:relative;z-index:1}
+    .cloud{font-size:6rem;margin-bottom:1rem;animation:float 3s ease-in-out infinite}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+    h1{font-size:2rem;font-weight:800;margin-bottom:.75rem;text-shadow:0 2px 10px rgba(0,0,0,.2)}
+    p{font-size:1.1rem;opacity:.9;line-height:1.7;margin-bottom:1.5rem}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.875rem 2rem;background:rgba(255,255,255,.2);backdrop-filter:blur(10px);border:2px solid rgba(255,255,255,.3);border-radius:999px;color:#fff;font-size:1rem;font-weight:700;cursor:pointer;text-decoration:none;transition:all .3s}
+    .btn:hover{background:rgba(255,255,255,.35);transform:scale(1.05)}
+    .btn:active{transform:scale(.98)}
+    .stars{position:fixed;inset:0;overflow:hidden;pointer-events:none}
+    .star{position:absolute;width:4px;height:4px;background:#fff;border-radius:50%;animation:twinkle 2s ease-in-out infinite}
+    .star:nth-child(1){top:10%;left:20%;animation-delay:0s}
+    .star:nth-child(2){top:30%;left:70%;animation-delay:.4s}
+    .star:nth-child(3){top:60%;left:15%;animation-delay:.8s}
+    .star:nth-child(4){top:15%;left:85%;animation-delay:1.2s}
+    .star:nth-child(5){top:75%;left:55%;animation-delay:1.6s}
+    .star:nth-child(6){top:45%;left:40%;animation-delay:.2s}
+    .star:nth-child(7){top:85%;left:80%;animation-delay:1s}
+    .star:nth-child(8){top:50%;left:90%;animation-delay:.6s}
+    @keyframes twinkle{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:1;transform:scale(1.5)}}
+    .tip{margin-top:2rem;padding:1rem;background:rgba(255,255,255,.1);border-radius:1rem;font-size:.9rem;opacity:.8}
+  </style>
+</head>
+<body>
+  <div class="stars">
+    <div class="star"></div><div class="star"></div><div class="star"></div>
+    <div class="star"></div><div class="star"></div><div class="star"></div>
+    <div class="star"></div><div class="star"></div>
+  </div>
+  <div class="container">
+    <div class="cloud">☁️</div>
+    <h1>لا يوجد اتصال بالإنترنت</h1>
+    <p>يبدو أنك غير متصل بالإنترنت الآن.<br>تحقق من اتصالك وحاول مرة أخرى!</p>
+    <button class="btn" onclick="window.location.reload()">
+      <span>🔄</span>
+      <span>إعادة المحاولة</span>
+    </button>
+    <div class="tip">
+      💡 نصيحة: ثبّت التطبيق على جهازك للحصول على تجربة أفضل حتى بدون اتصال!
+    </div>
+  </div>
+  <script>
+    // Auto-retry when connection comes back
+    window.addEventListener('online', () => window.location.reload());
+  </script>
+</body>
+</html>
+

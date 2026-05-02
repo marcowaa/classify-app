@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>Classify — App Icon 512×512</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 512px; height: 512px; overflow: hidden; background: transparent; }
+  .icon {
+    width: 512px; height: 512px;
+    background: linear-gradient(145deg, #1A0A3B 0%, #2D1070 40%, #4C1D95 70%, #3B0764 100%);
+    position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;
+    border-radius: 0; /* Google Play clips to rounded rect automatically */
+  }
+  /* Background glow */
+  .glow-1 { position: absolute; width: 380px; height: 380px; border-radius: 50%; background: radial-gradient(circle, rgba(124,58,237,0.5) 0%, transparent 70%); top: -80px; right: -80px; }
+  .glow-2 { position: absolute; width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, rgba(76,208,128,0.3) 0%, transparent 70%); bottom: -60px; left: -60px; }
+  .glow-3 { position: absolute; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(249,115,22,0.15) 0%, transparent 70%); bottom: 80px; right: 60px; }
+  /* Dot grid */
+  .dots { position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1.5px, transparent 1.5px); background-size: 32px 32px; }
+  /* Main content */
+  .content { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; }
+  /* Letter C */
+  .letter-wrap { position: relative; margin-bottom: 10px; }
+  .letter-c {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 200px;
+    font-weight: 900;
+    color: transparent;
+    background: linear-gradient(135deg, #FFFFFF 0%, #E0D0FF 40%, #B794F6 70%, #7C3AED 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    line-height: 1;
+    letter-spacing: -10px;
+    filter: drop-shadow(0 8px 32px rgba(124,58,237,0.8));
+  }
+  /* Tree growing from C */
+  .tree-overlay { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); }
+  /* App name under */
+  .app-name {
+    font-family: 'Arial Black', 'Arial', sans-serif;
+    font-size: 52px;
+    font-weight: 900;
+    color: white;
+    letter-spacing: 4px;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  }
+  /* Sparkle decorations */
+  .sparkle { position: absolute; }
+  .sparkle-1 { top: 60px; left: 55px; }
+  .sparkle-2 { top: 100px; right: 70px; }
+  .sparkle-3 { bottom: 100px; left: 65px; }
+</style>
+</head>
+<body>
+<div class="icon">
+  <div class="glow-1"></div>
+  <div class="glow-2"></div>
+  <div class="glow-3"></div>
+  <div class="dots"></div>
+
+  <!-- Sparkles -->
+  <svg class="sparkle sparkle-1" width="28" height="28" viewBox="0 0 28 28">
+    <path d="M14 2 L16 10 L24 12 L16 14 L14 22 L12 14 L4 12 L12 10 Z" fill="#FCD34D" opacity="0.9"/>
+  </svg>
+  <svg class="sparkle sparkle-2" width="20" height="20" viewBox="0 0 20 20">
+    <path d="M10 1 L11.5 7.5 L18 9 L11.5 10.5 L10 17 L8.5 10.5 L2 9 L8.5 7.5 Z" fill="#A78BFA" opacity="0.8"/>
+  </svg>
+  <svg class="sparkle sparkle-3" width="16" height="16" viewBox="0 0 16 16">
+    <path d="M8 1 L9 5.5 L13.5 6.5 L9 7.5 L8 12 L7 7.5 L2.5 6.5 L7 5.5 Z" fill="#4CD080" opacity="0.7"/>
+  </svg>
+
+  <div class="content">
+    <div class="letter-wrap">
+      <div class="letter-c">C</div>
+      <!-- Tree growing inside/over C -->
+      <div class="tree-overlay">
+        <svg width="90" height="130" viewBox="0 0 90 130" fill="none">
+          <!-- Trunk -->
+          <rect x="40" y="90" width="10" height="36" rx="5" fill="#6B3E1A" opacity="0.9"/>
+          <!-- Canopy layers -->
+          <ellipse cx="45" cy="85" rx="30" ry="20" fill="#16A34A" opacity="0.85"/>
+          <ellipse cx="45" cy="78" rx="28" ry="18" fill="#22C55E" opacity="0.9"/>
+          <ellipse cx="45" cy="62" rx="22" ry="16" fill="#22C55E" opacity="0.9"/>
+          <ellipse cx="45" cy="55" rx="20" ry="14" fill="#4ADE80"/>
+          <ellipse cx="45" cy="40" rx="15" ry="13" fill="#4ADE80" opacity="0.95"/>
+          <ellipse cx="45" cy="33" rx="12" ry="10" fill="#86EFAC" opacity="0.9"/>
+          <ellipse cx="45" cy="20" rx="8" ry="7" fill="#A7F3D0"/>
+          <!-- Star -->
+          <path d="M45 5 L47 11 L53 12 L48 16 L50 22 L45 18 L40 22 L42 16 L37 12 L43 11 Z" fill="#FCD34D" opacity="0.95"/>
+          <!-- Fruits -->
+          <circle cx="60" cy="58" r="5" fill="#F97316" opacity="0.9"/>
+          <circle cx="28" cy="65" r="4" fill="#EC4899" opacity="0.9"/>
+          <circle cx="62" cy="78" r="5" fill="#F59E0B" opacity="0.9"/>
+          <circle cx="26" cy="80" r="4" fill="#EF4444" opacity="0.9"/>
+        </svg>
+      </div>
+    </div>
+    <div class="app-name">CLASSIFY</div>
+  </div>
+</div>
+</body>
+</html>

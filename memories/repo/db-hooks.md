@@ -1,0 +1,2 @@
+- 2026-03-26: Decision confirmed with user context: keep DB trigger `trg_children_total_points_guard` active; do NOT remove it.
+- Action preference: update incompatible code paths to set `app.points_update='ledger'` before direct `children.total_points` updates, instead of dropping trigger.

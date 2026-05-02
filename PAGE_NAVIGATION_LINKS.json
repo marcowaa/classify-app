@@ -1,0 +1,393 @@
+[
+  {
+    "file": "components\\ChildAppWrapper.tsx",
+    "links": [
+      "/child-tasks",
+      "/child-games"
+    ]
+  },
+  {
+    "file": "components\\ChildNotificationBell.tsx",
+    "links": [
+      "/child-notifications"
+    ]
+  },
+  {
+    "file": "components\\ChildPageLayout.tsx",
+    "links": [
+      "/child-games"
+    ]
+  },
+  {
+    "file": "components\\CreateSessionDialog.tsx",
+    "links": [
+      "/parent-tasks?tab=marketplace",
+      "/parent-tasks?tab=my&create=1",
+      "/parent-tasks?tab=classy"
+    ]
+  },
+  {
+    "file": "components\\GrowthTree.tsx",
+    "links": [
+      "/child-games",
+      "/child-tasks"
+    ]
+  },
+  {
+    "file": "components\\NotificationBell.tsx",
+    "links": [
+      "/notifications"
+    ]
+  },
+  {
+    "file": "components\\PinEntry.tsx",
+    "links": [
+      "/parent-auth",
+      "/parent-dashboard",
+      "/child-profile"
+    ]
+  },
+  {
+    "file": "games\\match3\\Match3Page.tsx",
+    "links": [
+      "/child-games"
+    ]
+  },
+  {
+    "file": "pages\\AboutUs.tsx",
+    "links": [
+      "/"
+    ]
+  },
+  {
+    "file": "pages\\AcceptableUse.tsx",
+    "links": [
+      "/"
+    ]
+  },
+  {
+    "file": "pages\\AccessibilityPolicy.tsx",
+    "links": [
+      "/settings"
+    ]
+  },
+  {
+    "file": "pages\\AccountDeletion.tsx",
+    "links": [
+      "/"
+    ]
+  },
+  {
+    "file": "pages\\AdminAuth.tsx",
+    "links": [
+      "/admin-dashboard",
+      "/"
+    ]
+  },
+  {
+    "file": "pages\\AdminDashboard.tsx",
+    "links": [
+      "/admin"
+    ]
+  },
+  {
+    "file": "pages\\AssignTask.tsx",
+    "links": [
+      "/parent-dashboard"
+    ]
+  },
+  {
+    "file": "pages\\ChildDiscover.tsx",
+    "links": [
+      "/child-games"
+    ]
+  },
+  {
+    "file": "pages\\ChildGames.tsx",
+    "links": [
+      "/child-profile",
+      "/child-settings"
+    ]
+  },
+  {
+    "file": "pages\\ChildGifts.tsx",
+    "links": [
+      "/child-games",
+      "/child-tasks"
+    ]
+  },
+  {
+    "file": "pages\\ChildLink.tsx",
+    "links": [
+      "/parent-auth",
+      "/",
+      "/trial-games",
+      "/child-profile",
+      "/child-store"
+    ]
+  },
+  {
+    "file": "pages\\ChildNotifications.tsx",
+    "links": [
+      "/child-gifts",
+      "/child-tasks",
+      "/child-games",
+      "/child-rewards",
+      "/child-progress",
+      "/child-settings"
+    ]
+  },
+  {
+    "file": "pages\\ChildProfile.tsx",
+    "links": [
+      "/child-games",
+      "/child-discover",
+      "/child-store",
+      "/child-tasks",
+      "/child-progress"
+    ]
+  },
+  {
+    "file": "pages\\ChildProgress.tsx",
+    "links": [
+      "/child-games",
+      "/child-tasks",
+      "/child-gifts"
+    ]
+  },
+  {
+    "file": "pages\\ChildRewards.tsx",
+    "links": [
+      "/child-games"
+    ]
+  },
+  {
+    "file": "pages\\ChildSafety.tsx",
+    "links": [
+      "/"
+    ]
+  },
+  {
+    "file": "pages\\ChildSettings.tsx",
+    "links": [
+      "/child-games",
+      "/child-profile"
+    ]
+  },
+  {
+    "file": "pages\\ChildTasks.tsx",
+    "links": [
+      "/child-games"
+    ]
+  },
+  {
+    "file": "pages\\ContactUs.tsx",
+    "links": [
+      "/"
+    ]
+  },
+  {
+    "file": "pages\\CookiePolicy.tsx",
+    "links": [
+      "/"
+    ]
+  },
+  {
+    "file": "pages\\DownloadApp.tsx",
+    "links": [
+      "/",
+      "/parent-auth",
+      "/apps/classify-googleplay-latest.aab",
+      "/apps/classify-pwa-latest.zip"
+    ]
+  },
+  {
+    "file": "pages\\ForgotPassword.tsx",
+    "links": [
+      "/parent-auth"
+    ]
+  },
+  {
+    "file": "pages\\Home.tsx",
+    "links": [
+      "/parent-dashboard",
+      "/child-profile",
+      "/child-store",
+      "/child-link?action=existing",
+      "/child-link?action=new",
+      "/trial-games",
+      "/child-link",
+      "/apps/classify-googleplay-latest.aab",
+      "/apps/classify-pwa-latest.zip"
+    ]
+  },
+  {
+    "file": "pages\\LegalCenter.tsx",
+    "links": [
+      "/"
+    ]
+  },
+  {
+    "file": "pages\\LibraryStore.tsx",
+    "links": [
+      "/parent-auth",
+      "/parent-store"
+    ]
+  },
+  {
+    "file": "pages\\not-found.tsx",
+    "links": [
+      "/"
+    ]
+  },
+  {
+    "file": "pages\\Notifications.tsx",
+    "links": [
+      "/parent-dashboard"
+    ]
+  },
+  {
+    "file": "pages\\OAuthCallback.tsx",
+    "links": [
+      "/parent-dashboard",
+      "/parent-auth?error=oauth_no_token"
+    ]
+  },
+  {
+    "file": "pages\\OTPVerification.tsx",
+    "links": [
+      "/parent-auth"
+    ]
+  },
+  {
+    "file": "pages\\ParentAuth.tsx",
+    "links": [
+      "/otp",
+      "/teacher/dashboard",
+      "/school/dashboard",
+      "/library/dashboard",
+      "/",
+      "/parent-store",
+      "/forgot-password",
+      "/privacy-policy",
+      "/terms",
+      "/child-safety",
+      "/refund-policy",
+      "/about",
+      "/contact",
+      "/trial-games",
+      "/download",
+      "/legal"
+    ]
+  },
+  {
+    "file": "pages\\ParentDashboard.tsx",
+    "links": [
+      "/",
+      "/parent-profile",
+      "/settings",
+      "/wallet",
+      "/parent-store",
+      "/parent-tasks",
+      "/subjects",
+      "/notifications",
+      "/assign-task",
+      "/parent-inventory",
+      "/parent-store?view=cart",
+      "/parent-store?view=orders"
+    ]
+  },
+  {
+    "file": "pages\\ParentInventory.tsx",
+    "links": [
+      "/parent-dashboard",
+      "/parent-store"
+    ]
+  },
+  {
+    "file": "pages\\ParentProfile.tsx",
+    "links": [
+      "/parent-auth",
+      "/parent-dashboard"
+    ]
+  },
+  {
+    "file": "pages\\ParentTasks.tsx",
+    "links": [
+      "/parent-dashboard",
+      "/task-cart",
+      "/task-marketplace"
+    ]
+  },
+  {
+    "file": "pages\\PrivacyPolicy.tsx",
+    "links": [
+      "/"
+    ]
+  },
+  {
+    "file": "pages\\RefundPolicy.tsx",
+    "links": [
+      "/"
+    ]
+  },
+  {
+    "file": "pages\\Settings.tsx",
+    "links": [
+      "/",
+      "/parent-dashboard",
+      "/teacher/login",
+      "/privacy-policy"
+    ]
+  },
+  {
+    "file": "pages\\Subjects.tsx",
+    "links": [
+      "/parent-dashboard"
+    ]
+  },
+  {
+    "file": "pages\\SubjectTasks.tsx",
+    "links": [
+      "/parent-dashboard"
+    ]
+  },
+  {
+    "file": "pages\\TaskCart.tsx",
+    "links": [
+      "/task-marketplace",
+      "/wallet"
+    ]
+  },
+  {
+    "file": "pages\\TaskMarketplace.tsx",
+    "links": [
+      "/parent-dashboard",
+      "/task-cart"
+    ]
+  },
+  {
+    "file": "pages\\TeacherProfile.tsx",
+    "links": [
+      "/parent-dashboard"
+    ]
+  },
+  {
+    "file": "pages\\Terms.tsx",
+    "links": [
+      "/"
+    ]
+  },
+  {
+    "file": "pages\\TrialGames.tsx",
+    "links": [
+      "/child-link"
+    ]
+  },
+  {
+    "file": "pages\\Wallet.tsx",
+    "links": [
+      "/parent-dashboard"
+    ]
+  }
+]

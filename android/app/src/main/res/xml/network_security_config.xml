@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Network Security Configuration for Classify App
+    - Allows HTTPS connections to production server
+    - Restricts cleartext (HTTP) traffic by default
+    - Debug overrides for local development only
+-->
+<network-security-config>
+    <!-- Production: Only allow HTTPS -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+
+    <!-- Allow connections to production API server -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">classi-fy.com</domain>
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </domain-config>
+
+    <!-- Debug-only: allow localhost for development testing -->
+    <debug-overrides>
+        <trust-anchors>
+            <certificates src="user" />
+            <certificates src="system" />
+        </trust-anchors>
+    </debug-overrides>
+</network-security-config>

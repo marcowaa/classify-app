@@ -1,0 +1,4 @@
+client/public/apps/archive/*.apk filter=lfs diff=lfs merge=lfs -text
+client/public/apps/archive/*.aab filter=lfs diff=lfs merge=lfs -text
+client/public/apps/*.apk filter=lfs diff=lfs merge=lfs -text
+client/public/apps/*.aab filter=lfs diff=lfs merge=lfs -text

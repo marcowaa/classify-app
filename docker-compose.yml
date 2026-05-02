@@ -1,0 +1,400 @@
+name: ${COMPOSE_PROJECT_NAME:-classify}
+
+services:
+  traefik:
+    profiles: ["disabled"]
+    image: traefik:v2.11
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.constraints=Label(`com.docker.compose.project`,`${COMPOSE_PROJECT_NAME:-classify}`)"
+      - "--entryPoints.web.address=:80"
+      - "--entryPoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencrypt.acme.email=${ADMIN_EMAIL:-admin@classi-fy.com}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      - "--ping=true"
+      - "--ping.entryPoint=web"
+      - "--accesslog=true"
+      - "--accesslog.bufferingsize=100"
+      - "--api.dashboard=false"
+    ports:
+      - "${CLASSIFY_TRAEFIK_BIND_IP:-127.0.0.1}:${TRAEFIK_HTTP_PORT:-18080}:80"
+      - "${CLASSIFY_TRAEFIK_BIND_IP:-127.0.0.1}:${TRAEFIK_HTTPS_PORT:-18443}:443"
+    volumes:
+      - letsencrypt_data:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: always
+    networks:
+      - classify-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/ping"]
+      interval: ${TRAEFIK_CONTAINER_HEALTHCHECK_INTERVAL:-45s}
+      timeout: ${TRAEFIK_CONTAINER_HEALTHCHECK_TIMEOUT:-5s}
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 64M
+
+  # ===========================================================================
+  # Application Service (Express + React)
+  # ===========================================================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: classify-app:latest
+    labels:
+      # Traefik configuration
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-gemj_default"
+      
+      # HTTPS router (main)
+      - "traefik.http.routers.classify-app-secure.rule=Host(`classi-fy.com`) || Host(`www.classi-fy.com`)"
+      - "traefik.http.routers.classify-app-secure.entrypoints=websecure"
+      - "traefik.http.routers.classify-app-secure.tls.certresolver=letsencrypt"
+
+      # HTTPS router (APK upload path) - no buffering middleware to avoid upload body timeout
+      - "traefik.http.routers.classify-app-upload-secure.rule=(Host(`classi-fy.com`) || Host(`www.classi-fy.com`)) && PathPrefix(`/api/admin/mobile-apk-builds/upload`)"
+      - "traefik.http.routers.classify-app-upload-secure.entrypoints=websecure"
+      - "traefik.http.routers.classify-app-upload-secure.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.classify-app-upload-secure.priority=200"
+      - "traefik.http.routers.classify-app-upload-secure.service=classify-app"
+      - "traefik.http.services.classify-app.loadbalancer.server.port=5000"
+      - "traefik.http.services.classify-app.loadbalancer.healthcheck.path=/api/health"
+      - "traefik.http.services.classify-app.loadbalancer.healthcheck.interval=${TRAEFIK_APP_HEALTHCHECK_INTERVAL:-45s}"
+      - "traefik.http.services.classify-app.loadbalancer.healthcheck.timeout=${TRAEFIK_APP_HEALTHCHECK_TIMEOUT:-8s}"
+      
+      # HTTP → HTTPS redirect
+      - "traefik.http.routers.classify-app.rule=Host(`classi-fy.com`) || Host(`www.classi-fy.com`)"
+      - "traefik.http.routers.classify-app.entrypoints=web"
+      - "traefik.http.routers.classify-app.middlewares=https-redirect-classify"
+      - "traefik.http.middlewares.https-redirect-classify.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.https-redirect-classify.redirectscheme.permanent=true"
+      
+      # Security headers
+      - "traefik.http.middlewares.classify-security-headers.headers.stsSeconds=63072000"
+      - "traefik.http.middlewares.classify-security-headers.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.classify-security-headers.headers.frameDeny=false"
+      - "traefik.http.middlewares.classify-security-headers.headers.contentTypeNosniff=true"
+      - "traefik.http.routers.classify-app-secure.middlewares=classify-security-headers"
+      - "traefik.http.routers.classify-app-upload-secure.middlewares=classify-security-headers"
+      
+      # Container metadata
+      - "com.classify.version=3.0"
+      - "com.classify.environment=production"
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - HOST=0.0.0.0
+      - DATABASE_URL=postgresql://${POSTGRES_USER:?POSTGRES_USER is required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}@db:5432/${POSTGRES_DB:-classify_db}
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=${JWT_SECRET:?JWT_SECRET is required}
+      - SESSION_SECRET=${SESSION_SECRET:?SESSION_SECRET is required}
+      - VAPID_PUBLIC_KEY=${VAPID_PUBLIC_KEY:-}
+      - VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY:-}
+      - VAPID_SUBJECT=${VAPID_SUBJECT:-mailto:info@classi-fy.com}
+      - RESEND_API_KEY=${RESEND_API_KEY:-}
+      - ADMIN_EMAIL=${ADMIN_EMAIL:?ADMIN_EMAIL is required}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:?ADMIN_PASSWORD is required}
+      - ADMIN_PANEL_PASSWORD=${ADMIN_PANEL_PASSWORD:-}
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID:-}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN:-}
+      - TWILIO_PHONE_NUMBER=${TWILIO_PHONE_NUMBER:-}
+      - SMTP_HOST=${SMTP_HOST:-}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+      - SMTP_FROM=${SMTP_FROM:-}
+      - CORS_ORIGIN=${CORS_ORIGIN:-https://classi-fy.com}
+      - APP_URL=${APP_URL:-https://classi-fy.com}
+      - AUTH_SOCIAL_LOGIN_ENABLED=${AUTH_SOCIAL_LOGIN_ENABLED:-true}
+      - GOOGLE_ENABLED=${GOOGLE_ENABLED:-true}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:-https://classi-fy.com/api/auth/oauth/google/callback}
+      - PRERENDER_ENABLED=${PRERENDER_ENABLED:-auto}
+      - PRERENDER_TOKEN=${PRERENDER_TOKEN:-}
+      - PRERENDER_SERVICE_URL=${PRERENDER_SERVICE_URL:-}
+      - INHOME_SHIPPING_ENABLED=${INHOME_SHIPPING_ENABLED:-false}
+      - INHOME_SHIPPING_BASE_URL=${INHOME_SHIPPING_BASE_URL:-https://inhome.classi-fy.com}
+      - INHOME_SHIPPING_API_KEY=${INHOME_SHIPPING_API_KEY:-}
+      - INHOME_SHIPPING_TIMEOUT_MS=${INHOME_SHIPPING_TIMEOUT_MS:-5000}
+      - INHOME_SHIPPING_WEBHOOK_SECRET=${INHOME_SHIPPING_WEBHOOK_SECRET:-}
+      - INHOME_ALLOW_PRIVATE_HOSTS=${INHOME_ALLOW_PRIVATE_HOSTS:-false}
+      - PUBLIC_BASE_URL=${PUBLIC_BASE_URL:-https://classi-fy.com}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - NODE_CLUSTER_ENABLED=${NODE_CLUSTER_ENABLED:-false}
+      - WEB_CONCURRENCY=${WEB_CONCURRENCY:-1}
+      - DB_POOL_MAX=${DB_POOL_MAX:-20}
+      - DB_POOL_MIN=${DB_POOL_MIN:-2}
+      - DB_POOL_IDLE_TIMEOUT_MS=${DB_POOL_IDLE_TIMEOUT_MS:-30000}
+      - DB_POOL_CONNECT_TIMEOUT_MS=${DB_POOL_CONNECT_TIMEOUT_MS:-10000}
+      - DB_PUSH_ON_BOOT=${DB_PUSH_ON_BOOT:-false}
+      - OBJECT_STORAGE_PROVIDER=s3
+      - MINIO_ENDPOINT=minio
+      - MINIO_PORT=9000
+      - MINIO_USE_SSL=false
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-replace_minio_access_key}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-replace_minio_secret_key}
+      - MINIO_BUCKET=classify-media
+      - MINIO_PREFIX=private
+      - MINIO_PUBLIC_URL=
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    restart: always
+    volumes:
+      - app_uploads:/app/uploads
+      - app_logs:/app/logs
+    networks:
+      - classify-network
+      - traefik-gemj_default
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: ${APP_CONTAINER_HEALTHCHECK_INTERVAL:-45s}
+      timeout: ${APP_CONTAINER_HEALTHCHECK_TIMEOUT:-8s}
+      retries: 3
+      start_period: 90s
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "5"
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
+
+  db:
+    image: postgres:15.7-alpine
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:?POSTGRES_USER is required}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      - POSTGRES_DB=${POSTGRES_DB:-classify_db}
+      - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256
+    command:
+      - "postgres"
+      - "-c"
+      - "max_connections=150"
+      - "-c"
+      - "shared_buffers=512MB"
+      - "-c"
+      - "effective_cache_size=2GB"
+      - "-c"
+      - "work_mem=8MB"
+      - "-c"
+      - "maintenance_work_mem=128MB"
+      - "-c"
+      - "wal_buffers=8MB"
+      - "-c"
+      - "checkpoint_completion_target=0.9"
+      - "-c"
+      - "random_page_cost=1.1"
+      - "-c"
+      - "effective_io_concurrency=100"
+      - "-c"
+      - "log_min_duration_statement=500"
+      - "-c"
+      - "idle_in_transaction_session_timeout=60000"
+    ports:
+      - "127.0.0.1:${POSTGRES_HOST_PORT:-5434}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - classify-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB:-classify_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "5"
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 512M
+
+  redis:
+    image: redis:7.2-alpine
+    restart: always
+    sysctls:
+      - net.core.somaxconn=511
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "128mb", "--maxmemory-policy", "allkeys-lru", "--stop-writes-on-bgsave-error", "no"]
+    volumes:
+      - redis_data:/data
+    networks:
+      - classify-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+
+  minio:
+    image: minio/minio:latest
+    restart: always
+    command: server /data --console-address ":9001"
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY:-classifyminio}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY:-classifyminio123}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-gemj_default"
+      - "traefik.http.routers.classify-minio.rule=Host(`minio.classi-fy.com`)"
+      - "traefik.http.routers.classify-minio.entrypoints=websecure"
+      - "traefik.http.routers.classify-minio.tls.certresolver=letsencrypt"
+      - "traefik.http.services.classify-minio.loadbalancer.server.port=9001"
+      - "traefik.http.routers.classify-minio-http.rule=Host(`minio.classi-fy.com`)"
+      - "traefik.http.routers.classify-minio-http.entrypoints=web"
+      - "traefik.http.routers.classify-minio-http.middlewares=https-redirect-classify-minio"
+      - "traefik.http.middlewares.https-redirect-classify-minio.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.https-redirect-classify-minio.redirectscheme.permanent=true"
+    volumes:
+      - minio_data:/data
+    networks:
+      - classify-network
+      - traefik-gemj_default
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  apprise-api:
+    image: caronc/apprise:latest
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-gemj_default"
+      - "traefik.http.routers.classify-apprise.rule=Host(`apprise.classi-fy.com`)"
+      - "traefik.http.routers.classify-apprise.entrypoints=websecure"
+      - "traefik.http.routers.classify-apprise.tls.certresolver=letsencrypt"
+      - "traefik.http.services.classify-apprise.loadbalancer.server.port=8000"
+      - "traefik.http.routers.classify-apprise-http.rule=Host(`apprise.classi-fy.com`)"
+      - "traefik.http.routers.classify-apprise-http.entrypoints=web"
+      - "traefik.http.routers.classify-apprise-http.middlewares=https-redirect-classify-apprise"
+      - "traefik.http.middlewares.https-redirect-classify-apprise.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.https-redirect-classify-apprise.redirectscheme.permanent=true"
+    volumes:
+      - apprise_config:/config
+      - apprise_attachments:/attachments
+    environment:
+      - APPRISE_STATEFUL_MODE=simple
+      - APPRISE_WORKER_COUNT=1
+      - APPRISE_CONFIG_LOCK=true
+    networks:
+      - classify-network
+      - traefik-gemj_default
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/status', timeout=5)\""]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-gemj_default"
+      - "traefik.http.routers.classify-kuma.rule=Host(`kuma.classi-fy.com`)"
+      - "traefik.http.routers.classify-kuma.entrypoints=websecure"
+      - "traefik.http.routers.classify-kuma.tls.certresolver=letsencrypt"
+      - "traefik.http.services.classify-kuma.loadbalancer.server.port=3001"
+      - "traefik.http.routers.classify-kuma-http.rule=Host(`kuma.classi-fy.com`)"
+      - "traefik.http.routers.classify-kuma-http.entrypoints=web"
+      - "traefik.http.routers.classify-kuma-http.middlewares=https-redirect-classify-kuma"
+      - "traefik.http.middlewares.https-redirect-classify-kuma.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.https-redirect-classify-kuma.redirectscheme.permanent=true"
+    volumes:
+      - uptime_kuma_data:/app/data
+    networks:
+      - classify-network
+      - traefik-gemj_default
+
+  dozzle:
+    image: amir20/dozzle:latest
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-gemj_default"
+      - "traefik.http.routers.classify-dozzle.rule=Host(`dozzle.classi-fy.com`)"
+      - "traefik.http.routers.classify-dozzle.entrypoints=websecure"
+      - "traefik.http.routers.classify-dozzle.tls.certresolver=letsencrypt"
+      - "traefik.http.services.classify-dozzle.loadbalancer.server.port=8080"
+      - "traefik.http.routers.classify-dozzle-http.rule=Host(`dozzle.classi-fy.com`)"
+      - "traefik.http.routers.classify-dozzle-http.entrypoints=web"
+      - "traefik.http.routers.classify-dozzle-http.middlewares=https-redirect-classify-dozzle"
+      - "traefik.http.middlewares.https-redirect-classify-dozzle.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.https-redirect-classify-dozzle.redirectscheme.permanent=true"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - classify-network
+      - traefik-gemj_default
+
+networks:
+  classify-network:
+    driver: bridge
+  traefik-gemj_default:
+    external: true
+
+volumes:
+  postgres_data:
+  redis_data:
+  app_uploads:
+  app_logs:
+  letsencrypt_data:
+  minio_data:
+  apprise_config:
+  apprise_attachments:
+  uptime_kuma_data:

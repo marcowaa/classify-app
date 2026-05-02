@@ -1,0 +1,18 @@
+{
+  "name": "cat-game",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "homepage": "https://ahmadngiliyun00.github.io/cat-game",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0",
+    "vite": "^7.3.2"
+  }
+}

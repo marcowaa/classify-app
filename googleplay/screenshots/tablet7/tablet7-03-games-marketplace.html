@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>Tablet 7" — Games & Marketplace | 1200×1920</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1200px; height: 1920px; overflow: hidden; font-family: 'Cairo', sans-serif; background: #0D0B1A; }
+  .screen { width: 1200px; height: 1920px; background: linear-gradient(160deg, #0D0B1A 0%, #1A0D2E 50%, #0D1A2E 100%); display: flex; flex-direction: column; position: relative; overflow: hidden; }
+  .glow { position: absolute; width: 700px; height: 500px; border-radius: 50%; background: radial-gradient(ellipse, rgba(249,115,22,0.12), transparent 70%); top: 300px; left: 50%; transform: translateX(-50%); pointer-events: none; }
+  .dots { position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px); background-size: 55px 55px; pointer-events: none; }
+
+  /* Header */
+  .header { padding: 70px 60px 24px; position: relative; z-index: 10; }
+  .header h1 { font-size: 62px; font-weight: 900; color: white; line-height: 1.2; }
+  .header h1 .acc { color: #F97316; }
+  .header p { font-size: 26px; color: #94A3B8; font-weight: 600; margin-top: 10px; }
+
+  /* Games section */
+  .section-title { padding: 24px 60px 14px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
+  .section-title h2 { font-size: 30px; font-weight: 800; color: white; }
+  .section-title a { font-size: 20px; color: #F97316; font-weight: 700; }
+
+  .games-grid { padding: 0 40px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; position: relative; z-index: 10; }
+  .game-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 22px; padding: 20px 16px; text-align: center; }
+  .game-card.o { border-color: rgba(249,115,22,0.3); background: rgba(249,115,22,0.05); }
+  .game-card.p { border-color: rgba(124,58,237,0.3); background: rgba(124,58,237,0.05); }
+  .game-card.g { border-color: rgba(76,208,128,0.3); background: rgba(76,208,128,0.05); }
+  .game-card.b { border-color: rgba(59,130,246,0.3); background: rgba(59,130,246,0.05); }
+  .game-icon { font-size: 44px; margin-bottom: 10px; }
+  .game-name { font-size: 20px; font-weight: 800; color: white; margin-bottom: 4px; }
+  .game-pts { font-size: 17px; font-weight: 700; color: #F59E0B; margin-bottom: 8px; }
+  .play-btn { padding: 8px 20px; border-radius: 12px; font-size: 17px; font-weight: 800; color: white; }
+  .play-btn.o { background: #F97316; }
+  .play-btn.p { background: #7C3AED; }
+  .play-btn.g { background: #10B981; }
+  .play-btn.b { background: #3B82F6; }
+  .stars { font-size: 14px; color: #FCD34D; margin-bottom: 4px; }
+
+  /* Divider */
+  .divider { margin: 20px 60px; height: 1px; background: rgba(255,255,255,0.08); position: relative; z-index: 10; }
+
+  /* Marketplace section */
+  .market-grid { padding: 0 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; flex: 1; position: relative; z-index: 10; }
+  .mcard { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 22px 24px; display: flex; gap: 18px; }
+  .mcard.feat { border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.05); }
+  .micon { width: 68px; height: 68px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 30px; flex-shrink: 0; }
+  .micon.m { background: rgba(124,58,237,0.2); }
+  .micon.a { background: rgba(16,185,129,0.2); }
+  .micon.s { background: rgba(59,130,246,0.2); }
+  .micon.e { background: rgba(249,115,22,0.2); }
+  .minfo { flex: 1; }
+  .mname { font-size: 22px; font-weight: 800; color: white; margin-bottom: 4px; }
+  .mteacher { font-size: 18px; color: #94A3B8; font-weight: 600; margin-bottom: 6px; }
+  .mtags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .mtag { padding: 3px 10px; border-radius: 8px; font-size: 16px; font-weight: 700; background: rgba(255,255,255,0.08); color: #C4B5FD; }
+  .mright { display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; }
+  .mprice { font-size: 26px; font-weight: 900; color: white; }
+  .mprice.free { color: #4CD080; }
+  .mbuy { background: linear-gradient(135deg, #7C3AED, #5B21B6); color: white; font-size: 17px; font-weight: 800; padding: 8px 16px; border-radius: 12px; }
+  .feat-badge { font-size: 14px; background: linear-gradient(135deg, #F59E0B, #F97316); color: white; font-weight: 800; padding: 3px 10px; border-radius: 8px; margin-bottom: 4px; }
+
+  /* Bottom -->
+  .bottom-note { padding: 16px 60px 40px; text-align: center; position: relative; z-index: 10; }
+  .bottom-note p { font-size: 28px; font-weight: 800; color: #E2E8F0; }
+  .bottom-note p span { color: #F97316; }
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="glow"></div>
+  <div class="dots"></div>
+
+  <div class="header">
+    <h1>ألعاب <span class="acc">تعليمية 🎮</span><br>+ سوق المعلمين 📚</h1>
+    <p>تعلّم، العب، واشترِ مهام من معلمين محترفين</p>
+  </div>
+
+  <div class="section-title"><h2>🎮 الألعاب التعليمية</h2><a>كل الألعاب ←</a></div>
+  <div class="games-grid">
+    <div class="game-card o"><div class="game-icon">🧮</div><div class="stars">★★★★★</div><div class="game-name">تحدي الأرقام</div><div class="game-pts">+30 نقطة</div><div class="play-btn o">العب</div></div>
+    <div class="game-card p"><div class="game-icon">🧠</div><div class="stars">★★★★★</div><div class="game-name">بطاقات الذاكرة</div><div class="game-pts">+25 نقطة</div><div class="play-btn p">العب</div></div>
+    <div class="game-card g"><div class="game-icon">🐱</div><div class="stars">★★★★☆</div><div class="game-name">مملكة القطط</div><div class="game-pts">+40 نقطة</div><div class="play-btn g">العب</div></div>
+    <div class="game-card b"><div class="game-icon">🔤</div><div class="stars">★★★★★</div><div class="game-name">أملاء الكلمات</div><div class="game-pts">+20 نقطة</div><div class="play-btn b">العب</div></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-title"><h2>📚 سوق المهام التعليمية</h2><a>تصفح الكل ←</a></div>
+  <div class="market-grid">
+    <div class="mcard feat">
+      <div class="micon m">🧮</div>
+      <div class="minfo">
+        <div class="mname">الكسور والأعداد — الصف 4</div>
+        <div class="mteacher">⭐ 4.9 · أ. فاطمة الزهراء · 892 مشترٍ</div>
+        <div class="mtags"><div class="mtag">رياضيات</div><div class="mtag">الصف 4</div></div>
+      </div>
+      <div class="mright"><div class="feat-badge">⭐ مميز</div><div class="mprice">25 ر.س</div><div class="mbuy">أضف</div></div>
+    </div>
+    <div class="mcard">
+      <div class="micon a">📖</div>
+      <div class="minfo">
+        <div class="mname">تعبير كتابي — أصف غرفتي</div>
+        <div class="mteacher">⭐ 4.8 · أ. نورة العتيبي</div>
+        <div class="mtags"><div class="mtag">عربي</div><div class="mtag">الصف 3-5</div></div>
+      </div>
+      <div class="mright"><div class="mprice free">مجاني</div><div class="mbuy">أضف</div></div>
+    </div>
+    <div class="mcard">
+      <div class="micon s">🔬</div>
+      <div class="minfo">
+        <div class="mname">النظام الشمسي — 10 أسئلة</div>
+        <div class="mteacher">⭐ 4.7 · أ. محمد السيد · 445 مشترٍ</div>
+        <div class="mtags"><div class="mtag">علوم</div><div class="mtag">الصف 5-6</div></div>
+      </div>
+      <div class="mright"><div class="mprice">20 ر.س</div><div class="mbuy">أضف</div></div>
+    </div>
+    <div class="mcard">
+      <div class="micon e">🔤</div>
+      <div class="minfo">
+        <div class="mname">English Vocabulary — Grade 3</div>
+        <div class="mteacher">⭐ 4.8 · T. Sarah Johnson · 320 buyers</div>
+        <div class="mtags"><div class="mtag">English</div><div class="mtag">Grade 3</div></div>
+      </div>
+      <div class="mright"><div class="mprice">18 ر.س</div><div class="mbuy">أضف</div></div>
+    </div>
+  </div>
+
+  <div class="bottom-note"><p>+1,200 مهمة تعليمية من <span>+340 معلم متخصص</span> 👩‍🏫</p></div>
+</div>
+</body>
+</html>

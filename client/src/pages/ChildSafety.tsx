@@ -1,0 +1,138 @@
+import { useTranslation } from "react-i18next";
+import { useLocation } from "wouter";
+import { useTheme } from "@/contexts/ThemeContext";
+import { Baby, ArrowLeft, ArrowRight, Shield, Eye, Lock, Users, AlertTriangle, FileText, Mail, Heart, Smartphone, ChevronDown } from "lucide-react";
+import { useState } from "react";
+import { ChildBottomNav } from "@/components/ChildBottomNav";
+
+const ar = {
+  title: "سلامة الأطفال وحماية القُصّر",
+  subtitle: "التزامنا بحماية خصوصية وسلامة الأطفال — COPPA & GDPR-K",
+  lastUpdated: "21 فبراير 2026",
+  version: "الإصدار 2.0",
+  intro: "سلامة الأطفال هي الأولوية القصوى في Classify. تُوضّح هذه السياسة التزاماتنا الشاملة تجاه حماية الأطفال على منصتنا، وتتوافق مع قانون حماية خصوصية الأطفال على الإنترنت (COPPA)، واللائحة العامة لحماية البيانات الأوروبية (GDPR) المادة 8، وقانون حماية خصوصية الأطفال في المملكة المتحدة (Children's Code)، وقوانين حماية الأطفال في جميع الدول التي نعمل بها.",
+  sections: [
+    { id: "commitment", icon: "Heart", title: "التزامنا تجاه سلامة الأطفال", paragraphs: ["في Classify، نؤمن بأن كل طفل يستحق بيئة رقمية آمنة وتعليمية. لقد صُممت منصتنا من الألف إلى الياء مع وضع سلامة الأطفال في المقام الأول. نحن لا نكتفي بالامتثال للقوانين فحسب، بل نسعى لتجاوز المعايير المطلوبة لتوفير أعلى مستوى من الحماية.", "التزاماتنا الأساسية تشمل:"], items: ["تصميم كل ميزة في المنصة مع مراعاة سلامة الأطفال أولاً (Safety by Design).", "اعتماد مبدأ الخصوصية منذ التصميم (Privacy by Design) في جميع المعالجات.", "إجراء تقييمات تأثير حماية البيانات (DPIA) لأي ميزة جديدة تتعلق ببيانات الأطفال.", "تدريب فريقنا بأكمله على أفضل ممارسات حماية الأطفال.", "مراجعة سياساتنا وممارساتنا بشكل فصلي لضمان تماشيها مع أحدث المعايير."] },
+    { id: "coppa", icon: "Shield", title: "الامتثال لقانون COPPA", paragraphs: ["قانون حماية خصوصية الأطفال على الإنترنت (COPPA) هو قانون أمريكي فيدرالي يحمي خصوصية الأطفال دون سن 13 عامًا. نحن نلتزم بجميع متطلبات COPPA حتى للأطفال حتى سن 16 عامًا:", "المتطلبات التي نلتزم بها:"], items: ["الحصول على موافقة ولي الأمر القابلة للتحقق قبل جمع أي بيانات شخصية من طفل.", "توفير إشعار واضح ومباشر لأولياء الأمور حول البيانات التي نجمعها وكيفية استخدامها.", "منح أولياء الأمور حق الوصول إلى بيانات أطفالهم ومراجعتها في أي وقت.", "منح أولياء الأمور حق طلب حذف بيانات أطفالهم بالكامل.", "عدم اشتراط تقديم الطفل لمعلومات أكثر مما هو ضروري للمشاركة في النشاط.", "الحفاظ على سرية وأمان وسلامة بيانات الأطفال التي نجمعها.", "عدم الاحتفاظ ببيانات الأطفال لفترة أطول مما هو ضروري لتحقيق الغرض.", "حذف بيانات الأطفال بشكل آمن عند انتهاء الحاجة إليها."] },
+    { id: "gdpr-children", icon: "Shield", title: "الامتثال للائحة GDPR — حماية بيانات الأطفال", paragraphs: ["المادة 8 من اللائحة العامة لحماية البيانات (GDPR) تحدد شروطًا إضافية لمعالجة بيانات الأطفال في الاتحاد الأوروبي. نلتزم بما يلي:"], items: ["الحصول على موافقة ولي الأمر لمعالجة بيانات أي طفل دون 16 عامًا (أو السن المحدد محليًا).", "بذل جهود معقولة للتحقق من أن الموافقة مقدمة من ولي الأمر الفعلي.", "توفير معلومات واضحة ومفهومة للأطفال بلغة مناسبة لعمرهم.", "تطبيق مبدأ تقليل البيانات (Data Minimization) — جمع الحد الأدنى فقط.", "ضمان حق ولي الأمر في سحب الموافقة في أي وقت.", "إجراء تقييمات تأثير حماية البيانات (DPIA) لجميع العمليات المتعلقة ببيانات الأطفال."] },
+    { id: "safe-environment", icon: "Lock", title: "بيئة آمنة بالتصميم", paragraphs: ["صُممت منصة Classify لتكون بيئة مغلقة وآمنة للأطفال. فيما يلي تفاصيل الحماية المُطبّقة:"], items: ["لا توجد ميزة رسائل مباشرة: لا يستطيع الأطفال التواصل مع بعضهم أو مع أشخاص مجهولين.", "لا توجد مشاركة موقع جغرافي: المنصة لا تطلب أو تستخدم الموقع الجغرافي الدقيق للطفل.", "لا توجد ميزة مشاركة على وسائل التواصل: لا يستطيع الطفل مشاركة محتوى خارج المنصة.", "لا توجد إعلانات موجّهة: لا نعرض أي إعلانات مبنية على سلوك الطفل أو بياناته.", "لا يوجد شراء داخلي مستقل: أي عملية شراء تتطلب إذن ولي الأمر.", "محتوى مراجع: جميع المحتويات التعليمية والألعاب تمر بمراجعة دقيقة قبل نشرها.", "تصفية المحتوى: أنظمة آلية لمنع أي محتوى غير مناسب للأطفال.", "حسابات مقيدة: حسابات الأطفال محدودة الصلاحيات (قراءة فقط) ولا يمكن للطفل تعديل إعداداته.", "إشراف عائلي مدمج: يمتلك ولي الأمر أدوات واضحة لتنظيم تجربة الطفل.", "تسجيل خروج تلقائي: تنتهي جلسة الطفل بعد فترة خمول محددة لحماية الحساب."] },
+    { id: "data-collected", icon: "Eye", title: "البيانات التي نجمعها من الأطفال", paragraphs: ["نلتزم بجمع الحد الأدنى المطلق من البيانات اللازمة لتقديم الخدمة التعليمية:", "البيانات التي نجمعها:"], items: ["الاسم الأول (أو اسم مستعار يختاره ولي الأمر) — لعرضه في واجهة المستخدم.", "الفئة العمرية أو تاريخ الميلاد — لتخصيص المحتوى التعليمي المناسب.", "الجنس (اختياري) — لتخصيص الصورة الرمزية فقط.", "البيانات التعليمية — نتائج الألعاب، والمستويات المحققة، وتقارير الأداء المعرفي.", "بيانات الجلسة — مدة الاستخدام وأوقات تسجيل الدخول (لأغراض الأمان فقط)."], subsections: [{ title: "البيانات التي لا نجمعها أبدًا من الأطفال", items: ["عنوان البريد الإلكتروني للطفل", "رقم هاتف الطفل", "الموقع الجغرافي الدقيق", "الصور أو الفيديوهات الشخصية للطفل", "بيانات بيومترية (بصمات، التعرف على الوجه)", "معلومات مالية أو بيانات بطاقات", "أي معرّفات دائمة تُستخدم للتتبع عبر المواقع"] }] },
+    { id: "parental-controls", icon: "Users", title: "أدوات الإشراف العائلي", paragraphs: ["نوفر لأولياء الأمور مجموعة شاملة من الأدوات لتنظيم تجربة أطفالهم بثقة:"], items: ["لوحة تحكم شاملة: عرض نشاط الطفل والتقارير التعليمية والإحصائيات.", "تنظيم المحتوى: تحديد الألعاب والمحتوى التعليمي المتاح للطفل.", "تحديد وقت الاستخدام: إمكانية تعيين حدود يومية لاستخدام المنصة.", "إشعارات فورية: تنبيهات حول نشاط الطفل وإنجازاته.", "إدارة البيانات: القدرة على عرض وتعديل وحذف بيانات الطفل بالكامل.", "إعدادات الخصوصية: خيارات قابلة للتعديل لكل طفل.", "سجل النشاط: عرض تاريخ نشاط الطفل التفصيلي.", "إعدادات الأمان: تفعيل المصادقة الثنائية وإدارة الأجهزة المصرّح بها."] },
+    { id: "data-security", icon: "Lock", title: "حماية بيانات الأطفال", paragraphs: ["نطبق أعلى معايير الأمان لحماية بيانات الأطفال تحديدًا:"], items: ["تشفير TLS 1.3 لجميع البيانات أثناء النقل بين جهاز الطفل وخوادمنا.", "تشفير AES-256 لجميع بيانات الأطفال المخزنة في قواعد البيانات.", "فصل منطقي لبيانات الأطفال عن بيانات البالغين في نظام التخزين.", "تقييد الوصول: فقط الموظفون المخوّلون يمكنهم الوصول إلى بيانات الأطفال.", "تدقيق أمني: مراجعات أمنية دورية تشمل اختبارات اختراق لأنظمة بيانات الأطفال.", "إخطار فوري: في حالة أي خرق أمني يؤثر على بيانات الأطفال، نُخطر أولياء الأمور والسلطات المختصة خلال 72 ساعة.", "نسخ احتياطية مشفرة: نسخ احتياطية يومية مشفرة مع اختبار استعادة شهري."] },
+    { id: "retention-deletion", icon: "AlertTriangle", title: "الاحتفاظ ببيانات الأطفال وحذفها", paragraphs: ["نلتزم بسياسة صارمة للاحتفاظ ببيانات الأطفال وحذفها:"], items: ["البيانات الشخصية: تُحذف خلال 30 يومًا من طلب ولي الأمر أو حذف حساب الطفل.", "البيانات التعليمية: يمكن لولي الأمر تصديرها قبل الحذف بصيغة JSON أو PDF.", "بيانات الجلسة: تُحذف تلقائيًا بعد 90 يومًا.", "النسخ الاحتياطية: تُمسح بيانات الطفل المحذوف من جميع النسخ الاحتياطية خلال 90 يومًا.", "البيانات المجهّلة: قد نحتفظ ببيانات إحصائية مجهولة الهوية بالكامل لتحسين خوارزمياتنا التعليمية.", "التأكيد: يتلقى ولي الأمر تأكيدًا عبر البريد الإلكتروني بعد إتمام عملية الحذف."] },
+    { id: "third-party", icon: "Shield", title: "الأطراف الثالثة وبيانات الأطفال", paragraphs: ["سياستنا بشأن مشاركة بيانات الأطفال مع أطراف ثالثة صارمة جدًا:"], items: ["لا نبيع بيانات الأطفال أبدًا لأي طرف.", "لا نشارك بيانات الأطفال لأغراض تسويقية أو إعلانية.", "لا نسمح لأي طرف ثالث بجمع بيانات عن الأطفال على منصتنا.", "مقدمو الخدمات الأساسيون (مثل خدمات الاستضافة) يخضعون لاتفاقيات صارمة تمنع وصولهم لبيانات الأطفال.", "لا نستخدم أي أدوات تحليل أو تتبع تابعة لأطراف ثالثة على صفحات الأطفال.", "في حالة اندماج أو استحواذ، نضمن أن المشتري يلتزم بنفس معايير حماية بيانات الأطفال."] },
+    { id: "reporting", icon: "AlertTriangle", title: "الإبلاغ عن المخاوف", paragraphs: ["نشجع أولياء الأمور والمستخدمين على الإبلاغ فورًا عن أي مخاوف تتعلق بسلامة الأطفال:"], items: ["البريد الإلكتروني: safety@classi-fy.com (للبلاغات العاجلة المتعلقة بسلامة الأطفال)", "البريد الإلكتروني العام: support@classi-fy.com", "نلتزم بمراجعة جميع البلاغات المتعلقة بسلامة الأطفال خلال 24 ساعة.", "في حالة وجود خطر فوري على أي طفل، سنتخذ إجراءً فوريًا بما في ذلك إخطار السلطات المختصة.", "نتعاون بالكامل مع جهات إنفاذ القانون في أي تحقيقات تتعلق بسلامة الأطفال."] },
+    { id: "contact", icon: "Mail", title: "التواصل بشأن سلامة الأطفال", paragraphs: ["لأي استفسارات متعلقة بسلامة الأطفال أو خصوصيتهم على منصتنا:"], items: ["فريق سلامة الأطفال: safety@classi-fy.com", "مسؤول حماية البيانات: privacy@classi-fy.com", "الدعم العام: support@classi-fy.com", "الموقع الإلكتروني: https://classi-fy.com/contact", "نلتزم بالرد على جميع الاستفسارات المتعلقة بسلامة الأطفال خلال 48 ساعة كحد أقصى."] },
+  ],
+};
+
+const en = {
+  title: "Child Safety & Minor Protection",
+  subtitle: "Our Commitment to Protecting Children's Privacy and Safety — COPPA & GDPR-K Compliance",
+  lastUpdated: "February 21, 2026",
+  version: "Version 2.0",
+  intro: "Child safety is the highest priority at Classify. This policy outlines our comprehensive commitments to protecting children on our platform, complying with the Children's Online Privacy Protection Act (COPPA), the EU General Data Protection Regulation (GDPR) Article 8, the UK Children's Code, and child protection laws in all countries where we operate.",
+  sections: [
+    { id: "commitment", icon: "Heart", title: "Our Commitment to Child Safety", paragraphs: ["At Classify, we believe every child deserves a safe and educational digital environment. Our platform was designed from the ground up with child safety as the primary consideration. We don't just comply with laws — we strive to exceed required standards to provide the highest level of protection.", "Our core commitments include:"], items: ["Designing every platform feature with child safety first (Safety by Design).", "Adopting Privacy by Design principles in all data processing.", "Conducting Data Protection Impact Assessments (DPIA) for any new feature involving children's data.", "Training our entire team on child protection best practices.", "Quarterly review of our policies and practices to ensure alignment with the latest standards."] },
+    { id: "coppa", icon: "Shield", title: "COPPA Compliance", paragraphs: ["The Children's Online Privacy Protection Act (COPPA) is a U.S. federal law protecting the privacy of children under 13. We comply with all COPPA requirements even for children up to 16:", "Requirements we comply with:"], items: ["Obtaining verifiable parental consent before collecting any personal data from a child.", "Providing clear and direct notice to parents about the data we collect and how it's used.", "Granting parents the right to access and review their children's data at any time.", "Granting parents the right to request complete deletion of their children's data.", "Not requiring children to provide more information than necessary to participate in activities.", "Maintaining the confidentiality, security, and integrity of children's data we collect.", "Not retaining children's data longer than necessary to fulfill its purpose.", "Securely deleting children's data when it is no longer needed."] },
+    { id: "gdpr-children", icon: "Shield", title: "GDPR Compliance — Children's Data Protection", paragraphs: ["Article 8 of the GDPR sets additional conditions for processing children's data in the EU. We comply with:"], items: ["Obtaining parental consent for processing any child's data under 16 (or the locally specified age).", "Making reasonable efforts to verify that consent is provided by the actual parent.", "Providing clear, understandable information to children in age-appropriate language.", "Applying the Data Minimization principle — collecting only the minimum required.", "Ensuring parents' right to withdraw consent at any time.", "Conducting DPIAs for all operations involving children's data."] },
+    { id: "safe-environment", icon: "Lock", title: "Safe Environment by Design", paragraphs: ["Classify is designed as a closed, safe environment for children. Here are the protection details:"], items: ["No direct messaging: Children cannot communicate with each other or with strangers.", "No location sharing: The platform does not request or use the child's precise location.", "No social sharing: Children cannot share content outside the platform.", "No targeted advertising: We display no ads based on the child's behavior or data.", "No independent purchases: Any purchase requires parental authorization.", "Reviewed content: All educational content and games undergo thorough review before publication.", "Content filtering: Automated systems prevent any content inappropriate for children.", "Restricted accounts: Children's accounts have limited permissions (read-only).", "Built-in family guidance: Parents have clear tools to shape the child's experience.", "Automatic logout: Child sessions expire after a defined inactivity period for account protection."] },
+    { id: "data-collected", icon: "Eye", title: "Data We Collect from Children", paragraphs: ["We commit to collecting the absolute minimum data necessary for the educational service:", "Data we collect:"], items: ["First name (or nickname chosen by parent) — for display in the UI.", "Age group or date of birth — to customize appropriate educational content.", "Gender (optional) — for avatar customization only.", "Educational data — game results, levels achieved, cognitive performance reports.", "Session data — usage duration and login times (for security purposes only)."], subsections: [{ title: "Data We Never Collect from Children", items: ["Child's email address", "Child's phone number", "Precise geographic location", "Personal photos or videos of the child", "Biometric data (fingerprints, facial recognition)", "Financial information or card data", "Any persistent identifiers used for cross-site tracking"] }] },
+    { id: "parental-controls", icon: "Users", title: "Family Guidance Tools", paragraphs: ["We provide families with a comprehensive set of tools to guide their children's experience with confidence:"], items: ["Comprehensive dashboard: View child's activity, educational reports, and statistics.", "Content selection: Specify available games and educational content for the child.", "Screen time limits: Ability to set daily usage limits for the platform.", "Real-time notifications: Alerts about the child's activity and achievements.", "Data management: Ability to view, edit, and completely delete child's data.", "Privacy settings: Adjustable options for each child.", "Activity log: View detailed child activity history.", "Security settings: Enable 2FA and manage authorized devices."] },
+    { id: "data-security", icon: "Lock", title: "Children's Data Security", paragraphs: ["We apply the highest security standards specifically for children's data:"], items: ["TLS 1.3 encryption for all data in transit between the child's device and our servers.", "AES-256 encryption for all children's data stored in databases.", "Logical separation of children's data from adult data in the storage system.", "Access restriction: Only authorized personnel can access children's data.", "Security auditing: Regular security reviews including penetration tests on children's data systems.", "Immediate notification: In case of any security breach affecting children's data, we notify parents and relevant authorities within 72 hours.", "Encrypted backups: Daily encrypted backups with monthly restoration testing."] },
+    { id: "retention-deletion", icon: "AlertTriangle", title: "Children's Data Retention and Deletion", paragraphs: ["We adhere to a strict retention and deletion policy for children's data:"], items: ["Personal data: Deleted within 30 days of parent request or child account deletion.", "Educational data: Parents can export before deletion in JSON or PDF format.", "Session data: Automatically deleted after 90 days.", "Backups: Deleted child's data is purged from all backups within 90 days.", "Anonymized data: We may retain fully anonymized statistical data to improve our educational algorithms.", "Confirmation: Parents receive email confirmation after deletion is completed."] },
+    { id: "third-party", icon: "Shield", title: "Third Parties and Children's Data", paragraphs: ["Our policy regarding sharing children's data with third parties is strict:"], items: ["We never sell children's data to any party.", "We do not share children's data for marketing or advertising purposes.", "We do not allow any third party to collect data about children on our platform.", "Essential service providers (such as hosting) are bound by strict agreements preventing access to children's data.", "We do not use any third-party analytics or tracking tools on children's pages.", "In case of merger or acquisition, we ensure the buyer commits to the same children's data protection standards."] },
+    { id: "reporting", icon: "AlertTriangle", title: "Reporting Concerns", paragraphs: ["We encourage parents and users to immediately report any concerns about child safety:"], items: ["Email: safety@classi-fy.com (for urgent child safety reports)", "General email: support@classi-fy.com", "We commit to reviewing all child safety reports within 24 hours.", "In case of immediate danger to any child, we will take immediate action including notifying relevant authorities.", "We fully cooperate with law enforcement in any investigations related to child safety."] },
+    { id: "contact", icon: "Mail", title: "Contact Us About Child Safety", paragraphs: ["For any inquiries related to child safety or privacy on our platform:"], items: ["Child Safety Team: safety@classi-fy.com", "Data Protection Officer: privacy@classi-fy.com", "General Support: support@classi-fy.com", "Website: https://classi-fy.com/contact", "We commit to responding to all child safety inquiries within 48 hours maximum."] },
+  ],
+};
+
+const iconMap: Record<string, JSX.Element> = {
+  Heart: <Heart className="w-5 h-5" />, Shield: <Shield className="w-5 h-5" />, Lock: <Lock className="w-5 h-5" />,
+  Eye: <Eye className="w-5 h-5" />, Users: <Users className="w-5 h-5" />, AlertTriangle: <AlertTriangle className="w-5 h-5" />,
+  Mail: <Mail className="w-5 h-5" />, FileText: <FileText className="w-5 h-5" />, Smartphone: <Smartphone className="w-5 h-5" />,
+};
+
+export const ChildSafety = (): JSX.Element => {
+  const { i18n } = useTranslation();
+  const [, navigate] = useLocation();
+  const { isDark } = useTheme();
+  const lang = i18n.language === "ar" ? "ar" : "en";
+  const isRTL = lang === "ar";
+  const BackArrow = isRTL ? ArrowRight : ArrowLeft;
+  const c = lang === "ar" ? ar : en;
+  const [openToc, setOpenToc] = useState(false);
+
+  return (
+    <div className={`min-h-screen pb-24 ${isDark ? "bg-gray-900" : "bg-gradient-to-b from-green-50 to-white"}`} dir={isRTL ? "rtl" : "ltr"}>
+      <header className="bg-gradient-to-r from-green-600 to-teal-700 text-white">
+        <div className="max-w-4xl mx-auto px-4 py-5 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button onClick={() => window.history.length > 1 ? window.history.back() : navigate("/")} className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"><BackArrow className="w-5 h-5" /></button>
+            <div className="flex items-center gap-2"><Baby className="w-6 h-6" /><h1 className="text-xl md:text-2xl font-bold">{c.title}</h1></div>
+          </div>
+        </div>
+      </header>
+      <main className="max-w-4xl mx-auto px-4 py-8">
+        <div className={`rounded-2xl shadow-lg overflow-hidden mb-6 ${isDark ? "bg-gray-800" : "bg-white"}`}>
+          <div className={`px-6 md:px-8 py-5 ${isDark ? "border-b border-gray-700" : "bg-green-50 border-b border-green-100"}`}>
+            <p className={`text-lg font-semibold ${isDark ? "text-white" : "text-gray-900"}`}>Classify — {c.subtitle}</p>
+            <div className="flex flex-wrap gap-4 mt-2">
+              <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>{lang === "ar" ? "آخر تحديث" : "Last Updated"}: {c.lastUpdated}</p>
+              <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>{c.version}</p>
+            </div>
+          </div>
+          <div className="px-6 md:px-8 py-6"><p className={`leading-relaxed text-base ${isDark ? "text-gray-300" : "text-gray-600"}`}>{c.intro}</p></div>
+        </div>
+        <div className={`rounded-2xl shadow-lg overflow-hidden mb-6 ${isDark ? "bg-gray-800" : "bg-white"}`}>
+          <button onClick={() => setOpenToc(!openToc)} className={`w-full px-6 md:px-8 py-4 flex items-center justify-between ${isDark ? "hover:bg-gray-750" : "hover:bg-gray-50"} transition-colors`}>
+            <h2 className={`text-lg font-bold ${isDark ? "text-white" : "text-gray-900"}`}>{lang === "ar" ? "📑 جدول المحتويات" : "📑 Table of Contents"}</h2>
+            <ChevronDown className={`w-5 h-5 transition-transform ${openToc ? "rotate-180" : ""} ${isDark ? "text-gray-400" : "text-gray-500"}`} />
+          </button>
+          {openToc && (<div className={`px-6 md:px-8 pb-5 border-t ${isDark ? "border-gray-700" : "border-gray-100"}`}><ol className="pt-3 space-y-1.5">{c.sections.map((s, i) => (<li key={s.id}><a href={`#${s.id}`} className={`text-sm hover:underline ${isDark ? "text-green-400" : "text-green-600"}`}>{i + 1}. {s.title}</a></li>))}</ol></div>)}
+        </div>
+        <div className={`rounded-2xl shadow-lg overflow-hidden ${isDark ? "bg-gray-800" : "bg-white"}`}>
+          <div className="px-6 md:px-8 py-6 space-y-8">
+            {c.sections.map((section, idx) => (
+              <section key={section.id} id={section.id}>
+                <div className="flex items-start gap-3 mb-3">
+                  <div className={`p-2 rounded-lg shrink-0 ${isDark ? "bg-green-900/30 text-green-400" : "bg-green-100 text-green-600"}`}>{iconMap[section.icon] || <Shield className="w-5 h-5" />}</div>
+                  <h2 className={`text-lg md:text-xl font-bold pt-0.5 ${isDark ? "text-white" : "text-gray-900"}`}>{idx + 1}. {section.title}</h2>
+                </div>
+                <div className={`${isRTL ? "pr-12" : "pl-12"}`}>
+                  {section.paragraphs.map((p, pi) => (<p key={pi} className={`leading-relaxed mb-3 ${isDark ? "text-gray-300" : "text-gray-600"}`}>{p}</p>))}
+                  {section.items && (<ul className="space-y-2 mb-4">{section.items.map((item, i) => (<li key={i} className={`flex items-start gap-2 ${isDark ? "text-gray-300" : "text-gray-600"}`}><span className="text-green-500 mt-1.5 shrink-0">•</span><span className="leading-relaxed">{item}</span></li>))}</ul>)}
+                  {(section as any).subsections?.map((sub: any, si: number) => (
+                    <div key={si} className={`mt-4 p-4 rounded-xl ${isDark ? "bg-gray-750 border border-gray-700" : "bg-red-50 border border-red-200"}`}>
+                      <h3 className={`font-semibold mb-2 ${isDark ? "text-red-400" : "text-red-700"}`}>{sub.title}</h3>
+                      {sub.items && (<ul className="space-y-1.5">{sub.items.map((item: string, i: number) => (<li key={i} className={`flex items-start gap-2 text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}><span className="text-red-500 mt-1 shrink-0">✗</span><span className="leading-relaxed">{item}</span></li>))}</ul>)}
+                    </div>
+                  ))}
+                </div>
+                {idx < c.sections.length - 1 && <div className={`mt-6 border-b ${isDark ? "border-gray-700" : "border-gray-100"}`} />}
+              </section>
+            ))}
+          </div>
+        </div>
+        <div className={`rounded-2xl shadow-lg overflow-hidden mt-6 ${isDark ? "bg-gray-800" : "bg-white"}`}>
+          <div className="px-6 md:px-8 py-5">
+            <h3 className={`font-bold mb-3 ${isDark ? "text-white" : "text-gray-900"}`}>{lang === "ar" ? "📄 صفحات قانونية ذات صلة" : "📄 Related Legal Pages"}</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+              {[
+                { href: "/privacy-policy", label: lang === "ar" ? "سياسة الخصوصية" : "Privacy Policy" },
+                { href: "/terms", label: lang === "ar" ? "شروط الاستخدام" : "Terms of Service" },
+                { href: "/cookie-policy", label: lang === "ar" ? "سياسة ملفات الارتباط" : "Cookie Policy" },
+                { href: "/delete-account", label: lang === "ar" ? "حذف الحساب" : "Delete Account" },
+              ].map(link => (
+                <button key={link.href} onClick={() => navigate(link.href)} className={`text-sm px-3 py-2 rounded-lg text-start transition-colors ${isDark ? "bg-gray-700 hover:bg-gray-600 text-green-400" : "bg-green-50 hover:bg-green-100 text-green-600"}`}>{link.label}</button>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="text-center py-6"><p className={`text-sm ${isDark ? "text-gray-500" : "text-gray-400"}`}>© {new Date().getFullYear()} Classify by Proomnes. {lang === "ar" ? "جميع الحقوق محفوظة." : "All rights reserved."}</p></div>
+      </main>
+
+      <ChildBottomNav activeTab="games" />
+    </div>
+  );
+};

@@ -1,0 +1,159 @@
+apply plugin: 'com.android.application'
+
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+def resolveProp = { String key, String fallback = null ->
+    if (project.hasProperty(key) && project.property(key) != null && project.property(key).toString().trim()) {
+        return project.property(key).toString().trim()
+    }
+    return fallback
+}
+
+def resolveIntProp = { String key, int fallback ->
+    def value = resolveProp(key, null)
+    if (!value) {
+        return fallback
+    }
+    try {
+        return Integer.parseInt(value)
+    } catch (Exception ignored) {
+        return fallback
+    }
+}
+
+def defaultVersionCode = 31
+def defaultVersionName = "2.1.16"
+def resolvedVersionCode = resolveIntProp("CLASSIFY_VERSION_CODE", defaultVersionCode)
+def resolvedVersionName = resolveProp("CLASSIFY_VERSION_NAME", defaultVersionName)
+
+def signingStoreFile = resolveProp("CLASSIFY_SIGNING_STORE_FILE", keystoreProperties['storeFile'])
+def signingStorePassword = resolveProp("CLASSIFY_SIGNING_STORE_PASSWORD", keystoreProperties['storePassword'])
+def signingKeyAlias = resolveProp("CLASSIFY_SIGNING_KEY_ALIAS", keystoreProperties['keyAlias'])
+def signingKeyPassword = resolveProp("CLASSIFY_SIGNING_KEY_PASSWORD", keystoreProperties['keyPassword'])
+def resolveSigningStorePath = {
+    if (!signingStoreFile) {
+        return null
+    }
+
+    def moduleRelativePath = file(signingStoreFile)
+    if (moduleRelativePath.exists()) {
+        return moduleRelativePath
+    }
+
+    def rootRelativePath = rootProject.file(signingStoreFile)
+    if (rootRelativePath.exists()) {
+        return rootRelativePath
+    }
+
+    return moduleRelativePath
+}
+
+def resolvedSigningStorePath = resolveSigningStorePath()
+def hasResolvedSigning = signingStoreFile && signingStorePassword && signingKeyAlias && signingKeyPassword && resolvedSigningStorePath != null && resolvedSigningStorePath.exists()
+
+gradle.taskGraph.whenReady { graph ->
+    def releaseTaskRequested = graph.allTasks.any { task ->
+        def taskName = String.valueOf(task.name).toLowerCase()
+        return taskName.contains("release")
+    }
+
+    if (!releaseTaskRequested) {
+        return
+    }
+
+    def signingErrors = []
+    if (!signingStoreFile) signingErrors << "CLASSIFY_SIGNING_STORE_FILE (or keystore.properties storeFile)"
+    if (!signingStorePassword) signingErrors << "CLASSIFY_SIGNING_STORE_PASSWORD (or keystore.properties storePassword)"
+    if (!signingKeyAlias) signingErrors << "CLASSIFY_SIGNING_KEY_ALIAS (or keystore.properties keyAlias)"
+    if (!signingKeyPassword) signingErrors << "CLASSIFY_SIGNING_KEY_PASSWORD (or keystore.properties keyPassword)"
+
+    if (signingStoreFile && (resolvedSigningStorePath == null || !resolvedSigningStorePath.exists())) {
+        signingErrors << "Signing keystore file not found: ${signingStoreFile}"
+    }
+
+    if (!signingErrors.isEmpty()) {
+        throw new RuntimeException(
+            "Release signing is mandatory for Google Play bundles. Missing/invalid signing configuration:\n- " + signingErrors.join("\n- ")
+        )
+    }
+}
+
+android {
+    namespace "com.classi_fy.twa"
+    compileSdk rootProject.ext.compileSdkVersion
+    defaultConfig {
+        applicationId "com.classi_fy.twa"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode resolvedVersionCode
+        versionName resolvedVersionName
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        aaptOptions {
+             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
+             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
+            ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+
+    signingConfigs {
+        release {
+            if (hasResolvedSigning) {
+                storeFile resolvedSigningStorePath
+                storePassword signingStorePassword
+                keyAlias signingKeyAlias
+                keyPassword signingKeyPassword
+                enableV1Signing true
+                enableV2Signing true
+                enableV3Signing true
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            debuggable false
+            jniDebuggable false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (hasResolvedSigning) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+}
+
+repositories {
+    flatDir{
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "com.android.billingclient:billing:8.3.0"
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+    implementation project(':capacitor-android')
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    implementation project(':capacitor-cordova-android-plugins')
+}
+
+apply from: 'capacitor.build.gradle'
+
+try {
+    def servicesJSON = file('google-services.json')
+    if (servicesJSON.text) {
+        apply plugin: 'com.google.gms.google-services'
+    }
+} catch(Exception e) {
+    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+}
+

@@ -1,0 +1,116 @@
+# Dependencies
+node_modules
+node_modules/
+
+# Build output
+dist
+dist/
+build-output/
+server/public
+
+# Environment files (never commit production secrets)
+.env
+.env.local
+.env.production
+.env.docker
+.env.*.local
+
+# Firebase service account secrets
+service-account.json
+firebase-service-account.json
+secure/*.json
+!secure/.gitkeep
+
+# Logs
+*.log
+logs/
+nginx/logs/*.log
+!nginx/logs/.gitkeep
+
+# SSL certificates (never commit)
+nginx/ssl/*.pem
+nginx/ssl/*.crt
+nginx/ssl/*.key
+!nginx/ssl/.gitkeep
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE/Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+vite.config.ts.*
+
+# Testing
+coverage/
+
+# Cache
+.cache
+.next
+
+# Archives
+*.tar.gz
+*.tgz
+
+# Database backups
+*.sql
+*.sql.gz
+backups/
+!migrations/20260321__db_hardening_and_maintenance.sql
+
+# Uploads (keep structure)
+uploads/*
+!uploads/.gitkeep
+
+# Mobile builds
+android/.gradle/
+android/build/
+android/app/build/
+android/keystore.properties
+android/*.keystore
+android/*.jks
+android/keystore/*.jks
+*.keystore
+android/.tools/
+ios/Pods/
+ios/build/
+*.ipa
+*.aab
+
+# Google Play build artifacts (kept locally, uploaded to GP Console)
+classify-googleplay.*
+
+# APK builds (except the published one)
+android/app/build/
+
+# Published web-download artifacts (must be tracked)
+!client/public/apps/classify-app-latest.apk
+!client/public/apps/classify-googleplay-latest.aab
+!client/public/apps/archive/*.apk
+!client/public/apps/archive/*.aab
+
+# Replit artifacts
+.replit
+replit.nix
+.local/
+ecosystem.config.cjs
+
+# AI/temp artifacts
+docs/_ai-temp/
+attached_assets/
+debug.png
+test-results/
+_gplay_extract/
+signing-key-info.txt
+Classify - Google Play package.zip
+
+# Redundant env examples
+.env.example.production
+.env.production.example
+.env.staging.example
+
+
+.fake

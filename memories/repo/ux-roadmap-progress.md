@@ -1,0 +1,18 @@
+- 2026-03-22: Stabilization progress in docs/UX_FULL_AUDIT_REPORT_2026-03-22.md
+- Phase 8 DONE: Parent trusted device controls in Settings security (list/revoke/delete).
+- Phase 9 DONE: Role onboarding checklists added to Parent/Teacher/School/Library dashboards.
+- Phase 10 DONE: Parent session UX added (channel/status, manual trusted-device refresh, clear session action).
+- Phase 11 DONE: CI smoke gate upgraded with runtime/trial/session journey assertions.
+- Phase 12 DONE: Added role parity and usability cycle docs, enforced by smoke checks.
+- Added generic i18n keys `roleOnboarding.*` to app locales: ar,en,pt,es,fr,de,tr,ru,zh,hi.
+- Session UX keys added in `settings.*` for all app locales: ar,en,pt,es,fr,de,tr,ru,zh,hi.
+- Stabilization 1-2 weeks items and maturity 3-4 weeks items are marked DONE in report.
+- 2026-03-25: Child trial banner was converted from sticky layout element to dismissible floating card to avoid page shift in trial/logged child sessions; daily login reward card is now dismissible via X and auto-closes immediately after claim.
+- 2026-03-25: Parent trial onboarding nudges now include a 7-click cadence in Parent Dashboard (shows upgrade/register prompt with social quick-login icons) and Wallet-specific trial guard that shows quick-register card; deposit attempts in trial now show explicit failure + register-first guidance instead of proceeding.
+- 2026-03-25: Mobile-first responsiveness improved for School/Teacher/Library dashboards: headers now wrap safely on narrow widths, KPI cards stack on small screens, and tab bars use horizontal scroll instead of dense fixed grids.
+- 2026-03-25: Second-pass small-screen polish completed for School/Teacher/Library modal flows: dialog containers now use viewport-safe widths (`w-[calc(100vw-2rem)] sm:max-w-*`) and dense modal grids (price/subject, poll toggles, library product paired fields, child reports stats) now collapse to single-column on extra-small screens.
+- 2026-03-25: Added adult multi-account cache + instant account switching (without logout) across Parent/School/Teacher/Library flows: successful logins now cache sessions, dashboards expose a switch-account control, and selecting a cached session switches directly to its dashboard route.
+- 2026-03-29: Task creation flows now support media-flexible content (question text or media, answers text/media/mixed) with shared frontend/backend validation; mandatory child popup renders audio/video/image question + answer media, and task drafts persist for parent custom forms.
+- 2026-03-29: Post-feature cleanup pass trimmed non-functional diff churn in AssignTask and re-ran verification (tsc/build/tests/health all passing; health checked against built server with local DB warnings in background workers).
+- 2026-03-30: Parent task form now supports live recording (audio/video) for question and answers, direct camera capture + local upload, retake/delete recording actions, public-task profit hint copy, and same-origin camera/microphone enabled in Permissions-Policy headers.
+- 2026-03-30: TaskForm card UX was decluttered by grouping question/answer media actions into collapsible panels, moving sticker actions into a dedicated expandable section, and increasing answer card spacing for easier mobile interaction without removing existing media/sticker capabilities.

@@ -1,0 +1,215 @@
+﻿/* Font and heading styles */
+
+@font-face
+{
+    font-family: LalyUPC;
+    src: url('./../Fonts/upclb.ttf');
+}
+
+html { font-size: 62.5%; } 
+
+body
+{
+    background-color:black;
+    font-size:3rem;
+    color: white;
+    position: relative;
+}
+
+body > video 
+{
+    position: absolute;
+    z-index: 0;
+    bottom:0;
+    right:0;
+    height: 100%;
+}
+
+h1
+{
+    font-family:LalyUPC;
+    margin: 5rem auto 1rem auto;
+    text-align:center;
+}
+
+a:focus {
+    outline: 0;
+}
+
+/* sections common */
+.text-panel {
+    padding: 2rem 6rem;
+    font-family: Arial;
+    font-size: 1.8rem;
+    width: 55%;
+}
+
+.text-panel li
+{
+    margin-bottom: 3rem;
+}
+
+.slides-container > *
+{
+    background-repeat:no-repeat;
+}
+
+/* Splash screen */
+#spalsh-screen {
+ background-image:url('./images/splash/splash.png');
+ background-position:center;
+}
+
+/* your mission panel */
+.instruction-videos
+{
+    margin: 6rem 0;
+}
+
+.instruction-videos video {
+    float: left;
+    width: 328px;
+    margin-left: 4rem;
+    border: whitesmoke 1px solid;
+    height: 184px;
+}
+
+/* sliders */
+.ui-slider-horizontal .ui-state-default {
+    background: url(./images/resultpoint.png) no-repeat scroll 50% 50%;
+    width: 54px;
+    height: 74px;
+    border:none;
+}
+
+a.ui-slider-handle {
+    border:none;
+}
+
+.slider-value {
+    font-size: 2.4rem;
+    position: absolute;
+    top: -3rem;
+    color: azure;
+}
+.slider-panel
+{
+    padding: 0 5rem;
+    font-family: Arial;
+    font-size: 3rem;
+    width: 75%;
+    margin: auto;
+}
+
+.slider-row
+{
+    width: 675px;
+    margin: 4rem auto;
+}
+
+.slider-row > *
+{
+    font-family: LalyUPC;
+    margin:1rem auto;
+}
+
+.slider-row > .slider-label {
+    font-size: 4rem;
+    text-align: center;
+}
+
+.slider-row > .slider {
+    height: 62px;
+    background-image: url(./images/variables.png);
+    background-color: transparent;
+    border:none;
+    margin-top: 4rem;
+}
+
+.slider-extremities {
+    position:relative;
+}
+
+.slider-extremities > div {
+    position:absolute;
+    font-size: 1em;
+    width: 120px;
+    text-align: center;
+}
+
+.slider-min {
+    left: -60px;
+}
+
+.slider-max {
+    right: -60px;
+}
+
+/* game results */
+#game-results
+{
+  position: relative;
+  padding:0;
+}
+
+#game-results > *
+{
+    position: absolute;
+    width: 100%;
+}
+
+#game-results > video
+{
+    bottom: 0;
+    right: 0;
+}
+
+#game-results > div
+{
+    top: 0;
+}
+
+#outcome-panel {
+    display:none;
+}
+
+#outcome-image {
+    width: 80%;
+    margin: 3rem auto;
+    display: block;
+}
+
+#result-table {
+    margin-top:3rem;
+    font-family:LalyUPC;
+    width:675px;
+    height:110px;
+    margin:1rem auto;
+    background-image: url('./images/resultbar.png');
+    background-position:bottom center;
+    background-repeat:no-repeat;
+}
+
+#result-table > tbody td {
+    width: 96px;
+    position:relative;
+}
+
+#result-pointer {
+    position: absolute;
+    background-image: url('./images/resultpoint.png');
+    width: 54px;
+    height: 74px;
+    margin: 0;
+    padding: 0;
+    left: 20px;
+    top: 12px;
+}
+
+.text-panel-outcome {
+    padding: 2rem 5rem;
+    font-family: Arial;
+    font-size: 2.5rem;
+    width: 38%;
+    margin-left: 13%;
+}

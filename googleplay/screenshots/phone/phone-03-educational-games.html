@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>Phone 03 — Educational Games | 1080×1920</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1080px; height: 1920px; overflow: hidden; font-family: 'Cairo', sans-serif; background: #0D0B1A; }
+  .screen { width: 1080px; height: 1920px; background: linear-gradient(160deg, #0D0B1A 0%, #1A0D2E 40%, #0D1A2E 100%); display: flex; flex-direction: column; position: relative; overflow: hidden; }
+  .glow { position: absolute; width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(249,115,22,0.15) 0%, transparent 70%); top: 200px; left: 50%; transform: translateX(-50%); pointer-events: none; }
+  .dots-bg { position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 55px 55px; pointer-events: none; }
+
+  /* Header */
+  .header { padding: 70px 60px 30px; position: relative; z-index: 10; }
+  .headline h1 { font-size: 58px; font-weight: 900; color: #FFFFFF; line-height: 1.2; }
+  .headline h1 .orange { color: #F97316; }
+  .headline p { font-size: 26px; color: #94A3B8; font-weight: 600; margin-top: 12px; }
+  .points-note { display: inline-flex; align-items: center; gap: 10px; background: rgba(249,115,22,0.15); border: 1px solid rgba(249,115,22,0.4); border-radius: 20px; padding: 10px 24px; margin-top: 20px; }
+  .points-note span { font-size: 22px; color: #FB923C; font-weight: 700; }
+
+  /* Filter tabs */
+  .filter-row { padding: 20px 40px; position: relative; z-index: 10; display: flex; gap: 14px; overflow: hidden; }
+  .ftab { padding: 12px 26px; border-radius: 20px; font-size: 20px; font-weight: 700; flex-shrink: 0; }
+  .ftab.active { background: #F97316; color: white; }
+  .ftab.inactive { background: rgba(255,255,255,0.08); color: #94A3B8; border: 1px solid rgba(255,255,255,0.1); }
+
+  /* Games grid */
+  .games-grid { padding: 10px 40px; position: relative; z-index: 10; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1; }
+  .game-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 28px; padding: 28px 24px; display: flex; flex-direction: column; position: relative; overflow: hidden; cursor: pointer; }
+  .game-card::before { content: ''; position: absolute; inset: 0; border-radius: 28px; opacity: 0; transition: opacity 0.3s; }
+  .game-card.orange { border-color: rgba(249,115,22,0.3); }
+  .game-card.orange::before { background: linear-gradient(135deg, rgba(249,115,22,0.1), transparent); opacity: 1; }
+  .game-card.purple { border-color: rgba(124,58,237,0.3); }
+  .game-card.purple::before { background: linear-gradient(135deg, rgba(124,58,237,0.1), transparent); opacity: 1; }
+  .game-card.green { border-color: rgba(76,208,128,0.3); }
+  .game-card.green::before { background: linear-gradient(135deg, rgba(76,208,128,0.1), transparent); opacity: 1; }
+  .game-card.blue { border-color: rgba(59,130,246,0.3); }
+  .game-card.blue::before { background: linear-gradient(135deg, rgba(59,130,246,0.1), transparent); opacity: 1; }
+  .game-card.pink { border-color: rgba(236,72,153,0.3); }
+  .game-card.pink::before { background: linear-gradient(135deg, rgba(236,72,153,0.1), transparent); opacity: 1; }
+  .game-card.yellow { border-color: rgba(245,158,11,0.3); }
+  .game-card.yellow::before { background: linear-gradient(135deg, rgba(245,158,11,0.1), transparent); opacity: 1; }
+  .game-icon { font-size: 56px; margin-bottom: 14px; }
+  .game-name { font-size: 24px; font-weight: 800; color: #FFFFFF; margin-bottom: 6px; }
+  .game-subject { font-size: 18px; color: #94A3B8; font-weight: 600; margin-bottom: 12px; }
+  .game-pts-row { display: flex; justify-content: space-between; align-items: center; }
+  .game-pts { font-size: 20px; font-weight: 800; color: #F59E0B; }
+  .play-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .play-btn.orange { background: #F97316; }
+  .play-btn.purple { background: #7C3AED; }
+  .play-btn.green { background: #10B981; }
+  .play-btn.blue { background: #3B82F6; }
+  .play-btn.pink { background: #EC4899; }
+  .play-btn.yellow { background: #F59E0B; }
+  .new-badge { position: absolute; top: 16px; left: 16px; background: #EF4444; color: white; font-size: 16px; font-weight: 800; padding: 4px 12px; border-radius: 10px; }
+  .stars { font-size: 16px; color: #FCD34D; margin-bottom: 4px; }
+
+  /* Bottom note */
+  .bottom-note { padding: 16px 60px 50px; position: relative; z-index: 10; text-align: center; }
+  .bottom-note p { font-size: 26px; color: #94A3B8; font-weight: 600; }
+  .bottom-note p span { color: #F97316; font-weight: 800; }
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="glow"></div>
+  <div class="dots-bg"></div>
+
+  <div class="header">
+    <div class="headline">
+      <h1>تعلّم بالمرح<br><span class="orange">🎮 ألعاب تعليمية</span></h1>
+      <p>تشمل الرياضيات والذاكرة والمنطق والإملاء</p>
+      <div class="points-note"><span>🏆 كل لعبة = نقاط حقيقية لشجرتك</span></div>
+    </div>
+  </div>
+
+  <div class="filter-row">
+    <div class="ftab active">الكل</div>
+    <div class="ftab inactive">رياضيات</div>
+    <div class="ftab inactive">ذاكرة</div>
+    <div class="ftab inactive">منطق</div>
+    <div class="ftab inactive">لغة</div>
+  </div>
+
+  <div class="games-grid">
+    <!-- Game 1 -->
+    <div class="game-card orange">
+      <div class="new-badge">جديد</div>
+      <div class="game-icon">🧮</div>
+      <div class="stars">★★★★★</div>
+      <div class="game-name">تحدي الأرقام</div>
+      <div class="game-subject">رياضيات • 6-10 سنوات</div>
+      <div class="game-pts-row">
+        <span class="game-pts">+30 نقطة</span>
+        <div class="play-btn orange">▶</div>
+      </div>
+    </div>
+    <!-- Game 2 -->
+    <div class="game-card purple">
+      <div class="game-icon">🧠</div>
+      <div class="stars">★★★★★</div>
+      <div class="game-name">بطاقات الذاكرة</div>
+      <div class="game-subject">ذاكرة • 5-12 سنوات</div>
+      <div class="game-pts-row">
+        <span class="game-pts">+25 نقطة</span>
+        <div class="play-btn purple">▶</div>
+      </div>
+    </div>
+    <!-- Game 3 -->
+    <div class="game-card green">
+      <div class="game-icon">🐱</div>
+      <div class="stars">★★★★☆</div>
+      <div class="game-name">مملكة القطط</div>
+      <div class="game-subject">منطق • 7-14 سنوات</div>
+      <div class="game-pts-row">
+        <span class="game-pts">+40 نقطة</span>
+        <div class="play-btn green">▶</div>
+      </div>
+    </div>
+    <!-- Game 4 -->
+    <div class="game-card blue">
+      <div class="game-icon">🔤</div>
+      <div class="stars">★★★★★</div>
+      <div class="game-name">أملاء الكلمات</div>
+      <div class="game-subject">لغة عربية • 6-10 سنوات</div>
+      <div class="game-pts-row">
+        <span class="game-pts">+20 نقطة</span>
+        <div class="play-btn blue">▶</div>
+      </div>
+    </div>
+    <!-- Game 5 -->
+    <div class="game-card pink">
+      <div class="game-icon">🎨</div>
+      <div class="stars">★★★★☆</div>
+      <div class="game-name">الألوان والأشكال</div>
+      <div class="game-subject">إبداع • 4-8 سنوات</div>
+      <div class="game-pts-row">
+        <span class="game-pts">+15 نقطة</span>
+        <div class="play-btn pink">▶</div>
+      </div>
+    </div>
+    <!-- Game 6 -->
+    <div class="game-card yellow">
+      <div class="game-icon">🌍</div>
+      <div class="stars">★★★★★</div>
+      <div class="game-name">رحلة الجغرافيا</div>
+      <div class="game-subject">علوم • 8-14 سنوات</div>
+      <div class="game-pts-row">
+        <span class="game-pts">+35 نقطة</span>
+        <div class="play-btn yellow">▶</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-note">
+    <p>+15 لعبة تعليمية أخرى<br><span>تُضاف كل أسبوع ✨</span></p>
+  </div>
+</div>
+</body>
+</html>

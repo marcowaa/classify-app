@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-0K11FDXNEW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-0K11FDXNEW');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1400">
+<title>Classify - لوحة تحكم الوالدين</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Cairo', sans-serif;
+    width: 1400px;
+    height: 880px;
+    overflow: hidden;
+  }
+
+  .canvas {
+    width: 1400px;
+    height: 880px;
+    background: #F8F7FF;
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 240px;
+    background: linear-gradient(180deg, #1A0D3D 0%, #0D0A1E 100%);
+    display: flex;
+    flex-direction: column;
+    padding: 28px 0;
+    flex-shrink: 0;
+  }
+
+  .sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 24px 28px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 20px;
+  }
+
+  .s-logo-icon {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, #7C3AED, #4CD080);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 900; color: white;
+  }
+
+  .s-logo-text { font-size: 20px; font-weight: 900; color: white; }
+
+  .nav-section-title {
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 0 24px 10px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 24px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin: 0 8px;
+    border-radius: 10px;
+  }
+
+  .nav-item.active {
+    background: rgba(124,58,237,0.2);
+    color: white;
+    border: 1px solid rgba(124,58,237,0.4);
+  }
+
+  .nav-item-icon { font-size: 18px; }
+
+  .nav-badge {
+    margin-right: auto;
+    background: #7C3AED;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  /* Sidebar footer */
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 20px 24px 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .parent-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .parent-avatar {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, #7C3AED, #A78BFA);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  .parent-name { font-size: 14px; font-weight: 700; color: white; }
+  .parent-role { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+  /* Main content */
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Topbar */
+  .topbar {
+    height: 64px;
+    background: white;
+    border-bottom: 1px solid #E8E0FF;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    flex-shrink: 0;
+  }
+
+  .topbar-title { font-size: 20px; font-weight: 800; color: #1A0D3D; }
+  .topbar-subtitle { font-size: 13px; color: #6B7280; }
+
+  .topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .btn-add-task {
+    background: linear-gradient(135deg, #7C3AED, #6D28D9);
+    color: white;
+    padding: 10px 22px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 16px rgba(124,58,237,0.4);
+  }
+
+  .notif-btn {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: #F3F4F6;
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    position: relative;
+  }
+
+  .notif-dot {
+    position: absolute;
+    top: 8px; right: 8px;
+    width: 8px; height: 8px;
+    background: #EF4444;
+    border-radius: 50%;
+    border: 2px solid white;
+  }
+
+  /* Dashboard body */
+  .dashboard-body {
+    flex: 1;
+    padding: 24px 32px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* Stats row */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    flex-shrink: 0;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px 24px;
+    border: 1px solid #E8E0FF;
+    box-shadow: 0 2px 12px rgba(124,58,237,0.06);
+  }
+
+  .sc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .sc-label { font-size: 13px; color: #6B7280; font-weight: 600; }
+
+  .sc-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  .si-p { background: rgba(124,58,237,0.1); }
+  .si-g { background: rgba(76,208,128,0.15); }
+  .si-o { background: rgba(249,115,22,0.1); }
+  .si-b { background: rgba(59,130,246,0.1); }
+
+  .sc-value { font-size: 28px; font-weight: 900; color: #1A0D3D; }
+
+  .sc-change {
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .change-up { color: #22C55E; }
+  .change-down { color: #EF4444; }
+
+  /* Content grid */
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 20px;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* Children section */
+  .children-section {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #E8E0FF;
+    box-shadow: 0 2px 12px rgba(124,58,237,0.06);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .section-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid #F3F0FF;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .section-title { font-size: 16px; font-weight: 800; color: #1A0D3D; }
+
+  .section-action {
+    font-size: 13px;
+    color: #7C3AED;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  /* Children cards */
+  .children-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    padding: 20px 24px;
+    overflow-y: auto;
+  }
+
+  .child-card {
+    border-radius: 14px;
+    border: 1.5px solid #E8E0FF;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    background: #FDFCFF;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .child-card:hover { border-color: #7C3AED; box-shadow: 0 4px 20px rgba(124,58,237,0.15); }
+
+  .child-card-avatar {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px;
+    border: 3px solid;
+    position: relative;
+  }
+
+  .ca-purple { border-color: #7C3AED; background: rgba(124,58,237,0.1); }
+  .ca-green { border-color: #22C55E; background: rgba(34,197,94,0.1); }
+  .ca-orange { border-color: #F97316; background: rgba(249,115,22,0.1); }
+
+  .child-level-badge {
+    position: absolute;
+    bottom: -4px; right: -4px;
+    background: #7C3AED;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid white;
+  }
+
+  .child-card-name { font-size: 15px; font-weight: 800; color: #1A0D3D; }
+  .child-card-age { font-size: 12px; color: #6B7280; }
+
+  .child-mini-progress {
+    width: 100%;
+  }
+
+  .cmp-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #6B7280;
+    margin-bottom: 5px;
+  }
+
+  .cmp-bar {
+    height: 6px;
+    background: #E8E0FF;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .cmp-fill {
+    height: 100%;
+    border-radius: 6px;
+  }
+
+  .cf-purple { background: linear-gradient(90deg, #7C3AED, #A78BFA); }
+  .cf-green { background: linear-gradient(90deg, #22C55E, #4ADE80); }
+  .cf-orange { background: linear-gradient(90deg, #F97316, #FB923C); }
+
+  .child-stats-row {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .child-mini-stat {
+    text-align: center;
+  }
+
+  .cms-val { font-size: 16px; font-weight: 800; color: #1A0D3D; }
+  .cms-label { font-size: 10px; color: #9CA3AF; }
+
+  /* Right column */
+  .right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Wallet card */
+  .wallet-card {
+    background: linear-gradient(135deg, #7C3AED, #4C1D95);
+    border-radius: 16px;
+    padding: 24px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .wallet-bg-circle {
+    position: absolute;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+    top: -60px; left: -40px;
+  }
+
+  .wallet-label { font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 8px; }
+  .wallet-amount { font-size: 36px; font-weight: 900; margin-bottom: 4px; }
+  .wallet-currency { font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 20px; }
+
+  .wallet-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .wallet-btn {
+    flex: 1;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+  }
+
+  /* Tasks summary */
+  .tasks-card {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #E8E0FF;
+    padding: 20px;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .task-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #F3F0FF;
+  }
+
+  .task-row:last-child { border-bottom: none; }
+
+  .tr-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .tr-child { font-size: 12px; font-weight: 700; color: #6B7280; }
+  .tr-task { font-size: 14px; font-weight: 700; color: #1A0D3D; }
+
+  .tr-status {
+    margin-right: auto;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 10px;
+  }
+
+  .st-done { background: rgba(34,197,94,0.1); color: #16A34A; }
+  .st-pending { background: rgba(245,158,11,0.1); color: #D97706; }
+  .st-new { background: rgba(124,58,237,0.1); color: #7C3AED; }
+
+  /* Chart section */
+  .chart-section {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #E8E0FF;
+    padding: 20px 24px;
+    flex-shrink: 0;
+  }
+
+  .chart-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 60px;
+    margin-top: 12px;
+  }
+
+  .bar-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .bar {
+    width: 100%;
+    border-radius: 4px;
+    min-height: 4px;
+    background: linear-gradient(to top, #7C3AED, #A78BFA);
+  }
+
+  .bar-label {
+    font-size: 10px;
+    color: #9CA3AF;
+    font-weight: 600;
+  }
+
+  .bar.green { background: linear-gradient(to top, #22C55E, #4ADE80); }
+</style>
+</head>
+<body>
+<div class="canvas">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="s-logo-icon">C</div>
+      <div class="s-logo-text">Classify</div>
+    </div>
+
+    <div class="nav-section-title">الرئيسي</div>
+
+    <div class="nav-item active">
+      <span class="nav-item-icon">🏠</span>
+      لوحة التحكم
+    </div>
+
+    <div class="nav-item">
+      <span class="nav-item-icon">✅</span>
+      المهام
+      <span class="nav-badge">8</span>
+    </div>
+
+    <div class="nav-item">
+      <span class="nav-item-icon">👶</span>
+      أطفالي
+    </div>
+
+    <div class="nav-item">
+      <span class="nav-item-icon">📊</span>
+      التقارير
+    </div>
+
+    <div style="height: 20px;"></div>
+    <div class="nav-section-title">المتجر</div>
+
+    <div class="nav-item">
+      <span class="nav-item-icon">🏪</span>
+      متجر المهام
+    </div>
+
+    <div class="nav-item">
+      <span class="nav-item-icon">🛍️</span>
+      المتجر الإلكتروني
+    </div>
+
+    <div class="nav-item">
+      <span class="nav-item-icon">💰</span>
+      المحفظة
+    </div>
+
+    <div style="height: 20px;"></div>
+    <div class="nav-section-title">الحساب</div>
+
+    <div class="nav-item">
+      <span class="nav-item-icon">⚙️</span>
+      الإعدادات
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="parent-info">
+        <div class="parent-avatar">👨</div>
+        <div>
+          <div class="parent-name">أحمد محمد</div>
+          <div class="parent-role">ولي الأمر</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="main-content">
+    <!-- Topbar -->
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">لوحة تحكم ولي الأمر</div>
+        <div class="topbar-subtitle">الأحد، 29 مارس 2026</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="notif-btn">
+          🔔
+          <span class="notif-dot"></span>
+        </button>
+        <button class="btn-add-task">
+          <span>+</span>
+          إضافة مهمة
+        </button>
+      </div>
+    </div>
+
+    <!-- Dashboard body -->
+    <div class="dashboard-body">
+
+      <!-- Stats row -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="sc-header">
+            <div class="sc-label">إجمالي المهام</div>
+            <div class="sc-icon si-p">✅</div>
+          </div>
+          <div class="sc-value">48</div>
+          <div class="sc-change change-up">↑ +12 هذا الأسبوع</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="sc-header">
+            <div class="sc-label">النقاط المكتسبة</div>
+            <div class="sc-icon si-g">⭐</div>
+          </div>
+          <div class="sc-value">2,450</div>
+          <div class="sc-change change-up">↑ +380 اليوم</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="sc-header">
+            <div class="sc-label">معدل الإنجاز</div>
+            <div class="sc-icon si-o">📈</div>
+          </div>
+          <div class="sc-value">87%</div>
+          <div class="sc-change change-up">↑ +5% عن الأسبوع الماضي</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="sc-header">
+            <div class="sc-label">رصيد المحفظة</div>
+            <div class="sc-icon si-b">💰</div>
+          </div>
+          <div class="sc-value">150 ر.س</div>
+          <div class="sc-change" style="color:#6B7280;">متاح للصرف</div>
+        </div>
+      </div>
+
+      <!-- Content grid -->
+      <div class="content-grid">
+
+        <!-- Children section -->
+        <div class="children-section">
+          <div class="section-header">
+            <div class="section-title">أطفالي (3)</div>
+            <div class="section-action">+ إضافة طفل</div>
+          </div>
+
+          <div class="children-grid">
+            <!-- Child 1 -->
+            <div class="child-card">
+              <div class="child-card-avatar ca-purple">
+                🧒
+                <div class="child-level-badge">12</div>
+              </div>
+              <div class="child-card-name">يوسف</div>
+              <div class="child-card-age">10 سنوات</div>
+              <div class="child-mini-progress">
+                <div class="cmp-label">
+                  <span>المهام: 3/4</span>
+                  <span>75%</span>
+                </div>
+                <div class="cmp-bar">
+                  <div class="cmp-fill cf-purple" style="width:75%"></div>
+                </div>
+              </div>
+              <div class="child-stats-row">
+                <div class="child-mini-stat">
+                  <div class="cms-val">850</div>
+                  <div class="cms-label">نقطة</div>
+                </div>
+                <div class="child-mini-stat">
+                  <div class="cms-val">7</div>
+                  <div class="cms-label">أيام</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Child 2 -->
+            <div class="child-card">
+              <div class="child-card-avatar ca-green">
+                👧
+                <div class="child-level-badge" style="background:#22C55E;">8</div>
+              </div>
+              <div class="child-card-name">سارة</div>
+              <div class="child-card-age">8 سنوات</div>
+              <div class="child-mini-progress">
+                <div class="cmp-label">
+                  <span>المهام: 2/3</span>
+                  <span>67%</span>
+                </div>
+                <div class="cmp-bar">
+                  <div class="cmp-fill cf-green" style="width:67%"></div>
+                </div>
+              </div>
+              <div class="child-stats-row">
+                <div class="child-mini-stat">
+                  <div class="cms-val">620</div>
+                  <div class="cms-label">نقطة</div>
+                </div>
+                <div class="child-mini-stat">
+                  <div class="cms-val">5</div>
+                  <div class="cms-label">أيام</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Child 3 -->
+            <div class="child-card">
+              <div class="child-card-avatar ca-orange">
+                🧒
+                <div class="child-level-badge" style="background:#F97316;">5</div>
+              </div>
+              <div class="child-card-name">عمر</div>
+              <div class="child-card-age">6 سنوات</div>
+              <div class="child-mini-progress">
+                <div class="cmp-label">
+                  <span>المهام: 1/2</span>
+                  <span>50%</span>
+                </div>
+                <div class="cmp-bar">
+                  <div class="cmp-fill cf-orange" style="width:50%"></div>
+                </div>
+              </div>
+              <div class="child-stats-row">
+                <div class="child-mini-stat">
+                  <div class="cms-val">280</div>
+                  <div class="cms-label">نقطة</div>
+                </div>
+                <div class="child-mini-stat">
+                  <div class="cms-val">3</div>
+                  <div class="cms-label">أيام</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chart -->
+          <div class="chart-section" style="margin:0 24px 20px;padding:16px 20px;">
+            <div class="section-header" style="padding:0 0 12px;border-bottom:1px solid #F3F0FF;">
+              <div class="section-title" style="font-size:14px;">نشاط الأسبوع</div>
+              <div style="display:flex;gap:16px;">
+                <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#6B7280;">
+                  <div style="width:10px;height:10px;border-radius:2px;background:linear-gradient(#7C3AED,#A78BFA);"></div>مهام
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#6B7280;">
+                  <div style="width:10px;height:10px;border-radius:2px;background:linear-gradient(#22C55E,#4ADE80);"></div>نقاط
+                </div>
+              </div>
+            </div>
+            <div class="chart-bars">
+              <div class="bar-group">
+                <div class="bar" style="height:30px;"></div>
+                <div class="bar-label">أحد</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar green" style="height:45px;"></div>
+                <div class="bar-label">اثن</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar" style="height:52px;"></div>
+                <div class="bar-label">ثلا</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar green" style="height:38px;"></div>
+                <div class="bar-label">أرب</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar" style="height:58px;"></div>
+                <div class="bar-label">خمي</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar green" style="height:42px;"></div>
+                <div class="bar-label">جمع</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar" style="height:28px; background: linear-gradient(to top,#E8E0FF,#C4B5FD);"></div>
+                <div class="bar-label">سبت</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right column -->
+        <div class="right-column">
+          <!-- Wallet card -->
+          <div class="wallet-card">
+            <div class="wallet-bg-circle"></div>
+            <div style="position:relative;z-index:2;">
+              <div class="wallet-label">💰 رصيد المحفظة</div>
+              <div class="wallet-amount">150</div>
+              <div class="wallet-currency">ريال سعودي</div>
+              <div class="wallet-actions">
+                <div class="wallet-btn">+ إيداع</div>
+                <div class="wallet-btn">↔ تحويل</div>
+                <div class="wallet-btn">📊 كشف</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent tasks -->
+          <div class="tasks-card">
+            <div class="section-header" style="padding:0 0 12px;border-bottom:1px solid #F3F0FF;margin-bottom:4px;">
+              <div class="section-title" style="font-size:14px;">آخر المهام</div>
+              <div class="section-action">عرض الكل</div>
+            </div>
+
+            <div class="task-row">
+              <div class="tr-icon" style="background:rgba(124,58,237,0.1);">📐</div>
+              <div>
+                <div class="tr-child">يوسف</div>
+                <div class="tr-task">الضرب والقسمة</div>
+              </div>
+              <div class="tr-status st-done">مكتمل</div>
+            </div>
+
+            <div class="task-row">
+              <div class="tr-icon" style="background:rgba(59,130,246,0.1);">📖</div>
+              <div>
+                <div class="tr-child">سارة</div>
+                <div class="tr-task">قراءة القصة</div>
+              </div>
+              <div class="tr-status st-done">مكتمل</div>
+            </div>
+
+            <div class="task-row">
+              <div class="tr-icon" style="background:rgba(245,158,11,0.1);">🔬</div>
+              <div>
+                <div class="tr-child">يوسف</div>
+                <div class="tr-task">تجربة العلوم</div>
+              </div>
+              <div class="tr-status st-pending">قيد الإنجاز</div>
+            </div>
+
+            <div class="task-row">
+              <div class="tr-icon" style="background:rgba(76,208,128,0.1);">🎨</div>
+              <div>
+                <div class="tr-child">عمر</div>
+                <div class="tr-task">الرسم الإبداعي</div>
+              </div>
+              <div class="tr-status st-new">جديدة</div>
+            </div>
+
+            <div class="task-row">
+              <div class="tr-icon" style="background:rgba(236,72,153,0.1);">🎵</div>
+              <div>
+                <div class="tr-child">سارة</div>
+                <div class="tr-task">درس الموسيقى</div>
+              </div>
+              <div class="tr-status st-new">جديدة</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
+

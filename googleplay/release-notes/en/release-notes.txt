@@ -1,0 +1,14 @@
+Version 2.1.16 — March 2026
+
+✨ What's New:
+• Enhanced Growth Tree with smoother, more beautiful animations
+• 3 new educational games added to the games library
+• Faster push notifications when new tasks are assigned by parents
+• Significant improvements to parent dashboard loading speed
+
+🔧 Fixes:
+• Fixed login issue affecting some Android 14 devices
+• Improved battery consumption when app runs in the background
+• Better tablet support across all screen sizes
+
+Thank you to every family who shared reports and suggestions — you make Classify better every day.

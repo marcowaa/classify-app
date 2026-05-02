@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>Tablet 10" — Progress Reports Landscape | 1920×1200</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1920px; height: 1200px; overflow: hidden; font-family: 'Cairo', sans-serif; background: #F1F5F9; }
+  .screen { width: 1920px; height: 1200px; background: #F1F5F9; display: flex; overflow: hidden; }
+  /* Sidebar */
+  .sidebar { width: 300px; background: linear-gradient(180deg, #1E1B4B, #4C1D95); display: flex; flex-direction: column; padding: 50px 0 30px; flex-shrink: 0; }
+  .sb-brand { padding: 0 28px 36px; display: flex; align-items: center; gap: 14px; }
+  .sb-icon { width: 52px; height: 52px; background: rgba(255,255,255,0.15); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900; color: white; }
+  .sb-name { font-size: 24px; font-weight: 900; color: white; }
+  .sb-nav { padding: 0 14px; display: flex; flex-direction: column; gap: 4px; }
+  .nav-item { padding: 14px 18px; border-radius: 14px; display: flex; align-items: center; gap: 14px; }
+  .nav-item.active { background: rgba(255,255,255,0.18); }
+  .nav-item .ni { font-size: 22px; }
+  .nav-item .nl { font-size: 19px; font-weight: 700; color: rgba(255,255,255,0.85); }
+  .nav-item.active .nl { color: white; font-weight: 800; }
+  /* Main */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  /* Topbar */
+  .topbar { background: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0; }
+  .topbar h1 { font-size: 30px; font-weight: 900; color: #1E293B; }
+  .topbar p { font-size: 17px; color: #64748B; font-weight: 600; margin-top: 3px; }
+  .period-tabs { display: flex; gap: 10px; }
+  .ptab { padding: 10px 22px; border-radius: 12px; font-size: 17px; font-weight: 800; }
+  .ptab.active { background: #7C3AED; color: white; }
+  .ptab.inactive { background: #F1F5F9; color: #64748B; }
+  /* Main grid */
+  .content { padding: 24px 30px; flex: 1; display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 20px; overflow: hidden; }
+  /* Big chart card */
+  .big-card { background: white; border-radius: 22px; padding: 26px 28px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); display: flex; flex-direction: column; }
+  .card-title { font-size: 22px; font-weight: 800; color: #1E293B; margin-bottom: 20px; }
+  /* Multi child bars -->
+  .child-progress-list { display: flex; flex-direction: column; gap: 20px; flex: 1; }
+  .cp-row { }
+  .cp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .cp-name { font-size: 19px; font-weight: 800; color: #1E293B; display: flex; align-items: center; gap: 8px; }
+  .cp-av { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 900; color: white; }
+  .av-p { background: linear-gradient(135deg, #7C3AED, #5B21B6); }
+  .av-g { background: linear-gradient(135deg, #059669, #10B981); }
+  .av-b { background: linear-gradient(135deg, #2563EB, #3B82F6); }
+  .cp-pct { font-size: 19px; font-weight: 900; }
+  .cp-bar { height: 12px; background: #F1F5F9; border-radius: 6px; overflow: hidden; }
+  .cp-fill { height: 100%; border-radius: 6px; }
+  .fill-p { background: linear-gradient(90deg, #7C3AED, #A78BFA); }
+  .fill-g { background: linear-gradient(90deg, #059669, #10B981); }
+  .fill-b { background: linear-gradient(90deg, #2563EB, #60A5FA); }
+  .cp-sub { font-size: 15px; color: #94A3B8; font-weight: 600; margin-top: 4px; }
+  /* Weekly chart -->
+  .weekly-chart { margin-top: 16px; }
+  .wc-bars { display: flex; align-items: flex-end; gap: 12px; height: 100px; }
+  .wcb-g { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .wcb { width: 100%; border-radius: 6px 6px 0 0; }
+  .wcb.pa { background: linear-gradient(180deg, #7C3AED, #A78BFA); }
+  .wcb.ga { background: linear-gradient(180deg, #10B981, #6EE7B7); }
+  .wc-lbl { font-size: 14px; color: #94A3B8; font-weight: 600; }
+  /* Right col 1: Subjects -->
+  .subjects-card { background: white; border-radius: 22px; padding: 24px 26px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); display: flex; flex-direction: column; }
+  .subject-list { display: flex; flex-direction: column; gap: 14px; flex: 1; }
+  .subj-row { }
+  .subj-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
+  .subj-name { font-size: 18px; font-weight: 700; color: #1E293B; }
+  .subj-pct { font-size: 18px; font-weight: 900; }
+  .pct-p { color: #7C3AED; }
+  .pct-g { color: #10B981; }
+  .pct-o { color: #F97316; }
+  .pct-b { color: #3B82F6; }
+  .pct-y { color: #F59E0B; }
+  .subj-bar { height: 8px; background: #F1F5F9; border-radius: 4px; overflow: hidden; }
+  .sb-fill { height: 100%; border-radius: 4px; }
+  .sb-p { background: linear-gradient(90deg, #7C3AED, #A78BFA); }
+  .sb-g { background: linear-gradient(90deg, #059669, #10B981); }
+  .sb-o { background: linear-gradient(90deg, #F97316, #FB923C); }
+  .sb-b { background: linear-gradient(90deg, #2563EB, #60A5FA); }
+  .sb-y { background: linear-gradient(90deg, #F59E0B, #FCD34D); }
+  /* Right col 2: Achievements */
+  .achieve-card { background: white; border-radius: 22px; padding: 24px 26px; box-shadow: 0 3px 16px rgba(0,0,0,0.07); display: flex; flex-direction: column; }
+  .badge-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; flex: 1; }
+  .badge-item { background: #F8FAFC; border-radius: 16px; padding: 14px 12px; text-align: center; border: 1px solid #E2E8F0; }
+  .badge-icon { font-size: 34px; margin-bottom: 6px; }
+  .badge-name { font-size: 15px; font-weight: 800; color: #1E293B; }
+  .badge-sub { font-size: 13px; color: #64748B; font-weight: 600; margin-top: 3px; }
+  .badge-item.earned { background: linear-gradient(135deg, rgba(124,58,237,0.08), rgba(76,208,128,0.05)); border-color: rgba(124,58,237,0.2); }
+  /* Summary row at bottom */
+  .summary-row { padding: 14px 30px; background: linear-gradient(135deg, #4C1D95, #7C3AED); display: flex; gap: 24px; justify-content: center; }
+  .sum-item { display: flex; align-items: center; gap: 10px; }
+  .sum-item span { font-size: 18px; color: rgba(255,255,255,0.8); font-weight: 600; }
+  .sum-item strong { color: white; font-size: 20px; }
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="sidebar">
+    <div class="sb-brand"><div class="sb-icon">C</div><span class="sb-name">Classify</span></div>
+    <div class="sb-nav">
+      <div class="nav-item"><span class="ni">📊</span><span class="nl">لوحة التحكم</span></div>
+      <div class="nav-item"><span class="ni">📋</span><span class="nl">المهام</span></div>
+      <div class="nav-item"><span class="ni">👧</span><span class="nl">الأطفال</span></div>
+      <div class="nav-item active"><span class="ni">📈</span><span class="nl">التقارير</span></div>
+      <div class="nav-item"><span class="ni">🏪</span><span class="nl">سوق المعلمين</span></div>
+      <div class="nav-item"><span class="ni">💰</span><span class="nl">المحفظة</span></div>
+      <div class="nav-item"><span class="ni">🎮</span><span class="nl">الألعاب</span></div>
+      <div class="nav-item"><span class="ni">⚙️</span><span class="nl">الإعدادات</span></div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1>📈 تقارير التقدم الشاملة</h1>
+        <p>تابع تقدم أطفالك في جميع المواد والأنشطة</p>
+      </div>
+      <div class="period-tabs">
+        <div class="ptab inactive">يوم</div>
+        <div class="ptab active">أسبوع</div>
+        <div class="ptab inactive">شهر</div>
+        <div class="ptab inactive">سنة</div>
+      </div>
+    </div>
+    <div class="content">
+      <!-- Big chart: all children -->
+      <div class="big-card">
+        <div class="card-title">📊 مقارنة تقدم الأطفال — هذا الأسبوع</div>
+        <div class="child-progress-list">
+          <div class="cp-row">
+            <div class="cp-header">
+              <span class="cp-name"><div class="cp-av av-p">ي</div> يوسف أحمد (10 سنوات)</span>
+              <span class="cp-pct" style="color:#7C3AED">90%</span>
+            </div>
+            <div class="cp-bar"><div class="cp-fill fill-p" style="width:90%"></div></div>
+            <div class="cp-sub">48 مهمة منجزة · 2,450 نقطة · المرحلة 15</div>
+          </div>
+          <div class="cp-row">
+            <div class="cp-header">
+              <span class="cp-name"><div class="cp-av av-g">س</div> سارة أحمد (8 سنوات)</span>
+              <span class="cp-pct" style="color:#10B981">75%</span>
+            </div>
+            <div class="cp-bar"><div class="cp-fill fill-g" style="width:75%"></div></div>
+            <div class="cp-sub">28 مهمة منجزة · 1,380 نقطة · المرحلة 9</div>
+          </div>
+          <div class="cp-row">
+            <div class="cp-header">
+              <span class="cp-name"><div class="cp-av av-b">ع</div> عمر أحمد (6 سنوات)</span>
+              <span class="cp-pct" style="color:#3B82F6">60%</span>
+            </div>
+            <div class="cp-bar"><div class="cp-fill fill-b" style="width:60%"></div></div>
+            <div class="cp-sub">15 مهمة منجزة · 620 نقطة · المرحلة 4</div>
+          </div>
+        </div>
+        <div class="weekly-chart">
+          <div class="card-title" style="font-size:18px;margin-bottom:12px">نشاط الأسبوع</div>
+          <div class="wc-bars">
+            <div class="wcb-g"><div class="wcb pa" style="height:55px"></div><span class="wc-lbl">أحد</span></div>
+            <div class="wcb-g"><div class="wcb ga" style="height:75px"></div><span class="wc-lbl">إثن</span></div>
+            <div class="wcb-g"><div class="wcb pa" style="height:90px"></div><span class="wc-lbl">ثلا</span></div>
+            <div class="wcb-g"><div class="wcb ga" style="height:65px"></div><span class="wc-lbl">أرب</span></div>
+            <div class="wcb-g"><div class="wcb pa" style="height:100px"></div><span class="wc-lbl">خمس</span></div>
+            <div class="wcb-g"><div class="wcb ga" style="height:50px"></div><span class="wc-lbl">جمع</span></div>
+            <div class="wcb-g"><div class="wcb pa" style="height:40px"></div><span class="wc-lbl">سبت</span></div>
+          </div>
+        </div>
+      </div>
+      <!-- Subjects breakdown -->
+      <div class="subjects-card">
+        <div class="card-title">📚 أداء يوسف حسب المادة</div>
+        <div class="subject-list">
+          <div class="subj-row">
+            <div class="subj-header"><span class="subj-name">🧮 رياضيات</span><span class="subj-pct pct-p">94%</span></div>
+            <div class="subj-bar"><div class="sb-fill sb-p" style="width:94%"></div></div>
+          </div>
+          <div class="subj-row">
+            <div class="subj-header"><span class="subj-name">📖 لغة عربية</span><span class="subj-pct pct-g">88%</span></div>
+            <div class="subj-bar"><div class="sb-fill sb-g" style="width:88%"></div></div>
+          </div>
+          <div class="subj-row">
+            <div class="subj-header"><span class="subj-name">🔬 علوم</span><span class="subj-pct pct-b">82%</span></div>
+            <div class="subj-bar"><div class="sb-fill sb-b" style="width:82%"></div></div>
+          </div>
+          <div class="subj-row">
+            <div class="subj-header"><span class="subj-name">🔤 English</span><span class="subj-pct pct-o">76%</span></div>
+            <div class="subj-bar"><div class="sb-fill sb-o" style="width:76%"></div></div>
+          </div>
+          <div class="subj-row">
+            <div class="subj-header"><span class="subj-name">🌍 جغرافيا</span><span class="subj-pct pct-y">90%</span></div>
+            <div class="subj-bar"><div class="sb-fill sb-y" style="width:90%"></div></div>
+          </div>
+        </div>
+      </div>
+      <!-- Achievements -->
+      <div class="achieve-card">
+        <div class="card-title">🏆 إنجازات يوسف</div>
+        <div class="badge-grid">
+          <div class="badge-item earned"><div class="badge-icon">🌳</div><div class="badge-name">مزارع الشجرة</div><div class="badge-sub">المرحلة 15</div></div>
+          <div class="badge-item earned"><div class="badge-icon">🔥</div><div class="badge-name">14 يوم متواصل</div><div class="badge-sub">سجل شخصي!</div></div>
+          <div class="badge-item earned"><div class="badge-icon">🧮</div><div class="badge-name">بطل الرياضيات</div><div class="badge-sub">94% إنجاز</div></div>
+          <div class="badge-item earned"><div class="badge-icon">⭐</div><div class="badge-name">ألفا نقطة</div><div class="badge-sub">2,450+ نقطة</div></div>
+          <div class="badge-item"><div class="badge-icon">🎮</div><div class="badge-name">لاعب محترف</div><div class="badge-sub">50 لعبة قريباً</div></div>
+          <div class="badge-item"><div class="badge-icon">👑</div><div class="badge-name">متصدر الترتيب</div><div class="badge-sub">المركز #1 قريباً</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="summary-row">
+      <div class="sum-item"><span>📈 متوسط الإنجاز هذا الأسبوع: <strong>75%</strong></span></div>
+      <div class="sum-item"><span>⭐ إجمالي النقاط: <strong>4,450 نقطة</strong></span></div>
+      <div class="sum-item"><span>✅ مهام منجزة: <strong>91 مهمة</strong> هذا الشهر</span></div>
+      <div class="sum-item"><span>🌳 أعلى مرحلة: <strong>يوسف — المرحلة 15</strong></span></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
