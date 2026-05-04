@@ -54,6 +54,8 @@ coverage/
 # Archives
 *.tar.gz
 *.tgz
+*.zip
+*.vsix
 
 # Database backups
 *.sql
@@ -86,11 +88,8 @@ classify-googleplay.*
 # APK builds (except the published one)
 android/app/build/
 
-# Published web-download artifacts (must be tracked)
-!client/public/apps/classify-app-latest.apk
-!client/public/apps/classify-googleplay-latest.aab
-!client/public/apps/archive/*.apk
-!client/public/apps/archive/*.aab
+# Published web-download artifacts (generated; do not track in source repo)
+client/public/apps/
 
 # Replit artifacts
 .replit
