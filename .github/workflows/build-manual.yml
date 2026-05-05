@@ -1,0 +1,153 @@
+name: Manual Flutter Build
+
+on:
+    workflow_dispatch:
+        inputs:
+            build_apk:
+                description: "Build Android APK"
+                required: false
+                type: boolean
+                default: true
+            build_aab:
+                description: "Build Android App Bundle"
+                required: false
+                type: boolean
+                default: true
+            build_web:
+                description: "Build Web wrapper"
+                required: false
+                type: boolean
+                default: true
+
+permissions:
+    contents: write
+    actions: read
+    checks: write
+
+env:
+    NODE_VERSION: "20"
+    FLUTTER_VERSION: "3.41.0"
+    FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+    verify:
+        name: Verify Web App
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v5
+              with:
+                  lfs: false
+
+            - uses: actions/setup-node@v5
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: npm
+
+            - name: Install dependencies
+              run: npm ci --legacy-peer-deps
+
+            - name: TypeScript Check
+              run: npx tsc --noEmit
+
+            - name: Unit Tests
+              run: npm run test -- --runInBand
+
+            - name: Critical Flow Tests
+              run: npm run test:critical-flow
+
+            - name: Production Build
+              run: npm run build
+
+            - name: Verify build artifacts
+              run: |
+                  test -f dist/index.js
+                  test -d dist/public
+                  echo "Web build artifacts verified"
+
+    version-bump:
+        name: Bump Version
+        runs-on: ubuntu-latest
+        needs: verify
+        outputs:
+            app_version: ${{ steps.bump.outputs.app_version }}
+            build_number: ${{ steps.bump.outputs.build_number }}
+            release_tag: ${{ steps.bump.outputs.release_tag }}
+        steps:
+            - uses: actions/checkout@v5
+              with:
+                  lfs: false
+                  fetch-depth: 0
+
+            - uses: actions/setup-node@v5
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+
+            - name: Compute and persist version
+              id: bump
+              run: node ./scripts/bump-release-version.cjs --write --json
+
+            - name: Commit version bump
+              if: steps.bump.outputs.changed == 'true'
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+                  git add package.json appsflutter/pubspec.yaml CHANGELOG.md release-manifest.json || true
+                  git commit -m "chore(release): bump version to ${{ steps.bump.outputs.app_version }}" || true
+                  git push origin HEAD:main || true
+
+    flutter-mobile:
+        name: Build Flutter Wrapper
+        runs-on: ubuntu-latest
+        needs: verify
+        strategy:
+            matrix:
+                target: [apk, appbundle, web]
+        steps:
+            - uses: actions/checkout@v5
+              with:
+                  lfs: false
+
+            - uses: subosito/flutter-action@v2
+              with:
+                  flutter-version: ${{ env.FLUTTER_VERSION }}
+                  cache: true
+
+            - name: Flutter pub get
+              working-directory: appsflutter
+              run: flutter pub get
+
+            - name: Build APK
+              if: inputs.build_apk && matrix.target == 'apk'
+              working-directory: appsflutter
+              run: flutter build apk --release
+
+            - name: Build App Bundle
+              if: inputs.build_aab && matrix.target == 'appbundle'
+              working-directory: appsflutter
+              run: flutter build appbundle --release
+
+            - name: Build Web Wrapper
+              if: inputs.build_web && matrix.target == 'web'
+              working-directory: appsflutter
+              run: flutter build web --release
+
+            - name: Upload Android APK artifact
+              if: inputs.build_apk && matrix.target == 'apk'
+              uses: actions/upload-artifact@v4
+              with:
+                  name: flutter-apk
+                  path: appsflutter/build/app/outputs/flutter-apk/app-release.apk
+
+            - name: Upload Android App Bundle artifact
+              if: inputs.build_aab && matrix.target == 'appbundle'
+              uses: actions/upload-artifact@v4
+              with:
+                  name: flutter-aab
+                  path: appsflutter/build/app/outputs/bundle/release/app-release.aab
+
+            - name: Upload Web artifact
+              if: inputs.build_web && matrix.target == 'web'
+              uses: actions/upload-artifact@v4
+              with:
+                  name: flutter-web
+                  path: appsflutter/build/web
