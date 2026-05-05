@@ -24,9 +24,9 @@ COPY .npmrc* ./
 # Uses npm ci when package-lock.json exists (faster, deterministic)
 # Falls back to npm install when missing (manual/non-git deploys)
 RUN if [ -f package-lock.json ]; then \
-      npm ci --no-audit --no-fund; \
+    npm ci --no-audit --no-fund; \
     else \
-      npm install --no-audit --no-fund; \
+    npm install --no-audit --no-fund; \
     fi && \
     npm cache clean --force
 
@@ -66,22 +66,16 @@ RUN addgroup --system --gid 1001 nodejs && \
 RUN mkdir -p /app/uploads /app/logs && \
     chown -R appuser:nodejs /app /app/uploads /app/logs
 
-# Switch to non-root user BEFORE npm install (avoids slow chown -R on node_modules)
+# Switch to non-root user BEFORE copying runtime files
 USER appuser
 
 # Copy package files (owned by appuser since USER is set)
 COPY --chown=appuser:nodejs package*.json ./
 COPY --chown=appuser:nodejs .npmrc* ./
 
-# Install ONLY production deps + migration tools as appuser
-# (drizzle-kit, tsx needed for db:push at startup)
-RUN if [ -f package-lock.json ]; then \
-      npm ci --omit=dev --no-audit --no-fund; \
-    else \
-      npm install --omit=dev --no-audit --no-fund; \
-    fi && \
-    npm install --no-save drizzle-kit tsx && \
-    npm cache clean --force
+# Reuse the dependency tree from the deps stage to avoid network installs here.
+# This prevents runtime build failures when registry access is flaky.
+COPY --chown=appuser:nodejs --from=deps /app/node_modules ./node_modules
 
 # Copy built application from builder
 COPY --chown=appuser:nodejs --from=builder /app/dist ./dist

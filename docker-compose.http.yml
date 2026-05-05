@@ -28,6 +28,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:5000:5000"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.classify-app.rule=Host(`classi-fy.com`) || Host(`www.classi-fy.com`) || PathPrefix(`/`)"
