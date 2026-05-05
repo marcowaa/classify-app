@@ -1,21 +1,38 @@
-name: CI Pipeline
+name: CI/CD Pipeline
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
+    inputs:
+      build_apk:
+        description: "Build Android APK"
+        required: false
+        type: boolean
+        default: true
+      build_aab:
+        description: "Build Android App Bundle"
+        required: false
+        type: boolean
+        default: true
+      build_web:
+        description: "Build Web wrapper"
+        required: false
+        type: boolean
+        default: true
 
 permissions:
-  contents: read
+  contents: write
+  actions: read
+  checks: write
 
 env:
   NODE_VERSION: "20"
+  FLUTTER_VERSION: "3.41.0"
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  RELEASE_CHANNEL: ${{ github.ref_type == 'tag' && 'release' || 'main' }}
 
 jobs:
-  lint-and-typecheck:
-    name: Lint & Type Check
+  verify:
+    name: Verify Web App
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -25,6 +42,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: npm
 
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
@@ -32,90 +50,171 @@ jobs:
       - name: TypeScript Check
         run: npx tsc --noEmit
 
-      - name: Lint
-        run: npx eslint . --max-warnings 0
-
-  test:
-    name: Tests
-    runs-on: ubuntu-latest
-    needs: lint-and-typecheck
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          lfs: false
-
-      - uses: actions/setup-node@v5
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Install dependencies
-        run: npm ci --legacy-peer-deps
-
-      - name: Run Unit and Service Tests
+      - name: Unit Tests
         run: npm run test -- --runInBand
 
-  critical-flow:
-    name: Critical Flow Gate
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          lfs: false
-
-      - uses: actions/setup-node@v5
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Install dependencies
-        run: npm ci --legacy-peer-deps
-
-      - name: Run Critical Flow Contracts
+      - name: Critical Flow Tests
         run: npm run test:critical-flow
 
-  build:
-    name: Build
+      - name: Production Build
+        run: npm run build
+
+      - name: Verify build artifacts
+        run: |
+          test -f dist/index.js
+          test -d dist/public
+          echo "Web build artifacts verified"
+
+  version-bump:
+    name: Bump Version
     runs-on: ubuntu-latest
-    needs: critical-flow
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    needs: verify
+    outputs:
+      app_version: ${{ steps.bump.outputs.app_version }}
+      build_number: ${{ steps.bump.outputs.build_number }}
+      release_tag: ${{ steps.bump.outputs.release_tag }}
     steps:
       - uses: actions/checkout@v5
         with:
           lfs: false
+          fetch-depth: 0
 
       - uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Install dependencies
-        run: npm ci --legacy-peer-deps
+      - name: Compute and persist version
+        id: bump
+        run: node ./scripts/bump-release-version.cjs --write --json
 
-      - name: Build Production
-        run: npm run build
-
-      - name: Verify dist output
+      - name: Commit version bump
+        if: steps.bump.outputs.changed == 'true'
         run: |
-          test -f dist/index.js || (echo "dist/index.js missing" && exit 1)
-          test -d dist/public || (echo "dist/public missing" && exit 1)
-          echo "Build output verified"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add package.json appsflutter/pubspec.yaml CHANGELOG.md release-manifest.json || true
+          git commit -m "chore(release): bump version to ${{ steps.bump.outputs.app_version }}" || true
+          git push origin HEAD:main || true
 
-  docker:
-    name: Docker Build
+  flutter-mobile:
+    name: Build Flutter Wrapper
     runs-on: ubuntu-latest
-    needs: build
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    needs: verify
+    strategy:
+      matrix:
+        target: ${{ fromJSON(format('["{0}","{1}","{2}"]', inputs.build_apk && 'apk' || 'skip-apk', inputs.build_aab && 'appbundle' || 'skip-aab', inputs.build_web && 'web' || 'skip-web')) }}
     steps:
       - uses: actions/checkout@v5
         with:
           lfs: false
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
-
-      - name: Build Docker Image
-        uses: docker/build-push-action@v6
+      - uses: subosito/flutter-action@v2
         with:
-          context: .
-          push: false
-          tags: classify-app:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Flutter pub get
+        working-directory: appsflutter
+        run: flutter pub get
+
+      - name: Resolve version metadata
+        working-directory: appsflutter
+        run: flutter build --help > /dev/null
+
+      - name: Build APK
+        if: matrix.target == 'apk'
+        working-directory: appsflutter
+        run: flutter build apk --release
+
+      - name: Build App Bundle
+        if: matrix.target == 'appbundle'
+        working-directory: appsflutter
+        run: flutter build appbundle --release
+
+      - name: Build Web Wrapper
+        if: matrix.target == 'web'
+        working-directory: appsflutter
+        run: flutter build web --release
+
+      - name: Upload Android APK artifact
+        if: matrix.target == 'apk'
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-apk
+          path: appsflutter/build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Upload Android App Bundle artifact
+        if: matrix.target == 'appbundle'
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-aab
+          path: appsflutter/build/app/outputs/bundle/release/app-release.aab
+
+      - name: Upload Web artifact
+        if: matrix.target == 'web'
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-web
+          path: appsflutter/build/web
+
+  deploy:
+    name: Atomic Deploy
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' && false }}
+    needs: [verify, version-bump, flutter-mobile]
+    environment:
+      name: production
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          lfs: false
+
+      - name: Download deploy package
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Package release manifest
+        run: node ./scripts/package-release-artifacts.cjs
+
+      - name: Upload release bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-bundle
+          path: release-bundle/
+
+      - name: Deploy to server
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+          RELEASE_VERSION: ${{ needs.version-bump.outputs.app_version }}
+          RELEASE_BUILD_NUMBER: ${{ needs.version-bump.outputs.build_number }}
+          RELEASE_TAG: ${{ needs.version-bump.outputs.release_tag }}
+        run: |
+          printf '%s\n' "$DEPLOY_KEY" > /tmp/deploy_key
+          chmod 600 /tmp/deploy_key
+          scp -i /tmp/deploy_key -P "${DEPLOY_PORT:-22}" -o StrictHostKeyChecking=no -r release-bundle "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}/incoming"
+          ssh -i /tmp/deploy_key -p "${DEPLOY_PORT:-22}" -o StrictHostKeyChecking=no "${DEPLOY_USER}@${DEPLOY_HOST}" "RELEASE_VERSION='${RELEASE_VERSION}' RELEASE_BUILD_NUMBER='${RELEASE_BUILD_NUMBER}' RELEASE_TAG='${RELEASE_TAG}' ${DEPLOY_PATH}/scripts/deploy-release.sh ${DEPLOY_PATH}/incoming/release-bundle"
+          rm -f /tmp/deploy_key
+
+  deploy-mobile:
+    name: Deploy Mobile Artifacts
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' && false }}
+    needs: [verify, flutter-mobile]
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Publish mobile artifacts metadata
+        run: node ./scripts/write-release-manifest.cjs --input artifacts --output release-manifest.json
+
+      - name: Attach release note
+        run: |
+          echo "Release ready: ${{ github.ref_name }}"

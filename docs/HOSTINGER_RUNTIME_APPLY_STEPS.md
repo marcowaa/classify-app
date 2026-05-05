@@ -78,3 +78,80 @@ docker compose up -d --force-recreate app
 docker compose logs --tail 120 app
 curl -s -i http://127.0.0.1:5000/api/health
 ```
+
+## 7) Atomic release deploy model
+
+For versioned application releases, use the release scripts in `scripts/` rather than manual container restarts.
+
+### Release state layout
+
+```bash
+/srv/classify/
+├── current -> /srv/classify/releases/1.2.3+45
+├── previous -> /srv/classify/releases/1.2.2+44
+├── releases/
+├── state/
+└── incoming/release-bundle/
+```
+
+### Deploy sequence
+
+1. GitHub Actions builds:
+   - web build
+   - Flutter APK
+   - Flutter AAB
+   - release manifest
+   - checksums
+2. Upload artifacts to the server into a temporary folder.
+3. Run `scripts/deploy-release.sh`.
+4. Verify checksum and health checks.
+5. Switch `current` symlink only after all checks pass.
+6. Move the old `current` to `previous`.
+7. If any check fails, run `scripts/rollback-release.sh`.
+
+### Conflict prevention rules
+
+- Only one deploy can run at a time because the release script takes a lock file.
+- Never deploy directly into `current`.
+- Never overwrite a working release directory.
+- Always stage into a temporary folder and verify checksum before activation.
+- Never remove `previous` until the next release is healthy.
+
+### Zero-downtime strategy
+
+- Prepare the new release in a separate folder.
+- Keep the live release active until validation succeeds.
+- Flip the symlink in one atomic operation.
+- Keep the old release available for immediate rollback.
+
+### Health verification gate
+
+Release activation is allowed only when all of these pass:
+
+- build artifacts exist
+- checksum verification succeeds
+- health endpoint returns HTTP 200
+- version reported by health endpoint matches the release manifest
+- no missing files in the staged bundle
+
+### Rollback command
+
+```bash
+bash scripts/rollback-release.sh
+```
+
+Rollback restores the `current` pointer to `previous` without deleting the failed release.
+
+### Versioning rules
+
+- Source of truth for web release version: `package.json`
+- Source of truth for Flutter wrapper version: `appsflutter/pubspec.yaml`
+- Semantic version increments by patch for each release
+- Build number increments independently
+- Release metadata is written to `release-manifest.json`
+
+### Notes for operators
+
+- The GitHub workflow must stay aligned with the deploy scripts.
+- If the health endpoint changes, update the smoke checks in `scripts/deploy-release.sh`.
+- If checksum file naming changes, update both the deploy and rollback scripts.
