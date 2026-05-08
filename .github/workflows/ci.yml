@@ -90,13 +90,7 @@ jobs:
           set -euo pipefail
           node ./scripts/bump-release-version.cjs --write --json > /tmp/bump.json
 
-          app_version="$(node -p 'require("/tmp/bump.json").app_version')"
-          build_number="$(node -p 'require("/tmp/bump.json").build_number')"
-          release_tag="$(node -p 'require("/tmp/bump.json").release_tag')"
-
-          echo "app_version=$app_version" >> "$GITHUB_OUTPUT"
-          echo "build_number=$build_number" >> "$GITHUB_OUTPUT"
-          echo "release_tag=$release_tag" >> "$GITHUB_OUTPUT"
+          node -e 'const m=require("/tmp/bump.json");process.stdout.write("app_version="+m.app_version+"\n"+"build_number="+m.build_number+"\n"+"release_tag="+m.release_tag+"\n");' >> "$GITHUB_OUTPUT"
 
       - name: Commit version bump
         if: steps.bump.outputs.changed == 'true'
