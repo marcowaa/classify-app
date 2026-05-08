@@ -234,6 +234,10 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' }}
     needs: [verify, flutter-mobile, version-bump]
     steps:
+      - uses: actions/checkout@v5
+        with:
+          lfs: false
+
       - uses: actions/download-artifact@v4
         with:
           path: artifacts

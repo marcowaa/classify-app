@@ -64,12 +64,14 @@ function main() {
     }
 
     /** @type {Record<string, unknown>} */
+    const normalize = (v) => (typeof v === 'string' && v.trim() === '' ? undefined : v);
+
     const manifest = {
         generatedAt: new Date().toISOString(),
         source: input,
-        version: version ?? undefined,
-        buildNumber: buildNumber ?? undefined,
-        releaseTag: releaseTag ?? undefined,
+        version: normalize(version),
+        buildNumber: normalize(buildNumber),
+        releaseTag: normalize(releaseTag),
         files: listFiles(input),
     };
 
