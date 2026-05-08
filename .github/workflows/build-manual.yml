@@ -1,23 +1,18 @@
-name: Manual Flutter Build
+name: Manual Android Release (Signed AAB + APK)
 
 on:
     workflow_dispatch:
         inputs:
             build_apk:
-                description: "Build Android APK"
+                description: "Build APK (latest)"
                 required: false
                 type: boolean
                 default: true
             build_aab:
-                description: "Build Android App Bundle"
+                description: "Build AAB (latest)"
                 required: false
                 type: boolean
                 default: true
-            build_web:
-                description: "Build Web wrapper"
-                required: false
-                type: boolean
-                default: false
 
 permissions:
     contents: write
@@ -27,11 +22,10 @@ permissions:
 env:
     NODE_VERSION: "20"
     FLUTTER_VERSION: "3.41.0"
-    FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
     verify:
-        name: Verify Web App
+        name: Verify Web App (TypeScript + tests)
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v5
@@ -55,100 +49,88 @@ jobs:
             - name: Critical Flow Tests
               run: npm run test:critical-flow
 
-            - name: Production Build
+            - name: Production Build (Vite)
               run: npm run build
 
-            - name: Verify build artifacts
-              run: |
-                  test -f dist/index.js
-                  test -d dist/public
-                  echo "Web build artifacts verified"
-
-    version-bump:
-        name: Bump Version
+    android-release:
+        name: Build + Sign Android Release (AAB + APK)
         runs-on: ubuntu-latest
         needs: verify
-        outputs:
-            app_version: ${{ steps.bump.outputs.app_version }}
-            build_number: ${{ steps.bump.outputs.build_number }}
-            release_tag: ${{ steps.bump.outputs.release_tag }}
         steps:
             - uses: actions/checkout@v5
               with:
                   lfs: false
-                  fetch-depth: 0
 
             - uses: actions/setup-node@v5
               with:
                   node-version: ${{ env.NODE_VERSION }}
+                  cache: npm
 
-            - name: Compute and persist version
-              id: bump
-              run: node ./scripts/bump-release-version.cjs --write --json
+            - name: Setup Java (for jarsigner)
+              uses: actions/setup-java@v4
+              with:
+                  distribution: temurin
+                  java-version: "17"
 
-            - name: Commit version bump
-              if: steps.bump.outputs.changed == 'true'
+            - name: Install dependencies (root)
+              run: npm ci --legacy-peer-deps
+
+            # Create keystore file from GitHub secrets (upload key)
+            - name: Write Android keystore from secrets
+              env:
+                  ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+                  KEYSTORE_PATH: ${{ secrets.KEYSTORE_PATH }}
+                  KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+                  KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+                  KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
               run: |
-                  git config user.name "github-actions[bot]"
-                  git config user.email "github-actions[bot]@users.noreply.github.com"
-                  git add package.json appsflutter/pubspec.yaml CHANGELOG.md release-manifest.json || true
-                  git commit -m "chore(release): bump version to ${{ steps.bump.outputs.app_version }}" || true
-                  git push origin HEAD:main || true
+                  set -euo pipefail
+                  if [ -z "${ANDROID_KEYSTORE_BASE64:-}" ]; then echo "Missing ANDROID_KEYSTORE_BASE64 secret"; exit 1; fi
+                  if [ -z "${KEYSTORE_PATH:-}" ]; then echo "Missing KEYSTORE_PATH secret"; exit 1; fi
 
-    flutter-mobile:
-        name: Build Flutter Wrapper
-        runs-on: ubuntu-latest
-        needs: verify
-        strategy:
-            fail-fast: false
-            matrix:
-                target: ${{ fromJSON(format('["{0}","{1}","{2}"]', inputs.build_apk && 'apk' || 'skip-apk', inputs.build_aab && 'appbundle' || 'skip-aab', inputs.build_web && 'web' || 'skip-web')) }}
-        steps:
-            - uses: actions/checkout@v5
-              with:
-                  lfs: false
+                  mkdir -p "$(dirname "$KEYSTORE_PATH")"
+                  echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$KEYSTORE_PATH"
+                  chmod 600 "$KEYSTORE_PATH"
 
-            - uses: subosito/flutter-action@v2
-              with:
-                  flutter-version: ${{ env.FLUTTER_VERSION }}
-                  cache: true
+            # Publish script does: npm run build (Vite) + cap sync + gradle assembleRelease/bundleRelease + jarsigner verify
+            - name: Publish signed Android release (AAB + APK)
+              env:
+                  ANDROID_KEYSTORE_PATH: ${{ secrets.KEYSTORE_PATH }}
+                  ANDROID_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+                  ANDROID_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+                  ANDROID_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+                  CLASSIFY_ADMIN_TOKEN: ""
+              run: |
+                  set -euo pipefail
+                  chmod +x ./scripts/publish-android-release.sh
+                  # Build both; inside script it builds APK + AAB always.
+                  # Upload/register to admin API is skipped since CLASSIFY_ADMIN_TOKEN is empty and --skip-admin-upload is set.
+                  ./scripts/publish-android-release.sh --skip-admin-upload
 
-            - name: Flutter pub get
-              working-directory: appsflutter
-              run: flutter pub get
+            # Optional: verify artifacts exist in repo paths after publish
+            - name: Verify produced artifacts exist
+              run: |
+                  set -euo pipefail
+                  test -f client/public/apps/classify-app-latest.apk
+                  test -f client/public/apps/classify-googleplay-latest.aab
 
-            - name: Build APK
-              if: inputs.build_apk && matrix.target == 'apk'
-              working-directory: appsflutter
-              run: flutter build apk --release
-
-            - name: Build App Bundle
-              if: inputs.build_aab && matrix.target == 'appbundle'
-              working-directory: appsflutter
-              run: flutter build appbundle --release
-
-            - name: Build Web Wrapper
-              if: inputs.build_web && matrix.target == 'web'
-              working-directory: appsflutter
-              run: flutter build web --release
-
-            - name: Upload Android APK artifact
-              if: inputs.build_apk && matrix.target == 'apk'
+            - name: Upload APK artifact
+              if: ${{ inputs.build_apk }}
               uses: actions/upload-artifact@v4
               with:
-                  name: flutter-apk
-                  path: appsflutter/build/app/outputs/flutter-apk/app-release.apk
+                  name: android-apk-latest
+                  path: client/public/apps/classify-app-latest.apk
 
-            - name: Upload Android App Bundle artifact
-              if: inputs.build_aab && matrix.target == 'appbundle'
+            - name: Upload AAB artifact
+              if: ${{ inputs.build_aab }}
               uses: actions/upload-artifact@v4
               with:
-                  name: flutter-aab
-                  path: appsflutter/build/app/outputs/bundle/release/app-release.aab
+                  name: android-aab-latest
+                  path: client/public/apps/classify-googleplay-latest.aab
 
-            - name: Upload Web artifact
-              if: inputs.build_web && matrix.target == 'web'
+            # Also upload archive versions for traceability
+            - name: Upload versioned APK/AAB (archives)
               uses: actions/upload-artifact@v4
               with:
-                  name: flutter-web
-                  path: appsflutter/build/web
+                  name: android-apk-aab-archives
+                  path: client/public/apps/archive/
