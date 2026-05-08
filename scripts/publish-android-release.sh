@@ -560,6 +560,11 @@ ANDROID_ROOT="$ROOT_DIR/android"
 GRADLE_WRAPPER="$ANDROID_ROOT/gradlew"
 ensure_file "$GRADLE_WRAPPER" "Gradle wrapper"
 
+# CI/workflows sometimes lose executable bit on gradlew; fix deterministically.
+if [ ! -x "$GRADLE_WRAPPER" ]; then
+  chmod +x "$GRADLE_WRAPPER"
+fi
+
 load_previous_release_metadata
 
 if [ -z "$VERSION" ]; then
@@ -697,9 +702,9 @@ else
   step "Using existing Android signing configuration (keystore.properties)"
 fi
 
-./gradlew clean
-./gradlew assembleRelease "${GRADLE_PROPS[@]}"
-./gradlew bundleRelease "${GRADLE_PROPS[@]}"
+bash ./gradlew clean
+bash ./gradlew assembleRelease "${GRADLE_PROPS[@]}"
+bash ./gradlew bundleRelease "${GRADLE_PROPS[@]}"
 
 cd "$ROOT_DIR"
 
