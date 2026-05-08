@@ -253,6 +253,9 @@ main() {
   log "Activating release $release_tag"
   activate_release "$release_dir" "$version" "$build_number"
 
+  log "Syncing mobile artifacts into running container..."
+  sync_mobile_artifacts_to_container "$release_dir" "$release_tag"
+
   if ! run_smoke_checks; then
     log "Smoke checks failed after activation, rolling back"
     rollback_release
