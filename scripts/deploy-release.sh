@@ -120,6 +120,57 @@ run_smoke_checks() {
   return 1
 }
 
+sync_mobile_artifacts_to_container() {
+  local release_dir="$1"
+  local release_tag="$2"
+
+  # Compose project name used on this VPS (default matches docker-compose.yml observation: classify_main).
+  local compose_project="${DEPLOY_COMPOSE_PROJECT_NAME:-${COMPOSE_PROJECT_NAME:-classify_main}}"
+
+  # Find running app container for the compose stack.
+  local container_id
+  container_id="$(docker compose -p "$compose_project" ps -q app 2>/dev/null || true)"
+  if [[ -z "$container_id" ]]; then
+    container_id="$(docker ps --filter "name=${compose_project}.*-app" --format "{{.ID}}" | head -n 1 || true)"
+  fi
+  if [[ -z "$container_id" ]]; then
+    log "Mobile artifact sync: could not find running app container (compose_project=$compose_project)"
+    return 1
+  fi
+
+  # CI deploy bundle contains the Flutter wrapper artifacts at release_dir root:
+  # - app-release.apk
+  # - app-release.aab
+  local apk_src="${release_dir}/app-release.apk"
+  local aab_src="${release_dir}/app-release.aab"
+
+  if [[ ! -f "$apk_src" ]]; then
+    log "Mobile artifact sync: missing APK source: $apk_src"
+    return 1
+  fi
+  if [[ ! -f "$aab_src" ]]; then
+    log "Mobile artifact sync: missing AAB source: $aab_src"
+    return 1
+  fi
+
+  # Names expected by the frontend / links generator.
+  local latest_apk_name="classify-app-latest.apk"
+  local latest_aab_name="classify-googleplay-latest.aab"
+  local versioned_apk_name="classify-app-${release_tag}.apk"
+  local versioned_aab_name="classify-googleplay-${release_tag}.aab"
+
+  # Ensure destination paths exist.
+  docker exec "$container_id" sh -lc "mkdir -p /app/dist/public/apps/archive" >/dev/null 2>&1 || true
+
+  # Copy latest + archived artifacts into the running container static folder.
+  docker cp "$apk_src" "$container_id:/app/dist/public/apps/${latest_apk_name}"
+  docker cp "$aab_src" "$container_id:/app/dist/public/apps/${latest_aab_name}"
+  docker cp "$apk_src" "$container_id:/app/dist/public/apps/archive/${versioned_apk_name}"
+  docker cp "$aab_src" "$container_id:/app/dist/public/apps/archive/${versioned_aab_name}"
+
+  log "Mobile artifact sync complete: /apps/${latest_apk_name} and /apps/${latest_aab_name}"
+}
+
 activate_release() {
   local release_dir="$1"
   local version="$2"

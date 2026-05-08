@@ -259,20 +259,33 @@ jobs:
 
           printf '%s\n' "$DEPLOY_KEY" > /tmp/deploy_key
           chmod 600 /tmp/deploy_key
+
+          # Upload updated deploy script to ensure VPS runs the latest logic.
           scp -4 \
             -o AddressFamily=inet \
             -o ConnectTimeout=15 \
             -i /tmp/deploy_key \
             -P "${DEPLOY_PORT:-22}" \
             -o StrictHostKeyChecking=no \
-            -r release-bundle "${DEPLOY_USER}@${DEPLOY_TARGET}:${DEPLOY_PATH}/incoming"
+            scripts/deploy-release.sh "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}/scripts/deploy-release.sh"
+
+          # Upload release bundle
+          scp -4 \
+            -o AddressFamily=inet \
+            -o ConnectTimeout=15 \
+            -i /tmp/deploy_key \
+            -P "${DEPLOY_PORT:-22}" \
+            -o StrictHostKeyChecking=no \
+            -r release-bundle "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}/incoming"
+
           ssh -4 \
             -o AddressFamily=inet \
             -o ConnectTimeout=15 \
             -i /tmp/deploy_key \
             -p "${DEPLOY_PORT:-22}" \
             -o StrictHostKeyChecking=no \
-            "${DEPLOY_USER}@${DEPLOY_TARGET}" "RELEASE_VERSION='${RELEASE_VERSION}' RELEASE_BUILD_NUMBER='${RELEASE_BUILD_NUMBER}' RELEASE_TAG='${RELEASE_TAG}' bash ${DEPLOY_PATH}/scripts/deploy-release.sh ${DEPLOY_PATH}"
+            "${DEPLOY_USER}@${DEPLOY_HOST}" "RELEASE_VERSION='${RELEASE_VERSION}' RELEASE_BUILD_NUMBER='${RELEASE_BUILD_NUMBER}' RELEASE_TAG='${RELEASE_TAG}' bash ${DEPLOY_PATH}/scripts/deploy-release.sh ${DEPLOY_PATH}"
+
           rm -f /tmp/deploy_key
 
   deploy-mobile:
