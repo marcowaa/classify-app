@@ -1,7 +1,7 @@
 name: classify_flutter
 description: "Classify - منصة تعليمية للأطفال مع رقابة أبوية"
 publish_to: 'none'
-version: 1.0.0+1
+version: 2.0.2+2
 
 environment:
   sdk: ^3.8.0

@@ -89,9 +89,9 @@ jobs:
         run: |
           set -euo pipefail
           node ./scripts/bump-release-version.cjs --write --json > /tmp/bump.json
-          echo "app_version=$(node -p \"require('/tmp/bump.json').app_version\")" >> "$GITHUB_OUTPUT"
-          echo "build_number=$(node -p \"require('/tmp/bump.json').build_number\")" >> "$GITHUB_OUTPUT"
-          echo "release_tag=$(node -p \"require('/tmp/bump.json').release_tag\")" >> "$GITHUB_OUTPUT"
+          echo "app_version=$(node -e 'process.stdout.write(require(\"/tmp/bump.json\").app_version)')" >> "$GITHUB_OUTPUT"
+          echo "build_number=$(node -e 'process.stdout.write(require(\"/tmp/bump.json\").build_number)')" >> "$GITHUB_OUTPUT"
+          echo "release_tag=$(node -e 'process.stdout.write(require(\"/tmp/bump.json\").release_tag)')" >> "$GITHUB_OUTPUT"
 
       - name: Commit version bump
         if: steps.bump.outputs.changed == 'true'
@@ -249,8 +249,14 @@ jobs:
           echo "DNS A/AAAA (if available):"
           (getent ahosts "$DEPLOY_HOST" || true)
 
+          # Resolve explicit IPv4 to avoid cases where DNS returns only IPv6 / unreachable first.
+          DEPLOY_HOST_IP="$(getent ahosts "$DEPLOY_HOST" 2>/dev/null | awk '{print $1}' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1 || true)"
+          DEPLOY_TARGET="${DEPLOY_HOST_IP:-$DEPLOY_HOST}"
+
+          echo "Using deploy target: ${DEPLOY_TARGET}"
+
           echo "TCP reachability test (IPv4 only):"
-          nc -4 -vz -w 5 "$DEPLOY_HOST" "${DEPLOY_PORT:-22}" || true
+          nc -4 -vz -w 5 "$DEPLOY_TARGET" "${DEPLOY_PORT:-22}" || true
 
           printf '%s\n' "$DEPLOY_KEY" > /tmp/deploy_key
           chmod 600 /tmp/deploy_key
@@ -260,14 +266,14 @@ jobs:
             -i /tmp/deploy_key \
             -P "${DEPLOY_PORT:-22}" \
             -o StrictHostKeyChecking=no \
-            -r release-bundle "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}/incoming"
+            -r release-bundle "${DEPLOY_USER}@${DEPLOY_TARGET}:${DEPLOY_PATH}/incoming"
           ssh -4 \
             -o AddressFamily=inet \
             -o ConnectTimeout=15 \
             -i /tmp/deploy_key \
             -p "${DEPLOY_PORT:-22}" \
             -o StrictHostKeyChecking=no \
-            "${DEPLOY_USER}@${DEPLOY_HOST}" "RELEASE_VERSION='${RELEASE_VERSION}' RELEASE_BUILD_NUMBER='${RELEASE_BUILD_NUMBER}' RELEASE_TAG='${RELEASE_TAG}' bash ${DEPLOY_PATH}/scripts/deploy-release.sh ${DEPLOY_PATH}"
+            "${DEPLOY_USER}@${DEPLOY_TARGET}" "RELEASE_VERSION='${RELEASE_VERSION}' RELEASE_BUILD_NUMBER='${RELEASE_BUILD_NUMBER}' RELEASE_TAG='${RELEASE_TAG}' bash ${DEPLOY_PATH}/scripts/deploy-release.sh ${DEPLOY_PATH}"
           rm -f /tmp/deploy_key
 
   deploy-mobile:
