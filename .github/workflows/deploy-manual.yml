@@ -1,14 +1,14 @@
-name: Manual Deploy
+name: Manual Mobile Artifacts Refresh
 
 on:
     workflow_dispatch:
         inputs:
             release_version:
-                description: "Release version to deploy"
+                description: "Release version to deploy (used for logging only)"
                 required: true
                 type: string
             release_build_number:
-                description: "Release build number"
+                description: "Release build number (used for logging only)"
                 required: true
                 type: string
             deploy_root:
@@ -23,24 +23,12 @@ permissions:
 
 jobs:
     deploy:
-        name: Atomic Deploy
+        name: Refresh Mobile Artifacts on Server
         runs-on: ubuntu-latest
         environment:
             name: production
         steps:
-            - uses: actions/download-artifact@v4
-              with:
-                  name: release-bundle
-                  path: release-bundle
-
-            - uses: actions/checkout@v5
-              with:
-                  lfs: false
-
-            - name: Package release manifest
-              run: node ./scripts/package-release-artifacts.cjs
-
-            - name: Deploy to server
+            - name: Deploy mobile artifacts via SSH
               env:
                   DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
                   DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
@@ -50,31 +38,26 @@ jobs:
                   RELEASE_VERSION: ${{ inputs.release_version }}
                   RELEASE_BUILD_NUMBER: ${{ inputs.release_build_number }}
               run: |
+                  set -euo pipefail
                   printf '%s\n' "$DEPLOY_KEY" > /tmp/deploy_key
                   chmod 600 /tmp/deploy_key
-                  scp -i /tmp/deploy_key -P "${DEPLOY_PORT:-22}" -o StrictHostKeyChecking=no -r release-bundle "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}/incoming"
-                  ssh -i /tmp/deploy_key -p "${DEPLOY_PORT:-22}" -o StrictHostKeyChecking=no "${DEPLOY_USER}@${DEPLOY_HOST}" "RELEASE_VERSION='${RELEASE_VERSION}' RELEASE_BUILD_NUMBER='${RELEASE_BUILD_NUMBER}' ${DEPLOY_PATH}/scripts/deploy-release.sh ${DEPLOY_PATH}/incoming/release-bundle"
+
+                  ssh -i /tmp/deploy_key -p "${DEPLOY_PORT:-22}" -o StrictHostKeyChecking=no "${DEPLOY_USER}@${DEPLOY_HOST}" \
+                    "export RELEASE_VERSION='${RELEASE_VERSION}' RELEASE_BUILD_NUMBER='${RELEASE_BUILD_NUMBER}'; \
+                     cd '${DEPLOY_PATH}' && \
+                     chmod +x ./scripts/refresh-mobile-artifacts.sh && \
+                     ./scripts/refresh-mobile-artifacts.sh \
+                       --project-dir '${DEPLOY_PATH}' \
+                       --branch main \
+                       --compose-project-name classify_main \
+                       --skip-admin-setup"
+
                   rm -f /tmp/deploy_key
 
     rollback:
-        name: Rollback Release
+        name: Rollback not supported (mobile artifacts refresh is not transactional)
         runs-on: ubuntu-latest
         environment:
             name: production
         steps:
-            - uses: actions/checkout@v5
-              with:
-                  lfs: false
-
-            - name: Rollback on server
-              env:
-                  DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
-                  DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
-                  DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
-                  DEPLOY_PATH: ${{ inputs.deploy_root }}
-                  DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
-              run: |
-                  printf '%s\n' "$DEPLOY_KEY" > /tmp/deploy_key
-                  chmod 600 /tmp/deploy_key
-                  ssh -i /tmp/deploy_key -p "${DEPLOY_PORT:-22}" -o StrictHostKeyChecking=no "${DEPLOY_USER}@${DEPLOY_HOST}" "${DEPLOY_PATH}/scripts/rollback-release.sh ${DEPLOY_PATH}"
-                  rm -f /tmp/deploy_key
+            - run: echo "Rollback skipped."
