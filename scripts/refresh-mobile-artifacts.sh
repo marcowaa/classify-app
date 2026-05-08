@@ -63,11 +63,26 @@ require_cmd git
 require_cmd node
 require_cmd bash
 
+EFFECTIVE_PROJECT_DIR="$PROJECT_DIR"
+
+# Prefer the directory that actually contains client/public/apps.
+# Common Hostinger layout:
+#   /srv/classify/current -> /srv/classify/releases/<version>
+if [[ ! -d "$EFFECTIVE_PROJECT_DIR/client/public/apps" && -d "$EFFECTIVE_PROJECT_DIR/current/client/public/apps" ]]; then
+  EFFECTIVE_PROJECT_DIR="$EFFECTIVE_PROJECT_DIR/current"
+fi
+
+# If git metadata isn't in the resolved dir but it is under current/, switch.
+if [[ ! -d "$EFFECTIVE_PROJECT_DIR/.git" && -d "$PROJECT_DIR/current/.git" ]]; then
+  EFFECTIVE_PROJECT_DIR="$PROJECT_DIR/current"
+fi
+
+cd "$EFFECTIVE_PROJECT_DIR"
+PROJECT_DIR="$EFFECTIVE_PROJECT_DIR"
+
 if [[ ! -d "$PROJECT_DIR/.git" ]]; then
   die "Project dir is not a git repo: $PROJECT_DIR"
 fi
-
-cd "$PROJECT_DIR"
 
 # Resolve repo url if not provided
 if [[ -z "$REPO_URL" ]]; then
