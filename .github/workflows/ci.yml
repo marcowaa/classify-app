@@ -239,7 +239,7 @@ jobs:
           printf '%s\n' "$DEPLOY_KEY" > /tmp/deploy_key
           chmod 600 /tmp/deploy_key
           scp -i /tmp/deploy_key -P "${DEPLOY_PORT:-22}" -o StrictHostKeyChecking=no -r release-bundle "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}/incoming"
-          ssh -i /tmp/deploy_key -p "${DEPLOY_PORT:-22}" -o StrictHostKeyChecking=no "${DEPLOY_USER}@${DEPLOY_HOST}" "RELEASE_VERSION='${RELEASE_VERSION}' RELEASE_BUILD_NUMBER='${RELEASE_BUILD_NUMBER}' RELEASE_TAG='${RELEASE_TAG}' ${DEPLOY_PATH}/scripts/deploy-release.sh ${DEPLOY_PATH}"
+          ssh -i /tmp/deploy_key -p "${DEPLOY_PORT:-22}" -o StrictHostKeyChecking=no "${DEPLOY_USER}@${DEPLOY_HOST}" "RELEASE_VERSION='${RELEASE_VERSION}' RELEASE_BUILD_NUMBER='${RELEASE_BUILD_NUMBER}' RELEASE_TAG='${RELEASE_TAG}' bash ${DEPLOY_PATH}/scripts/deploy-release.sh ${DEPLOY_PATH}"
           rm -f /tmp/deploy_key
 
   deploy-mobile:
