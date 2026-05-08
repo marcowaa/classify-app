@@ -123,6 +123,29 @@ jobs:
         working-directory: appsflutter
         run: flutter build --help > /dev/null
 
+      - name: Prepare Web SDK (enable + precache)
+        if: matrix.target == 'web'
+        working-directory: appsflutter
+        run: |
+          flutter config --enable-web
+          flutter precache --web
+
+      - name: Flutter Doctor (web)
+        if: matrix.target == 'web'
+        working-directory: appsflutter
+        run: flutter doctor -v
+
+      - name: Configure Flutter Web (create web platform if missing)
+        if: matrix.target == 'web'
+        working-directory: appsflutter
+        run: |
+          set -euo pipefail
+          if [ ! -f "web/index.html" ]; then
+            flutter create . --platforms web
+          else
+            echo "Web platform already configured"
+          fi
+
       - name: Build APK
         if: matrix.target == 'apk'
         working-directory: appsflutter
@@ -136,7 +159,7 @@ jobs:
       - name: Build Web Wrapper
         if: matrix.target == 'web'
         working-directory: appsflutter
-        run: flutter build web --release
+        run: flutter build web --release --verbose
 
       - name: Upload Android APK artifact
         if: matrix.target == 'apk'
