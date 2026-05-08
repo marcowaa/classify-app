@@ -185,7 +185,7 @@ jobs:
   deploy:
     name: Atomic Deploy
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' && false }}
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     needs: [verify, version-bump, flutter-mobile]
     environment:
       name: production
@@ -198,6 +198,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
+
+      - name: Publish mobile artifacts metadata
+        run: node ./scripts/write-release-manifest.cjs --input artifacts --output release-manifest.json --version '${{ needs.version-bump.outputs.app_version }}' --buildNumber '${{ needs.version-bump.outputs.build_number }}' --releaseTag '${{ needs.version-bump.outputs.release_tag }}'
 
       - name: Package release manifest
         run: node ./scripts/package-release-artifacts.cjs
@@ -228,15 +231,15 @@ jobs:
   deploy-mobile:
     name: Deploy Mobile Artifacts
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' && false }}
-    needs: [verify, flutter-mobile]
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    needs: [verify, flutter-mobile, version-bump]
     steps:
       - uses: actions/download-artifact@v4
         with:
           path: artifacts
 
       - name: Publish mobile artifacts metadata
-        run: node ./scripts/write-release-manifest.cjs --input artifacts --output release-manifest.json
+        run: node ./scripts/write-release-manifest.cjs --input artifacts --output release-manifest.json --version '${{ needs.version-bump.outputs.app_version }}' --buildNumber '${{ needs.version-bump.outputs.build_number }}' --releaseTag '${{ needs.version-bump.outputs.release_tag }}'
 
       - name: Attach release note
         run: |

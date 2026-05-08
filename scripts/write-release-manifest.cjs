@@ -14,6 +14,15 @@ function parseArgs(argv) {
         } else if (current === '--output' && next) {
             args.output = next;
             index += 1;
+        } else if (current === '--version' && next) {
+            args.version = next;
+            index += 1;
+        } else if (current === '--buildNumber' && next) {
+            args.buildNumber = next;
+            index += 1;
+        } else if (current === '--releaseTag' && next) {
+            args.releaseTag = next;
+            index += 1;
         }
     }
     return args;
@@ -23,6 +32,7 @@ function parseArgs(argv) {
 function listFiles(dir) {
     /** @type {string[]} */
     const files = [];
+
     /** @param {string} currentDir */
     const walk = (currentDir) => {
         for (const entry of fs.readdirSync(currentDir)) {
@@ -44,7 +54,8 @@ function listFiles(dir) {
 }
 
 function main() {
-    const { input, output } = parseArgs(process.argv.slice(2));
+    const { input, output, version, buildNumber, releaseTag } = parseArgs(process.argv.slice(2));
+
     if (!input) {
         throw new Error('Missing --input <dir>');
     }
@@ -52,9 +63,13 @@ function main() {
         throw new Error('Missing --output <file>');
     }
 
+    /** @type {Record<string, unknown>} */
     const manifest = {
         generatedAt: new Date().toISOString(),
         source: input,
+        version: version ?? undefined,
+        buildNumber: buildNumber ?? undefined,
+        releaseTag: releaseTag ?? undefined,
         files: listFiles(input),
     };
 
