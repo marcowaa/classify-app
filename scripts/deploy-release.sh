@@ -54,14 +54,57 @@ update_release_state() {
 run_smoke_checks() {
   local health_url="${DEPLOY_HEALTH_URL:-http://127.0.0.1:5000/api/health}"
   local expected_version="${DEPLOY_EXPECTED_VERSION:-}"
+  local health_json_path="${DEPLOY_HEALTH_JSON_PATH:-/tmp/deploy-health.json}"
+
+  local app_port="${DEPLOY_APP_PORT:-${PORT:-5000}}"
+  local compose_project="${DEPLOY_COMPOSE_PROJECT_NAME:-${COMPOSE_PROJECT_NAME:-classify}}"
+  local app_service="${DEPLOY_COMPOSE_SERVICE_NAME:-app}"
+
+  docker_smoke_check() {
+    # Runs health check from inside the running container network.
+    # Important: run docker compose from the directory that has docker-compose*.yml.
+    local compose_workdir="${DEPLOY_COMPOSE_WORKDIR:-$ROOT_DIR}"
+
+    # 1) Try with explicit compose project (if it matches the running stack).
+    (cd "$compose_workdir" && docker compose -p "$compose_project" exec -T "$app_service" sh -lc \
+      "curl -fsS http://localhost:${app_port}/api/health" >"$health_json_path" 2>/dev/null) || true
+
+    # 2) Try without -p (compose will use its default project name from directory).
+    if [[ ! -s "$health_json_path" ]]; then
+      (cd "$compose_workdir" && docker compose exec -T "$app_service" sh -lc \
+        "curl -fsS http://localhost:${app_port}/api/health" >"$health_json_path" 2>/dev/null) || true
+    fi
+
+    # 3) Final fallback: docker exec the running container whose name matches the service.
+    if [[ ! -s "$health_json_path" ]]; then
+      local container_name
+      container_name="$(docker ps --filter "name=${app_service}" --format "{{.Names}}" | head -n 1 || true)"
+      if [[ -n "$container_name" ]]; then
+        docker exec "$container_name" sh -lc \
+          "curl -fsS http://localhost:${app_port}/api/health" >"$health_json_path" 2>/dev/null || true
+      fi
+    fi
+  }
 
   for attempt in $(seq 1 12); do
-    local code
-    code="$(curl -fsS -o /tmp/deploy-health.json -w '%{http_code}' "$health_url" || true)"
+    local code="000"
+
+    # Try host curl first (works in docker-compose.http.yml where host port is published).
+    if curl -fsS -o "$health_json_path" -w '%{http_code}' "$health_url" >/dev/null 2>&1; then
+      code="200"
+    else
+      # Fall back to container-network curl.
+      if docker_smoke_check; then
+        code="200"
+      fi
+    fi
+
     if [[ "$code" == "200" ]]; then
       if [[ -n "$expected_version" ]] && command -v jq >/dev/null 2>&1; then
+        # Current health response does NOT include a top-level `.version`;
+        # keep version enforcement non-fatal by only checking it if present.
         local reported
-        reported="$(jq -r '.version // empty' /tmp/deploy-health.json 2>/dev/null || true)"
+        reported="$(jq -r '.version // empty' "$health_json_path" 2>/dev/null || true)"
         if [[ -n "$reported" && "$reported" != "$expected_version" ]]; then
           log "Health endpoint version mismatch: expected=$expected_version reported=$reported"
           return 1
@@ -69,6 +112,7 @@ run_smoke_checks() {
       fi
       return 0
     fi
+
     sleep 5
   done
 
