@@ -15,7 +15,7 @@ on:
                 description: "Server deploy root path"
                 required: false
                 type: string
-                default: /srv/classify
+                default: /opt/classify
 
 permissions:
     contents: read
