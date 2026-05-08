@@ -241,10 +241,33 @@ jobs:
             exit 1
           fi
 
+          echo "=== Atomic Deploy connectivity diagnostics ==="
+          echo "DEPLOY_HOST=$DEPLOY_HOST"
+          echo "DEPLOY_PORT=${DEPLOY_PORT:-22}"
+          echo "DEPLOY_USER=$DEPLOY_USER"
+
+          echo "DNS A/AAAA (if available):"
+          (getent ahosts "$DEPLOY_HOST" || true)
+
+          echo "TCP reachability test (IPv4 only):"
+          nc -4 -vz -w 5 "$DEPLOY_HOST" "${DEPLOY_PORT:-22}" || true
+
           printf '%s\n' "$DEPLOY_KEY" > /tmp/deploy_key
           chmod 600 /tmp/deploy_key
-          scp -i /tmp/deploy_key -P "${DEPLOY_PORT:-22}" -o StrictHostKeyChecking=no -r release-bundle "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}/incoming"
-          ssh -i /tmp/deploy_key -p "${DEPLOY_PORT:-22}" -o StrictHostKeyChecking=no "${DEPLOY_USER}@${DEPLOY_HOST}" "RELEASE_VERSION='${RELEASE_VERSION}' RELEASE_BUILD_NUMBER='${RELEASE_BUILD_NUMBER}' RELEASE_TAG='${RELEASE_TAG}' bash ${DEPLOY_PATH}/scripts/deploy-release.sh ${DEPLOY_PATH}"
+          scp -4 \
+            -o AddressFamily=inet \
+            -o ConnectTimeout=15 \
+            -i /tmp/deploy_key \
+            -P "${DEPLOY_PORT:-22}" \
+            -o StrictHostKeyChecking=no \
+            -r release-bundle "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}/incoming"
+          ssh -4 \
+            -o AddressFamily=inet \
+            -o ConnectTimeout=15 \
+            -i /tmp/deploy_key \
+            -p "${DEPLOY_PORT:-22}" \
+            -o StrictHostKeyChecking=no \
+            "${DEPLOY_USER}@${DEPLOY_HOST}" "RELEASE_VERSION='${RELEASE_VERSION}' RELEASE_BUILD_NUMBER='${RELEASE_BUILD_NUMBER}' RELEASE_TAG='${RELEASE_TAG}' bash ${DEPLOY_PATH}/scripts/deploy-release.sh ${DEPLOY_PATH}"
           rm -f /tmp/deploy_key
 
   deploy-mobile:
