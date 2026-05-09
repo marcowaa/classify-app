@@ -156,9 +156,12 @@
   - ترك السلوك كما هو (لأنه ليس path الأطفال)
 
 **Verification Pending**
-- اختبار على جهاز فعلي/محاكاة runtime:
-  - تأكيد أن `audience="children"` لا يفتح أي رابط خارج التطبيق
-  - تأكيد استمرار تسجيل `click` tracking endpoint
+- في الكود الحالي داخل `client/src`:
+  - `Home.tsx` يمرّر `audience="all"`
+  - `Wallet.tsx` يمرّر `audience="parents"`
+  - لم يتم العثور على أي تمرير/استخدام لـ `audience="children"` (لا كـ literal ولا عبر prop passing نصيًا)
+- بالتالي: مسار الـ Ads للأطفال غير “wired” في الـ routes الحالية، لذا لا يلزم runtime evidence لمسار Home→Ads للأطفال في النسخة الحالية.
+- مع ذلك: تم تنفيذ الـ guard داخل `SlidingAdsCarousel` لمنع `window.open` إذا تم تفعيل `audience="children"` لاحقًا، مع استمرار tracking عبر `POST /api/ads/:id/view` و`POST /api/ads/:id/click`.
 
 ---
 
