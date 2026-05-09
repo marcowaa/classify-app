@@ -13,7 +13,7 @@
   "android": {
     "allowMixedContent": false,
     "captureInput": true,
-    "webContentsDebuggingEnabled": false,
+    "webContentsDebuggingEnabled": true,
     "backgroundColor": "#FFFFFF",
     "overrideUserAgent": "Classify-Android/2.1.0"
   },

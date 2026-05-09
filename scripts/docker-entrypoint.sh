@@ -5,6 +5,14 @@ echo "  Classify Docker Entrypoint"
 echo "  Environment: ${NODE_ENV:-production}"
 echo "=============================================="
 
+# Load local .env if it exists (so DATABASE_URL/JWT_SECRET are available)
+if [ -f ".env" ]; then
+  echo "Loading .env..."
+  set -a
+  . ./.env
+  set +a
+fi
+
 wait_for_db() {
     echo "[1/4] Waiting for database to be ready..."
     DB_HOST=$(echo $DATABASE_URL | sed -n 's|.*@\([^:]*\):.*|\1|p')

@@ -5,6 +5,28 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const logPath = path.join(__dirname, "server.log");
+
+function writeLog(level, msg, extra) {
+    const line = `[${new Date().toISOString()}] [${level}] ${msg}${extra ? ` ${JSON.stringify(extra)}` : ""}\n`;
+    try {
+        fs.appendFileSync(logPath, line, "utf8");
+    } catch {
+        // ignore logging errors
+    }
+}
+
+process.on("uncaughtException", (err) => {
+    writeLog("fatal", "uncaughtException", { message: err?.message, stack: err?.stack });
+});
+process.on("unhandledRejection", (reason) => {
+    writeLog("fatal", "unhandledRejection", { reason: String(reason) });
+});
+
+writeLog("info", "server.mjs starting", { cwd: process.cwd() });
+
 function isTextFile(mimeLike) {
     if (!mimeLike) return true;
     const s = String(mimeLike).toLowerCase();
@@ -478,4 +500,21 @@ server.registerTool(
 );
 
 const transport = new StdioServerTransport();
-await server.connect(transport);
+writeLog("info", "calling server.connect(stdio)");
+
+const pendingTimer = setTimeout(() => {
+    writeLog("warn", "connect still pending after 2000ms");
+}, 2000);
+
+try {
+    await server.connect(transport);
+    clearTimeout(pendingTimer);
+    writeLog("info", "connected to stdio transport");
+} catch (err) {
+    clearTimeout(pendingTimer);
+    writeLog("fatal", "connect_failed", {
+        message: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined
+    });
+    process.exit(1);
+}

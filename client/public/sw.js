@@ -87,6 +87,26 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
+  // ─── BOOT-SAFE RULE ─────────────────────────────────────────────
+  // During Capacitor local mode, serving cached hashed JS bundles can cause
+  // silent React boot failures (blank screen). To stabilize:
+  // - Always try a fresh (live) fetch for scripts
+  // - Never fall back to caches.match() for JS during startup
+  if (event.request.destination === 'script') {
+    event.respondWith(
+      fetch(event.request, { cache: 'reload' }).catch(() =>
+        new Response(
+          '/* SW boot-safe: script fetch failed */',
+          {
+            status: 503,
+            headers: { 'Content-Type': 'application/javascript; charset=utf-8' },
+          }
+        )
+      )
+    );
+    return;
+  }
+
   const fallbackResponse = (request) => {
     if (request.mode === 'navigate' || request.destination === 'document') {
       return new Response(
