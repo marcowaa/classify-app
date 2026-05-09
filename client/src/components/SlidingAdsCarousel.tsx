@@ -77,11 +77,14 @@ export function SlidingAdsCarousel({ audience, variant, isDark, className = "" }
 
   const handleClick = useCallback((ad: Ad) => {
     fetch(`/api/ads/${ad.id}/click`, { method: "POST" }).catch(() => {});
+    // Children audience: keep tracking, but block outbound/external navigation.
+    if (audience === "children") return;
+
     if (ad.linkUrl) {
       const url = /^https?:\/\//i.test(ad.linkUrl) ? ad.linkUrl : `https://${ad.linkUrl}`;
       window.open(url, "_blank", "noopener,noreferrer");
     }
-  }, []);
+  }, [audience]);
 
   if (adsList.length === 0) return null;
 
@@ -106,6 +109,7 @@ export function SlidingAdsCarousel({ audience, variant, isDark, className = "" }
               ad={currentAd}
               isDark={isDark}
               isHome={true}
+              audience={audience}
               slideClasses={slideClasses}
               adsList={adsList}
               goNext={goNext}
@@ -122,6 +126,7 @@ export function SlidingAdsCarousel({ audience, variant, isDark, className = "" }
             ad={currentAd}
             isDark={isDark}
             isHome={false}
+              audience={audience}
             slideClasses={slideClasses}
             adsList={adsList}
             goNext={goNext}
@@ -175,6 +180,7 @@ function CarouselBody({
   ad,
   isDark,
   isHome,
+  audience,
   slideClasses,
   adsList,
   goNext,
@@ -184,6 +190,7 @@ function CarouselBody({
   ad: Ad;
   isDark: boolean;
   isHome: boolean;
+    audience: SlidingAdsCarouselProps["audience"];
   slideClasses: string;
   adsList: Ad[];
   goNext: () => void;
@@ -212,7 +219,7 @@ function CarouselBody({
             <div className={`absolute bottom-0 inset-x-0 ${padding}`}>
               <h3 className={`text-white font-bold ${isHome ? "text-xl" : "text-lg"} leading-tight drop-shadow-md`}>{ad.title}</h3>
               <p className="text-white/80 text-sm mt-1.5 line-clamp-2">{ad.content}</p>
-              {ad.linkUrl && (
+              {ad.linkUrl && audience !== "children" && (
                 <div className="flex items-center gap-1.5 mt-2 text-white/60 text-xs">
                   <ExternalLink className="h-3 w-3" />
                   <span>{t("adsCarousel.viewDetails")}</span>
@@ -226,12 +233,12 @@ function CarouselBody({
             <p className={`text-sm mt-2 leading-relaxed line-clamp-3 ${isDark ? "text-gray-400" : isHome ? "text-white/70" : "text-gray-600"}`}>
               {ad.content}
             </p>
-            {ad.linkUrl && (
-              <div className={`flex items-center gap-1.5 mt-3 text-xs ${isDark ? "text-blue-400" : "text-blue-600"}`}>
-                <ExternalLink className="h-3 w-3" />
-                <span>{t("adsCarousel.viewDetails")}</span>
-              </div>
-            )}
+              {ad.linkUrl && audience !== "children" && (
+                <div className={`flex items-center gap-1.5 mt-3 text-xs ${isDark ? "text-blue-400" : "text-blue-600"}`}>
+                  <ExternalLink className="h-3 w-3" />
+                  <span>{t("adsCarousel.viewDetails")}</span>
+                </div>
+              )}
           </div>
         )}
       </div>
