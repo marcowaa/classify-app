@@ -722,6 +722,14 @@ VERSIONED_AAB_NAME="classify-googleplay-${RELEASE_TAG}.aab"
 
 step "Publishing artifacts to apps/ and apps/archive"
 
+# Prevent repo/LFS growth: keep only the newest archive.
+# We still keep "latest" always, but for "archive" we overwrite by deleting old binaries
+# (and their tracking metadata) before writing the new release.
+rm -f "$CLIENT_ARCHIVE_DIR"/*.apk "$CLIENT_ARCHIVE_DIR"/*.aab 2>/dev/null || true
+rm -f "$DIST_ARCHIVE_DIR"/*.apk "$DIST_ARCHIVE_DIR"/*.aab 2>/dev/null || true
+rm -f "$CLIENT_ARCHIVE_DIR"/release-*.json "$CLIENT_ARCHIVE_DIR"/provenance-*.json "$CLIENT_ARCHIVE_DIR"/checksums-*.txt 2>/dev/null || true
+rm -f "$DIST_ARCHIVE_DIR"/release-*.json "$DIST_ARCHIVE_DIR"/provenance-*.json "$DIST_ARCHIVE_DIR"/checksums-*.txt 2>/dev/null || true
+
 copy_artifact "$APK_SOURCE" "$CLIENT_APPS_DIR/$LATEST_APK_NAME" "latest APK"
 copy_artifact "$AAB_SOURCE" "$CLIENT_APPS_DIR/$LATEST_AAB_NAME" "latest AAB"
 copy_artifact "$APK_SOURCE" "$DIST_APPS_DIR/$LATEST_APK_NAME" "latest APK"
