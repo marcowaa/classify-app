@@ -1,5 +1,5 @@
 // Classify Service Worker v8 — update-safe UI cache strategy
-const CACHE_NAME = 'classify-v8';
+const CACHE_NAME = 'classify-v9';
 // Production-ready default: enable SW caching strategy.
 // Set to true only during active debugging sessions if you need network-only behavior.
 const DEV_DISABLE_SW_CACHE = false;
