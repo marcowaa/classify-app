@@ -243,6 +243,15 @@
 - [x] تحقق توقيع الـ APK (static):
   - تم تشغيل `jarsigner -verify -verbose -certs client\public\apps\classify-app-latest.apk` وظهر: `jar verified`
   - مع Warning: `self-signed` / `Invalid certificate chain (PKIX path building failed)` (غالبًا عدم توفّر trust chain محليًا، وليس دليلًا على عدم صحة توقيع الـ APK)
+- [x] مواصفات Release Keystore المستخدمة (مذكورة من فريق التوقيع):
+  - Keystore path: `/opt/classify/signing/classify-release.jks`
+  - Key alias / global alias: `classify-release`
+  - Algorithm: `RSA 4096`
+  - Signature scheme: `SHA256withRSA`
+  - Validity: `10 سنوات`
+  - Fingerprints:
+    - SHA-1: `442E46F141BBF7010F1EDEC57A0D73103F332C01`
+    - SHA-256: `35B11E7ABA0D9C71BFD49002219BD55725BC95076B1FBEA411CDCD5CB9E97055`
 
 ### Phase A — Blocking Fixes (Ads)
 1) قرار المنتج:
