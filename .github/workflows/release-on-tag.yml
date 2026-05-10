@@ -109,6 +109,20 @@ jobs:
             fi
           fi
 
+      - name: Sanitize Android SDK location for linux runner (remove Windows sdk.dir)
+        shell: bash
+        run: |
+          set -euo pipefail
+          LOCAL_PROPS="appsflutter/android/local.properties"
+
+          if [[ -f "$LOCAL_PROPS" ]]; then
+            current="$(grep -E '^sdk\.dir=' "$LOCAL_PROPS" | head -n 1 | cut -d= -f2- || true)"
+            if [[ -n "$current" && "$current" =~ ^[A-Za-z]:\\ ]]; then
+              echo "Removing Windows sdk.dir from $LOCAL_PROPS"
+              sed -i '/^sdk\.dir=/d' "$LOCAL_PROPS"
+            fi
+          fi
+
       - name: Build APK (release)
         working-directory: appsflutter
         run: flutter build apk --release
