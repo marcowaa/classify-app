@@ -123,6 +123,38 @@ jobs:
         working-directory: appsflutter
         run: flutter pub get
 
+      - name: Setup Java (for jarsigner/gradle signing tooling)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Write Android release key.properties from secrets
+        if: ${{ matrix.target == 'apk' || matrix.target == 'appbundle' }}
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PATH: ${{ secrets.KEYSTORE_PATH }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${ANDROID_KEYSTORE_BASE64:-}" ]; then echo "Missing ANDROID_KEYSTORE_BASE64 secret"; exit 1; fi
+          if [ -z "${KEYSTORE_PATH:-}" ]; then echo "Missing KEYSTORE_PATH secret"; exit 1; fi
+
+          mkdir -p "$(dirname "$KEYSTORE_PATH")"
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$KEYSTORE_PATH"
+          chmod 600 "$KEYSTORE_PATH"
+
+          mkdir -p "appsflutter/android"
+          printf 'storeFile=%s\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
+            "$KEYSTORE_PATH" \
+            "$KEYSTORE_PASSWORD" \
+            "$KEY_ALIAS" \
+            "$KEY_PASSWORD" > "appsflutter/android/key.properties"
+          chmod 600 "appsflutter/android/key.properties"
+
       - name: Resolve version metadata
         working-directory: appsflutter
         run: flutter build --help > /dev/null
@@ -155,10 +187,48 @@ jobs:
         working-directory: appsflutter
         run: flutter build apk --release
 
+      - name: Verify produced APK exists and is non-empty
+        if: matrix.target == 'apk'
+        working-directory: appsflutter
+        run: |
+          set -euo pipefail
+          test -s "build/app/outputs/flutter-apk/app-release.apk"
+          echo "APK verified: build/app/outputs/flutter-apk/app-release.apk"
+
       - name: Build App Bundle
         if: matrix.target == 'appbundle'
         working-directory: appsflutter
         run: flutter build appbundle --release
+
+      - name: Verify produced AAB exists and is non-empty
+        if: matrix.target == 'appbundle'
+        working-directory: appsflutter
+        run: |
+          set -euo pipefail
+          test -s "build/app/outputs/bundle/release/app-release.aab"
+          echo "AAB verified: build/app/outputs/bundle/release/app-release.aab"
+
+      - name: Verify AAB signature (jarsigner)
+        if: matrix.target == 'appbundle'
+        working-directory: appsflutter
+        run: |
+          set -euo pipefail
+          AAB_PATH="build/app/outputs/bundle/release/app-release.aab"
+          if ! command -v jarsigner >/dev/null 2>&1; then
+            echo "jarsigner not found in PATH" >&2
+            exit 1
+          fi
+          verify_output="$(jarsigner -verify -verbose -certs "$AAB_PATH" 2>&1 || true)"
+          echo "$verify_output"
+          if echo "$verify_output" | grep -qi "jar is unsigned"; then
+            echo "Generated AAB is unsigned" >&2
+            exit 1
+          fi
+          if ! echo "$verify_output" | grep -qi "jar verified"; then
+            echo "AAB signature verification failed" >&2
+            exit 1
+          fi
+          echo "AAB signature verification passed"
 
       - name: Build Web Wrapper
         if: matrix.target == 'web'
@@ -202,6 +272,19 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
+
+      - name: Stage mobile artifacts with fixed names for Atomic Deploy
+        run: |
+          set -euo pipefail
+
+          APK_SRC="$(find artifacts -type f -name 'app-release.apk' | head -n 1 || true)"
+          AAB_SRC="$(find artifacts -type f -name 'app-release.aab' | head -n 1 || true)"
+
+          if [ -z "${APK_SRC:-}" ]; then echo "Missing produced APK: app-release.apk"; exit 1; fi
+          if [ -z "${AAB_SRC:-}" ]; then echo "Missing produced AAB: app-release.aab"; exit 1; fi
+
+          cp -f "$APK_SRC" "artifacts/app-release.apk"
+          cp -f "$AAB_SRC" "artifacts/app-release.aab"
 
       - name: Publish mobile artifacts metadata
         run: node ./scripts/write-release-manifest.cjs --input artifacts --output release-manifest.json --version '${{ needs.version-bump.outputs.app_version }}' --buildNumber '${{ needs.version-bump.outputs.build_number }}' --releaseTag '${{ needs.version-bump.outputs.release_tag }}'

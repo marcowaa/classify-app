@@ -60,27 +60,39 @@ final routerProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
     initialLocation: RoutePaths.splash,
-    debugLogDiagnostics: true,
+    debugLogDiagnostics: false,
     redirect: (context, state) {
       final isLoggedIn = authState.isAuthenticated;
-      final isAuthRoute = state.matchedLocation == RoutePaths.parentAuth ||
-          state.matchedLocation == RoutePaths.childLink ||
-          state.matchedLocation == RoutePaths.childPinLogin ||
-          state.matchedLocation == RoutePaths.accountType ||
-          state.matchedLocation == RoutePaths.otp ||
-          state.matchedLocation == RoutePaths.forgotPassword;
+
+      // Routes that must be reachable when the user is NOT authenticated.
+      final isPublicAuthRoute =
+          state.matchedLocation == RoutePaths.parentAuth ||
+              state.matchedLocation == RoutePaths.childLink ||
+              state.matchedLocation == RoutePaths.childPinLogin ||
+              state.matchedLocation == RoutePaths.accountType ||
+              state.matchedLocation == RoutePaths.otp ||
+              state.matchedLocation == RoutePaths.forgotPassword;
+
+      final isLoggedInRedirectRoute =
+          state.matchedLocation == RoutePaths.parentAuth ||
+              state.matchedLocation == RoutePaths.accountType ||
+              state.matchedLocation == RoutePaths.otp ||
+              state.matchedLocation == RoutePaths.forgotPassword ||
+              state.matchedLocation == RoutePaths.childLink ||
+              state.matchedLocation == RoutePaths.childPinLogin;
+
       final isSplash = state.matchedLocation == RoutePaths.splash;
 
       // Allow splash screen always
       if (isSplash) return null;
 
-      // If not logged in and not on auth route, redirect to account type
-      if (!isLoggedIn && !isAuthRoute) {
+      // If not logged in and not on a public auth route, redirect to account type
+      if (!isLoggedIn && !isPublicAuthRoute) {
         return RoutePaths.accountType;
       }
 
-      // If logged in and on auth route, redirect to appropriate dashboard
-      if (isLoggedIn && isAuthRoute) {
+      // If logged in and on a route that should not be reachable, redirect.
+      if (isLoggedIn && isLoggedInRedirectRoute) {
         if (authState.userType == UserType.child) {
           return RoutePaths.childGames;
         }

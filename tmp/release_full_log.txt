@@ -1,0 +1,159 @@
+--------- beginning of main
+05-10 20:55:24.443 E/SlowAppComponent(12160): 41ms: AndroidXAppInitializer instantiating…
+05-10 20:55:24.443 E/SlowAppComponent(12160): 50ms: FifuDeferredDeeplinkProvider instantiating…
+05-10 20:55:24.443 E/SlowAppComponent(12160): 50ms: UsdidValuesProvider instantiating…
+05-10 20:55:24.443 E/SlowAppComponent(12160): 50ms: DeferredDeeplinkProvider instantiating…
+05-10 20:55:24.443 E/SlowAppComponent(12160): 50ms: TixuDeferredDeeplinkProvider instantiating…
+05-10 20:55:24.443 E/SlowAppComponent(12160): 325ms: KeepWarmReceiver instantiating…
+05-10 20:55:24.443 E/SlowAppComponent(12160): Main thread was blocked for 332ms in the background starting with InstagramAppShell
+05-10 20:55:24.444 D/MilletPolicy( 6518): isAllowFreeze autostart uid=10275 pkgName=com.facebook.katana
+05-10 20:55:24.447 W/IgMetaConfig(12160): Could not obtain MC: not_user_session session=X.5uv@5d87c3a
+05-10 20:55:24.447 W/IgMetaConfig(12160): java.lang.RuntimeException: Could not obtain MC, call-site will receive default values
+05-10 20:55:24.447 W/IgMetaConfig(12160): 	at X.1pf.A07(:18)
+05-10 20:55:24.447 W/IgMetaConfig(12160): 	at X.1pf.A06(:8)
+05-10 20:55:24.447 W/IgMetaConfig(12160): 	at X.1pf.A03(:2)
+05-10 20:55:24.447 W/IgMetaConfig(12160): 	at X.4IA.<init>(Unknown Source:60)
+05-10 20:55:24.447 W/IgMetaConfig(12160): 	at X.4Ay.A00(Unknown Source:188)
+05-10 20:55:24.447 W/IgMetaConfig(12160): 	at X.7us.onQueueIdle(:20)
+05-10 20:55:24.447 W/IgMetaConfig(12160): 	at X.6x2.queueIdle(Unknown Source:33)
+05-10 20:55:24.447 W/IgMetaConfig(12160): 	at android.os.MessageQueue.next(MessageQueue.java:410)
+05-10 20:55:24.447 W/IgMetaConfig(12160): 	at android.os.Looper.loopOnce(Looper.java:169)
+05-10 20:55:24.447 W/IgMetaConfig(12160): 	at android.os.Looper.loop(Looper.java:300)
+05-10 20:55:24.447 W/IgMetaConfig(12160): 	at android.app.ActivityThread.main(ActivityThread.java:8410)
+05-10 20:55:24.447 W/IgMetaConfig(12160): 	at java.lang.reflect.Method.invoke(Native Method)
+05-10 20:55:24.447 W/IgMetaConfig(12160): 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:559)
+05-10 20:55:24.447 W/IgMetaConfig(12160): 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:954)
+--------- beginning of system
+05-10 20:55:24.452 D/PackageManager( 1808): set app component=ComponentInfo{com.instagram.android/com.instagram.push.FbnsInitBroadcastReceiver} enabled state: 1 from null,uid=10298,pid=12160
+05-10 20:55:24.453 D/CompatibilityChangeReporter(12160): Compat change id reported: 160794467; UID 10298; state: ENABLED
+05-10 20:55:24.455 I/SmartPower.com.facebook.services/10094(11049)( 1808): idle->background(٥٤٥١٢ms) R(service start com.facebook.services/com.facebook.oxygen.services.fbns.PreloadedFbnsService) adj=0.
+05-10 20:55:24.456 W/IgMetaConfig(12160): Could not obtain MC: not_user_session session=X.5uv@5d87c3a
+05-10 20:55:24.456 W/IgMetaConfig(12160): java.lang.RuntimeException: Could not obtain MC, call-site will receive default values
+05-10 20:55:24.456 W/IgMetaConfig(12160): 	at X.1pf.A07(:18)
+05-10 20:55:24.456 W/IgMetaConfig(12160): 	at X.1pf.A06(:8)
+05-10 20:55:24.456 W/IgMetaConfig(12160): 	at X.1pf.A03(:2)
+05-10 20:55:24.456 W/IgMetaConfig(12160): 	at com.instagram.push.FbnsInitBroadcastReceiver.onReceive(Unknown Source:28)
+05-10 20:55:24.456 W/IgMetaConfig(12160): 	at android.app.LoadedApk$ReceiverDispatcher$Args.lambda$getRunnable$0$android-app-LoadedApk$ReceiverDispatcher$Args(LoadedApk.java:1819)
+05-10 20:55:24.456 W/IgMetaConfig(12160): 	at android.app.LoadedApk$ReceiverDispatcher$Args$$ExternalSyntheticLambda0.run(Unknown Source:2)
+05-10 20:55:24.456 W/IgMetaConfig(12160): 	at android.os.Handler.handleCallback(Handler.java:942)
+05-10 20:55:24.456 W/IgMetaConfig(12160): 	at android.os.Handler.dispatchMessage(Handler.java:99)
+05-10 20:55:24.456 W/IgMetaConfig(12160): 	at android.os.Looper.loopOnce(Looper.java:211)
+05-10 20:55:24.456 W/IgMetaConfig(12160): 	at android.os.Looper.loop(Looper.java:300)
+05-10 20:55:24.456 W/IgMetaConfig(12160): 	at android.app.ActivityThread.main(ActivityThread.java:8410)
+05-10 20:55:24.456 W/IgMetaConfig(12160): 	at java.lang.reflect.Method.invoke(Native Method)
+05-10 20:55:24.456 W/IgMetaConfig(12160): 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:559)
+05-10 20:55:24.456 W/IgMetaConfig(12160): 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:954)
+05-10 20:55:24.456 D/PackageManager( 1808): set app component=ComponentInfo{com.instagram.android/com.instagram.push.FbnsInitBroadcastReceiver} enabled state: 1 from null,uid=10298,pid=12160
+05-10 20:55:24.544 D/UidObserver( 6518): onUidIdle uid=10146 uidstate=100
+05-10 20:55:24.648 W/IgMetaConfig(12160): Could not obtain MC: not_user_session session=X.5uv@5d87c3a
+05-10 20:55:24.648 W/IgMetaConfig(12160): java.lang.RuntimeException: Could not obtain MC, call-site will receive default values
+05-10 20:55:24.648 W/IgMetaConfig(12160): 	at X.1pf.A07(:18)
+05-10 20:55:24.648 W/IgMetaConfig(12160): 	at X.1pf.A06(:8)
+05-10 20:55:24.648 W/IgMetaConfig(12160): 	at X.1pf.A03(:2)
+05-10 20:55:24.648 W/IgMetaConfig(12160): 	at X.7vk.A01(:274)
+05-10 20:55:24.648 W/IgMetaConfig(12160): 	at X.A0u.run(Unknown Source:16)
+05-10 20:55:24.648 W/IgMetaConfig(12160): 	at X.3gs.run(:37)
+05-10 20:55:24.648 W/IgMetaConfig(12160): 	at X.1mx.run(:25)
+05-10 20:55:24.648 W/IgMetaConfig(12160): 	at X.1mx.run(:25)
+05-10 20:55:24.648 W/IgMetaConfig(12160): 	at X.1mp.A00(:110)
+05-10 20:55:24.648 W/IgMetaConfig(12160): 	at X.1mp.run(:136)
+05-10 20:55:25.073 I/ExtM    ( 1808): zram userate is low, no need to flush: 33
+05-10 20:55:25.182 W/AppInitScheduler|Run(12160): DeadlockMonitor exiting.
+05-10 20:55:25.548 W/Settings(14284): Setting device_provisioned has moved from android.provider.Settings.Secure to android.provider.Settings.Global.
+05-10 20:55:25.548 I/JoyoseCloudControlManager3(14284): network metered changed, network metered: false, deviceProvisioned: true, scAllowConn: true, setNetworkAccessEnabled: true
+05-10 20:55:25.549 I/BugleRcsEngine(26245): handleMessage processing message:[NOTIFY_UPTIME_IGNORE_STATE_CHANGED] with [non-null]:RcsEngineImpl reference [CONTEXT log_prefix="RcsEngineImpl[DUAL_REG]:[933e948e-7d6a]>Handler" thread_id=84 ]
+05-10 20:55:25.550 I/BugleRcsEngine(26245): Connected state: [1], networkType: [WIFI] [CONTEXT thread_id=76 ]
+05-10 20:55:25.550 D/QCNEJ/WlanStaInfoRelay( 2705): Received action: android.net.wifi.RSSI_CHANGED
+05-10 20:55:25.555 I/SmartPower.com.google.android.apps.messaging/10139(6137)( 1808): idle->background(١٥١٣٧ms) R(content provider start ContentProviderRecord{da46b96 u0 com.google.android.apps.messaging/.shared.datamodel.provider.sharedstorage.SharedStorageProvider}) adj=200.
+05-10 20:55:25.719 D/UidObserver( 6518): onUidIdle uid=10111 uidstate=100
+05-10 20:55:26.050 I/NearbySharing(13806): Network state changed: NetworkState(isRestricted=false, isOnline=true, isCongested=false, isMetered=false, isWifiConnected=true)
+05-10 20:55:26.108 D/UidObserver( 6518): onUidIdle uid=10294 uidstate=100
+05-10 20:55:26.109 D/MilletPolicy( 6518): isAllowFreeze autostart uid=10294 pkgName=com.whatsapp
+05-10 20:55:26.196 W/MultiSignalANRDetectorLacrima(12160): Pausing error state checks
+05-10 20:55:26.213 D/MiuiNetworkPolicy( 1808): updateLimit mLimitEnabled=true,enabled=false,mNetworkPriorityMode=255
+05-10 20:55:26.396 W/IgMetaConfig(12160): Could not obtain MC: not_user_session session=X.5uv@5d87c3a
+05-10 20:55:26.396 W/IgMetaConfig(12160): java.lang.RuntimeException: Could not obtain MC, call-site will receive default values
+05-10 20:55:26.396 W/IgMetaConfig(12160): 	at X.1pf.A07(:18)
+05-10 20:55:26.396 W/IgMetaConfig(12160): 	at X.1pf.A06(:8)
+05-10 20:55:26.396 W/IgMetaConfig(12160): 	at X.1pf.A03(:2)
+05-10 20:55:26.396 W/IgMetaConfig(12160): 	at X.2el.A00(:9)
+05-10 20:55:26.396 W/IgMetaConfig(12160): 	at X.2el.A03(:4)
+05-10 20:55:26.396 W/IgMetaConfig(12160): 	at X.6gt.run(:7)
+05-10 20:55:26.396 W/IgMetaConfig(12160): 	at X.1mx.run(:25)
+05-10 20:55:26.396 W/IgMetaConfig(12160): 	at android.os.Handler.handleCallback(Handler.java:942)
+05-10 20:55:26.396 W/IgMetaConfig(12160): 	at android.os.Handler.dispatchMessage(Handler.java:99)
+05-10 20:55:26.396 W/IgMetaConfig(12160): 	at android.os.Looper.loopOnce(Looper.java:211)
+05-10 20:55:26.396 W/IgMetaConfig(12160): 	at android.os.Looper.loop(Looper.java:300)
+05-10 20:55:26.396 W/IgMetaConfig(12160): 	at android.os.HandlerThread.run(HandlerThread.java:67)
+05-10 20:55:26.397 W/IgMetaConfig(12160): Could not obtain MC: not_user_session session=X.6w7@c47dc8a
+05-10 20:55:26.397 W/IgMetaConfig(12160): java.lang.RuntimeException: Could not obtain MC, call-site will receive default values
+05-10 20:55:26.397 W/IgMetaConfig(12160): 	at X.1pf.A07(:18)
+05-10 20:55:26.397 W/IgMetaConfig(12160): 	at X.1pf.A06(:8)
+05-10 20:55:26.397 W/IgMetaConfig(12160): 	at X.1pf.A03(:2)
+05-10 20:55:26.397 W/IgMetaConfig(12160): 	at X.2el.A00(:9)
+05-10 20:55:26.397 W/IgMetaConfig(12160): 	at X.2el.A03(:4)
+05-10 20:55:26.397 W/IgMetaConfig(12160): 	at X.6gt.run(:7)
+05-10 20:55:26.397 W/IgMetaConfig(12160): 	at X.1mx.run(:25)
+05-10 20:55:26.397 W/IgMetaConfig(12160): 	at android.os.Handler.handleCallback(Handler.java:942)
+05-10 20:55:26.397 W/IgMetaConfig(12160): 	at android.os.Handler.dispatchMessage(Handler.java:99)
+05-10 20:55:26.397 W/IgMetaConfig(12160): 	at android.os.Looper.loopOnce(Looper.java:211)
+05-10 20:55:26.397 W/IgMetaConfig(12160): 	at android.os.Looper.loop(Looper.java:300)
+05-10 20:55:26.397 W/IgMetaConfig(12160): 	at android.os.HandlerThread.run(HandlerThread.java:67)
+05-10 20:55:26.795 I/SmartPower.com.google.process.gservices/10153(10205)( 1808): background->idle(٥٨٣٩٩ms) R(process died ) adj=915.
+05-10 20:55:26.795 I/SmartPower.com.google.android.gms/10153(11050)( 1808): background->idle(٥٨٥٩٤ms) R(process died ) adj=800.
+05-10 20:55:27.458 I/SmartPower.com.facebook.services/10094(11049)( 1808): background->idle(٣٠٠٢ms) R(service start com.facebook.services/com.facebook.oxygen.services.fbns.PreloadedFbnsService) adj=800.
+05-10 20:55:27.787 W/Settings( 2766): Setting airplane_mode_on has moved from android.provider.Settings.System to android.provider.Settings.Global, returning read-only value.
+05-10 20:55:27.790 D/MobileStatusTracker(2)( 2793): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=CellSignalStrengthCdma: cdmaDbm=2147483647 cdmaEcio=2147483647 evdoDbm=2147483647 evdoEcio=2147483647 evdoSnr=2147483647 miuiLevel=0 mOptimizedLevel=0 level=0,mGsm=CellSignalStrengthGsm: rssi=2147483647 ber=2147483647 mTa=2147483647 miuiLevel=0 mOptimizedLevel=0 mLevel=0,mWcdma=CellSignalStrengthWcdma: ss=-73 ber=2147483647 rscp=-69 ecno=-4 miuiLevel=5 mOptimizedLevel=0 level=4,mTdscdma=CellSignalStrengthTdscdma: rssi=2147483647 ber=2147483647 rscp=2147483647 miuiLevel=0 mOptimizedLevel=0 level=0,mLte=CellSignalStrengthLte: rssi=2147483647 rsrp=2147483647 rsrq=2147483647 rssnr=2147483647 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 miuiLevel=0 mOptimizedLevel=0 level=0 parametersUseForLevel=0,mNr=CellSignalStrengthNr:{ csiRsrp = 2147483647 csiRsrq = 2147483647 csiCqiTableIndex = 2147483647 csiCqiReport = [] ssRsrp = 2147483647 ssRsrq = 2147483647 ssSinr = 2147483647 miuiLevel = 0 mOptimizedLevel = 0 level = 0 parametersUseForLevel = 0 },primary=CellSignalStrengthWcdma}
+05-10 20:55:27.790 D/NetworkController.MobileSignalController(2)( 2793): update5GConnectState: false
+05-10 20:55:27.790 D/NetworkController.MobileSignalController(2)( 2793): ss use aosp level not 0, 5
+05-10 20:55:28.448 I/MiuiNetworkPolicy( 1808): updateUidState uid = 10275, uidState = 11
+05-10 20:55:28.450 I/SmartPower.com.facebook.katana/10275(11618)( 1808): idle->background(١٣٣٨٦ms) R(content provider start ContentProviderRecord{7901d17 u0 com.facebook.katana/.liteprovider.usdid.UsdidValuesProvider}) adj=0.
+05-10 20:55:28.556 I/SmartPower.com.google.android.apps.messaging/10139(6137)( 1808): background->idle(٣٠٠١ms) R(content provider start ContentProviderRecord{da46b96 u0 com.google.android.apps.messaging/.shared.datamodel.provider.sharedstorage.SharedStorageProvider}) adj=200.
+05-10 20:55:28.921 I/ExtM    ( 1808): zram userate is low, no need to flush: 33
+05-10 20:55:29.430 D/IpClient/wlan0( 2641): interfaceLinkStateChanged: ifindex 30 up
+05-10 20:55:29.647 D/UidObserver( 6518): onUidIdle uid=10086 uidstate=100
+05-10 20:55:30.061 D/UidObserver( 6518): onUidIdle uid=10295 uidstate=100
+05-10 20:55:30.063 D/MilletPolicy( 6518): isAllowFreeze autostart uid=10295 pkgName=com.facebook.orca
+05-10 20:55:30.109 W/Settings( 2766): Setting airplane_mode_on has moved from android.provider.Settings.System to android.provider.Settings.Global, returning read-only value.
+05-10 20:55:30.110 D/MobileStatusTracker(2)( 2793): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=CellSignalStrengthCdma: cdmaDbm=2147483647 cdmaEcio=2147483647 evdoDbm=2147483647 evdoEcio=2147483647 evdoSnr=2147483647 miuiLevel=0 mOptimizedLevel=0 level=0,mGsm=CellSignalStrengthGsm: rssi=2147483647 ber=2147483647 mTa=2147483647 miuiLevel=0 mOptimizedLevel=0 mLevel=0,mWcdma=CellSignalStrengthWcdma: ss=-71 ber=2147483647 rscp=-72 ecno=-8 miuiLevel=5 mOptimizedLevel=0 level=4,mTdscdma=CellSignalStrengthTdscdma: rssi=2147483647 ber=2147483647 rscp=2147483647 miuiLevel=0 mOptimizedLevel=0 level=0,mLte=CellSignalStrengthLte: rssi=2147483647 rsrp=2147483647 rsrq=2147483647 rssnr=2147483647 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 miuiLevel=0 mOptimizedLevel=0 level=0 parametersUseForLevel=0,mNr=CellSignalStrengthNr:{ csiRsrp = 2147483647 csiRsrq = 2147483647 csiCqiTableIndex = 2147483647 csiCqiReport = [] ssRsrp = 2147483647 ssRsrq = 2147483647 ssSinr = 2147483647 miuiLevel = 0 mOptimizedLevel = 0 level = 0 parametersUseForLevel = 0 },primary=CellSignalStrengthWcdma}
+05-10 20:55:30.110 D/NetworkController.MobileSignalController(2)( 2793): update5GConnectState: false
+05-10 20:55:30.110 D/NetworkController.MobileSignalController(2)( 2793): ss use aosp level not 0, 5
+05-10 20:55:31.217 D/MiuiNetworkPolicy( 1808): updateLimit mLimitEnabled=false,enabled=true,mNetworkPriorityMode=255
+05-10 20:55:31.452 I/SmartPower.com.facebook.katana/10275(11618)( 1808): background->idle(٣٠٠١ms) R(content provider start ContentProviderRecord{7901d17 u0 com.facebook.katana/.liteprovider.usdid.UsdidValuesProvider}) adj=0.
+05-10 20:55:31.567 W/ProcessStats( 1808): Tracking association SourceState{ee85379 com.miui.analytics/10198 BTopFgs #296155} whose proc state 2 is better than process ProcessState{aa54ad2 com.miui.securitycenter.remote/1000 pkg=com.miui.securitycenter} proc state 3 (59 skipped)
+05-10 20:55:31.600 D/QCNEJ/WlanStaInfoRelay( 2705): Received action: android.net.wifi.RSSI_CHANGED
+05-10 20:55:31.601 W/Settings(14284): Setting device_provisioned has moved from android.provider.Settings.Secure to android.provider.Settings.Global.
+05-10 20:55:31.602 I/JoyoseCloudControlManager3(14284): network metered changed, network metered: false, deviceProvisioned: true, scAllowConn: true, setNetworkAccessEnabled: true
+05-10 20:55:31.606 I/BugleRcsEngine(26245): handleMessage processing message:[NOTIFY_UPTIME_IGNORE_STATE_CHANGED] with [non-null]:RcsEngineImpl reference [CONTEXT log_prefix="RcsEngineImpl[DUAL_REG]:[933e948e-7d6a]>Handler" thread_id=84 ]
+05-10 20:55:31.606 I/BugleRcsEngine(26245): Connected state: [1], networkType: [WIFI] [CONTEXT thread_id=76 ]
+05-10 20:55:31.610 I/SmartPower.com.google.android.apps.messaging/10139(6137)( 1808): idle->background(٣٠٥٤ms) R(content provider start ContentProviderRecord{da46b96 u0 com.google.android.apps.messaging/.shared.datamodel.provider.sharedstorage.SharedStorageProvider}) adj=200.
+05-10 20:55:32.106 I/NearbySharing(13806): Network state changed: NetworkState(isRestricted=false, isOnline=true, isCongested=false, isMetered=false, isWifiConnected=true)
+05-10 20:55:33.448 D/CompatibilityInfo( 1808): mCompatibilityFlags - 0
+05-10 20:55:33.448 D/CompatibilityInfo( 1808): applicationDensity - 256
+05-10 20:55:33.448 D/CompatibilityInfo( 1808): applicationScale - 1.0
+05-10 20:55:34.086 D/UiModeManager( 1808): updateConfigurationLocked: mDockState=0; mCarMode=false; mCar=false; mPowerSave=false; mComputedNightMode=true; mNightMode=2; uiMode=44
+05-10 20:55:34.087 I/PowerUtils( 4697): getSurfaceTemprature temp: 35
+05-10 20:55:34.088 I/PowerSaveService( 4697): onReceive: android.intent.action.BATTERY_CHANGED
+05-10 20:55:34.088 V/DeviceStatisticsService( 2758): chargerType=1 batteryLevel=100 totalBatteryCapacity=4380000
+05-10 20:55:34.089 I/PowerNoticeUI( 4697): handleBatteryChanged oldPlugType 1 mPlugType 1 oldBatteryLevel 100 mBatteryLevel 100 temperature 353
+05-10 20:55:34.089 D/PowerCheckerService( 6518): onBatteryChanged, mBatteryLevel = 100, status = 5, level = 100, plug = 1, scale = 100
+05-10 20:55:34.089 I/ChargerBatteryIntelligenceReceiver( 4697): onBatteryChanged temperature：35,plugType:1
+05-10 20:55:34.089 D/PowerKeeper.FrozenApp( 6518): onBatteryChanged plug=true mBatteryPlugged=1
+05-10 20:55:34.089 D/PowerKeeper.Thermal( 6518): mBatteryTemperature: 35
+05-10 20:55:34.090 I/SmartPower.com.android.chrome/10165(1996)( 1808): idle->background(١٩٠٢٩ms) R(broadcast start Intent { act=android.intent.action.BATTERY_CHANGED flg=0x60000010 (has extras) }) adj=700.
+05-10 20:55:34.090 I/SmartPower.com.xiaomi.discover/10160(11048)( 1808): idle->background(١٩٠٢٩ms) R(broadcast start Intent { act=android.intent.action.BATTERY_CHANGED flg=0x60000010 (has extras) }) adj=800.
+05-10 20:55:34.091 I/SmartPower.com.facebook.katana/10275(11618)( 1808): idle->background(٢٦٤٠ms) R(broadcast start Intent { act=android.intent.action.BATTERY_CHANGED flg=0x60000010 (has extras) }) adj=0.
+05-10 20:55:34.091 I/SmartPower.com.whatsapp/10294(11751)( 1808): idle->background(١٩٠٢٧ms) R(broadcast start Intent { act=android.intent.action.BATTERY_CHANGED flg=0x60000010 (has extras) }) adj=500.
+05-10 20:55:34.092 I/SmartPower.com.facebook.orca/10295(11936)( 1808): idle->background(١٩٠٢٨ms) R(broadcast start Intent { act=android.intent.action.BATTERY_CHANGED flg=0x60000010 (has extras) }) adj=905.
+05-10 20:55:34.187 W/JavaBinder(12160): BinderProxy is being destroyed but the application did not call unlinkToDeath to unlink all of its death recipients beforehand.  Releasing leaked death recipient: X.0Zd
+05-10 20:55:34.192 W/System  (12160): A resource failed to call close. 
+05-10 20:55:34.466 I/MiuiNetworkPolicy( 1808): updateUidState uid = 10275, uidState = 15
+05-10 20:55:34.611 I/SmartPower.com.google.android.apps.messaging/10139(6137)( 1808): background->idle(٣٠٠١ms) R(content provider start ContentProviderRecord{da46b96 u0 com.google.android.apps.messaging/.shared.datamodel.provider.sharedstorage.SharedStorageProvider}) adj=200.
+05-10 20:55:34.908 W/Settings( 2766): Setting airplane_mode_on has moved from android.provider.Settings.System to android.provider.Settings.Global, returning read-only value.
+05-10 20:55:34.910 D/MobileStatusTracker(2)( 2793): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=CellSignalStrengthCdma: cdmaDbm=2147483647 cdmaEcio=2147483647 evdoDbm=2147483647 evdoEcio=2147483647 evdoSnr=2147483647 miuiLevel=0 mOptimizedLevel=0 level=0,mGsm=CellSignalStrengthGsm: rssi=2147483647 ber=2147483647 mTa=2147483647 miuiLevel=0 mOptimizedLevel=0 mLevel=0,mWcdma=CellSignalStrengthWcdma: ss=-71 ber=2147483647 rscp=-71 ecno=-11 miuiLevel=5 mOptimizedLevel=0 level=4,mTdscdma=CellSignalStrengthTdscdma: rssi=2147483647 ber=2147483647 rscp=2147483647 miuiLevel=0 mOptimizedLevel=0 level=0,mLte=CellSignalStrengthLte: rssi=2147483647 rsrp=2147483647 rsrq=2147483647 rssnr=2147483647 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 miuiLevel=0 mOptimizedLevel=0 level=0 parametersUseForLevel=0,mNr=CellSignalStrengthNr:{ csiRsrp = 2147483647 csiRsrq = 2147483647 csiCqiTableIndex = 2147483647 csiCqiReport = [] ssRsrp = 2147483647 ssRsrq = 2147483647 ssSinr = 2147483647 miuiLevel = 0 mOptimizedLevel = 0 level = 0 parametersUseForLevel = 0 },primary=CellSignalStrengthWcdma}
+05-10 20:55:34.910 D/NetworkController.MobileSignalController(2)( 2793): update5GConnectState: false
+05-10 20:55:34.910 D/NetworkController.MobileSignalController(2)( 2793): ss use aosp level not 0, 5
+05-10 20:55:36.171 I/ActivityTaskManager( 1808): START u0 {flg=0x10000000 cmp=com.classi_fy.twa/.MainActivity} from uid 2000 from pid 12310 callingPackage com.android.shell
+05-10 20:55:36.171 D/MiuiMultiWindowAdapter( 1808): MiuiMultiWindowAdapter::getCanStartActivityFromFullscreenToFreefromList::LIST_CAN_START_ACTIVITY_FROM_FULLSCREEN_TO_FREEFROM = [com.alipay.android.phone.wallet.aptrip.ui.ApTripActivity, com.alipay.mobile.onsitepay.merge.OnsitepayActivity, com.alipay.mobile.nebulax.integration.mpaas.activity.NebulaActivity$Main, com.alipay.mobile.scan.as.main.MainCaptureActivity]
+05-10 20:55:36.173 D/MiuiMultiWindowAdapter( 1808): MiuiMultiWindowAdapter::getLaunchInTaskList::LIST_LAUNCH_IN_TASK = [com.android.bluetooth/.opp.BluetoothOppLauncherActivity, com.android.bluetooth/.opp.BluetoothOppBtEnableActivity]
+05-10 20:55:36.184 E/MiuiActivityController( 1808): MiuiLog-ActivityObserver: There was something wrong : null

@@ -1,9 +1,28 @@
+import java.util.Properties
+import org.gradle.api.GradleException
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
+
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("key.properties")
+if (!keystorePropertiesFile.exists()) {
+    throw GradleException(
+        "Missing signing config file: ${keystorePropertiesFile}. " +
+            "Create it (appsflutter/android/key.properties) with storeFile/storePassword/keyAlias/keyPassword."
+    )
+}
+keystorePropertiesFile.inputStream().use { keystoreProperties.load(it) }
+
+fun requiredKeystoreProperty(name: String): String =
+    keystoreProperties.getProperty(name)
+        ?.trim()
+        ?.takeIf { it.isNotEmpty() }
+        ?: throw GradleException("key.properties is missing required property: ${name}")
 
 android {
     namespace = "com.classify.classify_flutter"
@@ -31,11 +50,30 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        create("release") {
+            val storeFilePath = requiredKeystoreProperty("storeFile")
+            storeFile = file(storeFilePath)
+            storePassword = requiredKeystoreProperty("storePassword")
+            keyAlias = requiredKeystoreProperty("keyAlias")
+            keyPassword = requiredKeystoreProperty("keyPassword")
+
+            // Enforce v1/v2/v3 so `apksigner verify` is fully valid.
+            enableV1Signing = true
+            enableV2Signing = true
+            enableV3Signing = true
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // Signed with release keystore (from appsflutter/android/key.properties).
+            signingConfig = signingConfigs.getByName("release")
+
+            // Avoid native debug symbol stripping failures that break AAB builds
+            ndk {
+                debugSymbolLevel = "none"
+            }
         }
     }
 }

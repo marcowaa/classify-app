@@ -1,0 +1,2 @@
+﻿C:\Users\cex\Desktop\classify-main\android\app\build\outputs\apk\release\app-release.apk
+C:\Users\cex\Desktop\classify-main\android\app\build\outputs\bundle\release\app-release.aab

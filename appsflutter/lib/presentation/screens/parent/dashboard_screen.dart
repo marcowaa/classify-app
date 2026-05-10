@@ -112,9 +112,8 @@ class ParentDashboardScreen extends ConsumerWidget {
                       ),
                       const Spacer(),
                       FilledButton.icon(
-                        onPressed: () {
-                          // TODO: Add child dialog
-                        },
+                        onPressed: () =>
+                            context.go(RoutePaths.childLink),
                         icon: const Icon(Icons.add, size: 18),
                         label: Text(l10n.linkChild),
                         style: FilledButton.styleFrom(
@@ -435,10 +434,8 @@ class _ChildCard extends StatelessWidget {
               ],
             ),
           ),
-          FilledButton.tonal(
-            onPressed: () {
-              // TODO: Navigate to child management
-            },
+            FilledButton.tonal(
+            onPressed: () => context.go(RoutePaths.parentTasks),
             style: FilledButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 12),
             ),
