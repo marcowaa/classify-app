@@ -1,232 +1,237 @@
 name: Manual Android Release (Signed AAB + APK)
 
 on:
-    workflow_dispatch:
-        inputs:
-            build_apk:
-                description: "Build APK (latest)"
-                required: false
-                type: boolean
-                default: true
-            build_aab:
-                description: "Build AAB (latest)"
-                required: false
-                type: boolean
-                default: true
+  workflow_dispatch:
+    inputs:
+      build_apk:
+        description: "Build APK (latest)"
+        required: false
+        type: boolean
+        default: true
+      build_aab:
+        description: "Build AAB (latest)"
+        required: false
+        type: boolean
+        default: true
 
 permissions:
-    contents: write
-    actions: read
-    checks: write
+  contents: write
+  actions: read
+  checks: write
 
 env:
-    NODE_VERSION: "20"
-    FLUTTER_VERSION: "3.41.0"
+  NODE_VERSION: "20"
+  FLUTTER_VERSION: "3.41.0"
 
 jobs:
-    verify:
-        name: Verify Web App (TypeScript + tests)
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v5
-              with:
-                  lfs: false
+  verify:
+    name: Verify Web App (TypeScript + tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          lfs: false
 
-            - uses: actions/setup-node@v5
-              with:
-                  node-version: ${{ env.NODE_VERSION }}
-                  cache: npm
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
 
-            - name: Install dependencies
-              run: npm ci --legacy-peer-deps
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
 
-            - name: TypeScript Check
-              run: npx tsc --noEmit
+      - name: TypeScript Check
+        run: npx tsc --noEmit
 
-            - name: Unit Tests
-              run: npm run test -- --runInBand
+      - name: Unit Tests
+        run: npm run test -- --runInBand
 
-            - name: Critical Flow Tests
-              run: npm run test:critical-flow
+      - name: Critical Flow Tests
+        run: npm run test:critical-flow
 
-            - name: Production Build (Vite)
-              run: npm run build
+      - name: Production Build (Vite)
+        run: npm run build
 
-    android-release:
-        name: Build + Sign Android Release (AAB + APK)
-        runs-on: ubuntu-latest
-        needs: verify
-        steps:
-            - uses: actions/checkout@v5
-              with:
-                  lfs: false
+  android-release:
+    name: Build + Sign Android Release (AAB + APK)
+    runs-on: ubuntu-latest
+    needs: verify
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          lfs: false
 
-            - uses: actions/setup-node@v5
-              with:
-                  node-version: ${{ env.NODE_VERSION }}
-                  cache: npm
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
 
-            - name: Setup Java (for jarsigner)
-              uses: actions/setup-java@v4
-              with:
-                  distribution: temurin
-                  java-version: "17"
+      - name: Setup Java (for jarsigner)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
 
-            - name: Sanitize Gradle/Android paths for Linux runner (remove Windows org.gradle.java.home + sdk.dir)
-              shell: bash
-              run: |
-                  set -euo pipefail
-                  GRADLE_PROPS="appsflutter/android/gradle.properties"
-                  LOCAL_PROPS="appsflutter/android/local.properties"
+      - name: Sanitize Gradle/Android paths for Linux runner (remove Windows org.gradle.java.home + sdk.dir)
+        shell: bash
+        run: |
+          set -euo pipefail
+          GRADLE_PROPS="appsflutter/android/gradle.properties"
+          LOCAL_PROPS="appsflutter/android/local.properties"
 
-                  is_windows_path() {
-                    local v="$1"
-                    [[ "$v" =~ ^[A-Za-z]:\\ ]] || [[ "$v" == *"\\"* ]]
-                  }
+          is_windows_path() {
+            local v="$1"
+            [[ "$v" =~ ^[A-Za-z]:\\ ]] || [[ "$v" == *"\\"* ]]
+          }
 
-                  # Fix Gradle Java home if it's Windows-specific
-                  if [[ -f "$GRADLE_PROPS" ]]; then
-                    if grep -qE '^org\.gradle\.java\.home=' "$GRADLE_PROPS"; then
-                      echo "Removing org.gradle.java.home from $GRADLE_PROPS"
-                      sed -i '/^org\.gradle\.java\.home=/d' "$GRADLE_PROPS"
-                    fi
-                  fi
+          # Fix Gradle Java home if it's Windows-specific
+          if [[ -f "$GRADLE_PROPS" ]]; then
+            if grep -qE '^org\.gradle\.java\.home=' "$GRADLE_PROPS"; then
+              echo "Removing org.gradle.java.home from $GRADLE_PROPS"
+              sed -i '/^org\.gradle\.java\.home=/d' "$GRADLE_PROPS"
+            fi
+          fi
 
-                  # Fix Android SDK location (sdk.dir) if it's Windows-specific
-                  if [[ -f "$LOCAL_PROPS" ]]; then
-                    local_sdk_dir=""
-                    local_sdk_dir="$(grep -E '^sdk\.dir=' "$LOCAL_PROPS" | head -n 1 | cut -d= -f2- || true)"
-                    if [ -n "$local_sdk_dir" ] && is_windows_path "$local_sdk_dir"; then
-                      echo "Removing Windows sdk.dir from $LOCAL_PROPS"
-                      sed -i '/^sdk\.dir=/d' "$LOCAL_PROPS"
-                    fi
-                  fi
+          # Fix Android SDK location (sdk.dir) if it's Windows-specific
+          if [[ -f "$LOCAL_PROPS" ]]; then
+            local_sdk_dir=""
+            local_sdk_dir="$(grep -E '^sdk\.dir=' "$LOCAL_PROPS" | head -n 1 | cut -d= -f2- || true)"
+            if [ -n "$local_sdk_dir" ] && is_windows_path "$local_sdk_dir"; then
+              echo "Removing Windows sdk.dir from $LOCAL_PROPS"
+              sed -i '/^sdk\.dir=/d' "$LOCAL_PROPS"
+            fi
+          fi
 
-            - name: Install dependencies (root)
-              run: npm ci --legacy-peer-deps
+      - name: Install dependencies (root)
+        run: npm ci --legacy-peer-deps
 
-            # Create keystore file from GitHub secrets (upload key)
-            - name: Write Android keystore from secrets
-              env:
-                  ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-                  KEYSTORE_PATH: ${{ secrets.KEYSTORE_PATH }}
-                  KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-                  KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-                  KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-              run: |
-                  set -euo pipefail
-                  if [ -z "${ANDROID_KEYSTORE_BASE64:-}" ]; then echo "Missing ANDROID_KEYSTORE_BASE64 secret"; exit 1; fi
-                  if [ -z "${KEYSTORE_PATH:-}" ]; then echo "Missing KEYSTORE_PATH secret"; exit 1; fi
+      - name: Write Android keystore from secrets
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PATH: ${{ secrets.KEYSTORE_PATH }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${ANDROID_KEYSTORE_BASE64:-}" ]; then echo "Missing ANDROID_KEYSTORE_BASE64 secret"; exit 1; fi
+          if [ -z "${KEYSTORE_PATH:-}" ]; then echo "Missing KEYSTORE_PATH secret"; exit 1; fi
 
-                  mkdir -p "$(dirname "$KEYSTORE_PATH")"
-                  echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$KEYSTORE_PATH"
-                  chmod 600 "$KEYSTORE_PATH"
+          mkdir -p "$(dirname "$KEYSTORE_PATH")"
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$KEYSTORE_PATH"
+          chmod 600 "$KEYSTORE_PATH"
 
-            # Publish script does: npm run build (Vite) + cap sync + gradle assembleRelease/bundleRelease + jarsigner verify
-            - name: Publish signed Android release (AAB + APK)
-              env:
-                  ANDROID_KEYSTORE_PATH: ${{ secrets.KEYSTORE_PATH }}
-                  ANDROID_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-                  ANDROID_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-                  ANDROID_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-                  CLASSIFY_ADMIN_TOKEN: ""
-              run: |
-                  set -euo pipefail
-                  chmod +x ./scripts/publish-android-release.sh
-                  # Build both; inside script it builds APK + AAB always.
-                  # Upload/register to admin API is skipped since CLASSIFY_ADMIN_TOKEN is empty and --skip-admin-upload is set.
-                  ./scripts/publish-android-release.sh --skip-admin-upload
+          mkdir -p "appsflutter/android"
+          printf 'storeFile=%s\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
+            "$KEYSTORE_PATH" \
+            "$KEYSTORE_PASSWORD" \
+            "$KEY_ALIAS" \
+            "$KEY_PASSWORD" > "appsflutter/android/key.properties"
+          chmod 600 "appsflutter/android/key.properties"
 
-            # Optional: verify artifacts exist in repo paths after publish
-            - name: Verify produced artifacts exist
-              run: |
-                  set -euo pipefail
-                  test -f client/public/apps/classify-app-latest.apk
-                  test -f client/public/apps/classify-googleplay-latest.aab
+      - name: Publish signed Android release (AAB + APK)
+        env:
+          ANDROID_KEYSTORE_PATH: ${{ secrets.KEYSTORE_PATH }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          CLASSIFY_ADMIN_TOKEN: ""
+        shell: bash
+        run: |
+          set -euo pipefail
+          chmod +x ./scripts/publish-android-release.sh
+          ./scripts/publish-android-release.sh --skip-admin-upload
 
-            - name: Verify APK signature v2/v3 and reject debug keys
-              shell: bash
-              run: |
-                  set -euo pipefail
-                  APK="client/public/apps/classify-app-latest.apk"
+      - name: Verify produced artifacts exist
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f client/public/apps/classify-app-latest.apk
+          test -f client/public/apps/classify-googleplay-latest.aab
 
-                  if command -v apksigner >/dev/null 2>&1; then
-                    APKSIGNER="$(command -v apksigner)"
-                  else
-                    APKSIGNER="$(find "${ANDROID_HOME:-/usr/lib/android-sdk}" -name apksigner -type f 2>/dev/null | head -n 1 || true)"
-                  fi
+      - name: Verify APK signature v2/v3 and reject debug keys
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="client/public/apps/classify-app-latest.apk"
 
-                  if [[ -z "${APKSIGNER:-}" || ! -f "$APKSIGNER" ]]; then
-                    echo "apksigner not found; cannot verify v2/v3 signatures." >&2
-                    exit 1
-                  fi
+          if command -v apksigner >/dev/null 2>&1; then
+            APKSIGNER="$(command -v apksigner)"
+          else
+            APKSIGNER="$(find "${ANDROID_HOME:-/usr/lib/android-sdk}" -name apksigner -type f 2>/dev/null | head -n 1 || true)"
+          fi
 
-                  echo "Using apksigner: $APKSIGNER"
-                  VERIFY_OUTPUT="$("$APKSIGNER" verify --verbose --print-certs "$APK" 2>&1 || true)"
-                  echo "$VERIFY_OUTPUT"
+          if [[ -z "${APKSIGNER:-}" || ! -f "$APKSIGNER" ]]; then
+            echo "apksigner not found; cannot verify v2/v3 signatures." >&2
+            exit 1
+          fi
 
-                  # Reject debug signing key
-                  if echo "$VERIFY_OUTPUT" | grep -qiE "android debug|androiddebug|CN=Android Debug"; then
-                    echo "Debug signing key detected; rejecting release." >&2
-                    exit 1
-                  fi
+          echo "Using apksigner: $APKSIGNER"
+          VERIFY_OUTPUT="$("$APKSIGNER" verify --verbose --print-certs "$APK" 2>&1 || true)"
+          echo "$VERIFY_OUTPUT"
 
-                  # v2/v3 must be enabled/verified
-                  if ! echo "$VERIFY_OUTPUT" | grep -qiE "v2.*true"; then
-                    echo "APK v2 signature verification failed or not true." >&2
-                    exit 1
-                  fi
+          # Reject debug signing key
+          if echo "$VERIFY_OUTPUT" | grep -qiE "android debug|androiddebug|CN=Android Debug"; then
+            echo "Debug signing key detected; rejecting release." >&2
+            exit 1
+          fi
 
-                  if ! echo "$VERIFY_OUTPUT" | grep -qiE "v3.*true"; then
-                    echo "APK v3 signature verification failed or not true." >&2
-                    exit 1
-                  fi
+          # v2/v3 must be enabled/verified
+          if ! echo "$VERIFY_OUTPUT" | grep -qiE "v2.*true"; then
+            echo "APK v2 signature verification failed or not true." >&2
+            exit 1
+          fi
 
-                  echo "APK signing verification passed for v2 & v3."
+          if ! echo "$VERIFY_OUTPUT" | grep -qiE "v3.*true"; then
+            echo "APK v3 signature verification failed or not true." >&2
+            exit 1
+          fi
 
-            - name: Verify AAB signature (jarsigner) is not unsigned
-              shell: bash
-              run: |
-                  set -euo pipefail
-                  AAB="client/public/apps/classify-googleplay-latest.aab"
+          echo "APK signing verification passed for v2 & v3."
 
-                  if ! command -v jarsigner >/dev/null 2>&1; then
-                    echo "jarsigner not found; cannot verify AAB signatures." >&2
-                    exit 1
-                  fi
+      - name: Verify AAB signature (jarsigner) is not unsigned
+        shell: bash
+        run: |
+          set -euo pipefail
+          AAB="client/public/apps/classify-googleplay-latest.aab"
 
-                  VERIFY_OUTPUT="$(jarsigner -verify -verbose -certs "$AAB" 2>&1 || true)"
-                  echo "$VERIFY_OUTPUT"
+          if ! command -v jarsigner >/dev/null 2>&1; then
+            echo "jarsigner not found; cannot verify AAB signatures." >&2
+            exit 1
+          fi
 
-                  if echo "$VERIFY_OUTPUT" | grep -qi "jar is unsigned"; then
-                    echo "Generated AAB is unsigned." >&2
-                    exit 1
-                  fi
+          VERIFY_OUTPUT="$(jarsigner -verify -verbose -certs "$AAB" 2>&1 || true)"
+          echo "$VERIFY_OUTPUT"
 
-                  if ! echo "$VERIFY_OUTPUT" | grep -qi "jar verified"; then
-                    echo "AAB signature verification failed." >&2
-                    exit 1
-                  fi
+          if echo "$VERIFY_OUTPUT" | grep -qi "jar is unsigned"; then
+            echo "Generated AAB is unsigned." >&2
+            exit 1
+          fi
 
-                  echo "AAB signature verification passed."
+          if ! echo "$VERIFY_OUTPUT" | grep -qi "jar verified"; then
+            echo "AAB signature verification failed." >&2
+            exit 1
+          fi
 
-            - name: Upload APK artifact
-              if: ${{ inputs.build_apk }}
-              uses: actions/upload-artifact@v4
-              with:
-                  name: android-apk-latest
-                  path: client/public/apps/classify-app-latest.apk
+          echo "AAB signature verification passed."
 
-            - name: Upload AAB artifact
-              if: ${{ inputs.build_aab }}
-              uses: actions/upload-artifact@v4
-              with:
-                  name: android-aab-latest
-                  path: client/public/apps/classify-googleplay-latest.aab
+      - name: Upload APK artifact
+        if: ${{ inputs.build_apk }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk-latest
+          path: client/public/apps/classify-app-latest.apk
 
-            # Also upload archive versions for traceability
-            - name: Upload versioned APK/AAB (archives)
-              uses: actions/upload-artifact@v4
-              with:
-                  name: android-apk-aab-archives
-                  path: client/public/apps/archive/
+      - name: Upload AAB artifact
+        if: ${{ inputs.build_aab }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-aab-latest
+          path: client/public/apps/classify-googleplay-latest.aab
+
+      - name: Upload versioned APK/AAB (archives)
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk-aab-archives
+          path: client/public/apps/archive/
