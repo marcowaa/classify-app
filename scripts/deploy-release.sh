@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="${1:-${DEPLOY_ROOT:-/srv/classify}}"
-STAGING_DIR="${2:-$ROOT_DIR/incoming/release-bundle}"
+ROOT_DIR="${1:-${DEPLOY_ROOT:-/var/www}}"
+STAGING_DIR="${2:-$ROOT_DIR/releases/staging}"
 RELEASES_DIR="$ROOT_DIR/releases"
-STATE_DIR="$ROOT_DIR/state"
-CURRENT_LINK="$ROOT_DIR/current"
-PREVIOUS_LINK="$ROOT_DIR/previous"
+STATE_DIR="$ROOT_DIR/app/state"
+CURRENT_LINK="$ROOT_DIR/app/current"
+PREVIOUS_LINK="$ROOT_DIR/app/previous"
 LOCK_FILE="$ROOT_DIR/.deploy.lock"
 LOG_FILE="$ROOT_DIR/logs/deploy.log"
 
-mkdir -p "$RELEASES_DIR" "$STATE_DIR" "$ROOT_DIR/logs"
+mkdir -p "$RELEASES_DIR" "$STATE_DIR" "$ROOT_DIR/logs" "$ROOT_DIR/app"
 
 log() {
   printf '[%s] %s\n' "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" "$*" | tee -a "$LOG_FILE"
@@ -34,6 +34,73 @@ checksum_verify() {
   fi
 
   (cd "$target_dir" && sha256sum -c "$checksum_file")
+}
+
+verify_apk_release_signing() {
+  local apk_path="$1"
+
+  if [[ ! -f "$apk_path" ]]; then
+    log "APK signing verification: missing APK: $apk_path"
+    exit 1
+  fi
+
+  if ! command -v apksigner >/dev/null 2>&1; then
+    log "APK signing verification: apksigner not found on server runner PATH"
+    exit 1
+  fi
+
+  local out
+  out="$(apksigner verify --verbose --print-certs "$apk_path" 2>&1 || true)"
+  log "APK apksigner verify output (truncated): $(echo "$out" | tail -n 30 | tr '\n' ' ' | sed 's/  */ /g')"
+
+  # Reject debug keys
+  if echo "$out" | grep -qiE "Android Debug|android debug|CN=Android Debug"; then
+    log "APK signing verification failed: debug key detected"
+    exit 1
+  fi
+
+  # Enforce v2/v3 = true
+  if ! echo "$out" | grep -qiE "APK Signature Scheme v2.*: true"; then
+    log "APK signing verification failed: v2 scheme not verified as true"
+    exit 1
+  fi
+
+  if ! echo "$out" | grep -qiE "APK Signature Scheme v3.*: true"; then
+    log "APK signing verification failed: v3 scheme not verified as true"
+    exit 1
+  fi
+
+  log "APK signing verification passed: v2 & v3 (release keys)"
+}
+
+verify_release_artifact_hashes() {
+  local dir="$1"
+
+  local apk="${dir}/app-release.apk"
+  local aab="${dir}/app-release.aab"
+  local apk_hash="${dir}/app-release.apk.sha256"
+  local aab_hash="${dir}/app-release.aab.sha256"
+
+  if [[ ! -f "$apk" ]]; then
+    log "Artifact hash gate: missing APK: $apk"
+    exit 1
+  fi
+  if [[ ! -f "$aab" ]]; then
+    log "Artifact hash gate: missing AAB: $aab"
+    exit 1
+  fi
+  if [[ ! -f "$apk_hash" ]]; then
+    log "Artifact hash gate: missing APK sha256 file: $apk_hash"
+    exit 1
+  fi
+  if [[ ! -f "$aab_hash" ]]; then
+    log "Artifact hash gate: missing AAB sha256 file: $aab_hash"
+    exit 1
+  fi
+
+  (cd "$dir" && sha256sum -c "app-release.apk.sha256" "app-release.aab.sha256")
+
+  log "Artifact hash gate passed (APK/AAB sha256)."
 }
 
 update_release_state() {
@@ -162,6 +229,10 @@ sync_mobile_artifacts_to_container() {
   # Ensure destination paths exist.
   docker exec "$container_id" sh -lc "mkdir -p /app/dist/public/apps/archive" >/dev/null 2>&1 || true
 
+  # Retention requirement: keep ONLY the latest release artifacts on disk.
+  # Remove all previous versioned archives before copying the new ones.
+  docker exec "$container_id" sh -lc "rm -f /app/dist/public/apps/archive/classify-app-*.apk /app/dist/public/apps/archive/classify-googleplay-*.aab || true" >/dev/null 2>&1 || true
+
   # Copy latest + archived artifacts into the running container static folder.
   docker cp "$apk_src" "$container_id:/app/dist/public/apps/${latest_apk_name}"
   docker cp "$aab_src" "$container_id:/app/dist/public/apps/${latest_aab_name}"
@@ -240,6 +311,12 @@ main() {
   log "Verifying checksum for $release_tag"
   checksum_verify "$tmp_dir/checksums.sha256" "$tmp_dir"
 
+  log "Verifying per-artifact sha256 hashes before activation"
+  verify_release_artifact_hashes "$tmp_dir"
+
+  log "Verifying APK signing (v2/v3) before activation"
+  verify_apk_release_signing "$tmp_dir/app-release.apk"
+
   log "Running smoke checks against staged release"
   DEPLOY_EXPECTED_VERSION="$version" run_smoke_checks
 
@@ -260,6 +337,30 @@ main() {
     log "Smoke checks failed after activation, rolling back"
     rollback_release
     exit 1
+  fi
+
+  # Cleanup staged build + temporary copy only after successful activation.
+  rm -rf "$tmp_dir" 2>/dev/null || true
+
+  # Prune old release directories (keep only current + previous targets).
+  local current_target previous_target
+  current_target="$(readlink -f "$CURRENT_LINK" 2>/dev/null || true)"
+  previous_target="$(readlink -f "$PREVIOUS_LINK" 2>/dev/null || true)"
+
+  shopt -s nullglob 2>/dev/null || true
+  for d in "$RELEASES_DIR"/*; do
+    if [[ -d "$d" && "$d" != "$STAGING_DIR" && "$d" != "$current_target" && "$d" != "$previous_target" ]]; then
+      log "Pruning old release dir: $d"
+      rm -rf "$d"
+    fi
+  done
+
+  # Clean staging directory contents after a successful activation.
+  # Keep the staging directory itself so next release uploads have a stable target.
+  if [[ -d "$STAGING_DIR" ]]; then
+    log "Cleaning staging directory contents: $STAGING_DIR"
+    rm -rf "$STAGING_DIR"/* 2>/dev/null || true
+    rm -rf "$STAGING_DIR"/.[!.]* "$STAGING_DIR"/..?* 2>/dev/null || true
   fi
 
   log "Deployment completed successfully: $release_tag"

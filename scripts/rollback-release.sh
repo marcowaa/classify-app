@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="${1:-${DEPLOY_ROOT:-/srv/classify}}"
-STATE_DIR="$ROOT_DIR/state"
-CURRENT_LINK="$ROOT_DIR/current"
-PREVIOUS_LINK="$ROOT_DIR/previous"
+ROOT_DIR="${1:-${DEPLOY_ROOT:-/var/www}}"
+STATE_DIR="$ROOT_DIR/app/state"
+CURRENT_LINK="$ROOT_DIR/app/current"
+PREVIOUS_LINK="$ROOT_DIR/app/previous"
 LOCK_FILE="$ROOT_DIR/.deploy.lock"
 LOG_FILE="$ROOT_DIR/logs/deploy.log"
 
-mkdir -p "$ROOT_DIR/logs" "$STATE_DIR"
+mkdir -p "$ROOT_DIR/logs" "$STATE_DIR" "$ROOT_DIR/app"
 
 log() {
   printf '[%s] %s\n' "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" "$*" | tee -a "$LOG_FILE"
