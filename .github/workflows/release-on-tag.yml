@@ -88,6 +88,27 @@ jobs:
             "$KEY_PASSWORD" > "appsflutter/android/key.properties"
           chmod 600 "appsflutter/android/key.properties"
 
+      - name: Sanitize Gradle Java home for linux runner (remove Windows org.gradle.java.home)
+        shell: bash
+        run: |
+          set -euo pipefail
+          GRADLE_PROPS="appsflutter/android/gradle.properties"
+          LOCAL_PROPS="appsflutter/android/local.properties"
+
+          if [[ -f "$GRADLE_PROPS" ]]; then
+            if grep -qE '^org\.gradle\.java\.home=' "$GRADLE_PROPS"; then
+              echo "Removing org.gradle.java.home from $GRADLE_PROPS"
+              sed -i '/^org\.gradle\.java\.home=/d' "$GRADLE_PROPS"
+            fi
+          fi
+
+          if [[ -f "$LOCAL_PROPS" ]]; then
+            if grep -qE '^org\.gradle\.java\.home=' "$LOCAL_PROPS"; then
+              echo "Removing org.gradle.java.home from $LOCAL_PROPS"
+              sed -i '/^org\.gradle\.java\.home=/d' "$LOCAL_PROPS"
+            fi
+          fi
+
       - name: Build APK (release)
         working-directory: appsflutter
         run: flutter build apk --release
