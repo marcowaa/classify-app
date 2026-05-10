@@ -257,8 +257,8 @@ jobs:
           : "${DEPLOY_KEY:?Missing DEPLOY_KEY}"
 
           DEPLOY_PORT="${DEPLOY_PORT:-22}"
-          DEPLOY_ROOT="/var/www"
-          STAGING_DIR="$DEPLOY_ROOT/releases/staging"
+          DEPLOY_ROOT="/opt/classify"
+          STAGING_DIR="$DEPLOY_ROOT/incoming/release-bundle"
 
           printf '%s\n' "$DEPLOY_KEY" > /tmp/deploy_key
           chmod 600 /tmp/deploy_key

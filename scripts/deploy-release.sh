@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="${1:-${DEPLOY_ROOT:-/var/www}}"
-STAGING_DIR="${2:-$ROOT_DIR/releases/staging}"
+ROOT_DIR="${1:-${DEPLOY_ROOT:-/opt/classify}}"
+STAGING_DIR="${2:-$ROOT_DIR/incoming/release-bundle}"
 RELEASES_DIR="$ROOT_DIR/releases"
-STATE_DIR="$ROOT_DIR/app/state"
-CURRENT_LINK="$ROOT_DIR/app/current"
-PREVIOUS_LINK="$ROOT_DIR/app/previous"
+STATE_DIR="$ROOT_DIR/state"
+CURRENT_LINK="$ROOT_DIR/current"
+PREVIOUS_LINK="$ROOT_DIR/previous"
 LOCK_FILE="$ROOT_DIR/.deploy.lock"
 LOG_FILE="$ROOT_DIR/logs/deploy.log"
 
-mkdir -p "$RELEASES_DIR" "$STATE_DIR" "$ROOT_DIR/logs" "$ROOT_DIR/app"
+mkdir -p "$RELEASES_DIR" "$STATE_DIR" "$ROOT_DIR/logs"
 
 log() {
   printf '[%s] %s\n' "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" "$*" | tee -a "$LOG_FILE"
