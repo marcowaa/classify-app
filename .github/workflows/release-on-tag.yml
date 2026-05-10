@@ -63,10 +63,9 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Write Android release keystore (from secrets)
+      - name: Write Android release keystore (fixed in-repo path)
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          KEYSTORE_PATH: ${{ secrets.KEYSTORE_PATH }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
@@ -74,15 +73,20 @@ jobs:
         run: |
           set -euo pipefail
           if [[ -z "${ANDROID_KEYSTORE_BASE64:-}" ]]; then echo "Missing ANDROID_KEYSTORE_BASE64"; exit 1; fi
-          if [[ -z "${KEYSTORE_PATH:-}" ]]; then echo "Missing KEYSTORE_PATH"; exit 1; fi
+          if [[ -z "${KEYSTORE_PASSWORD:-}" ]]; then echo "Missing KEYSTORE_PASSWORD"; exit 1; fi
+          if [[ -z "${KEY_ALIAS:-}" ]]; then echo "Missing KEY_ALIAS"; exit 1; fi
+          if [[ -z "${KEY_PASSWORD:-}" ]]; then echo "Missing KEY_PASSWORD"; exit 1; fi
 
-          mkdir -p "$(dirname "$KEYSTORE_PATH")"
-          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$KEYSTORE_PATH"
-          chmod 600 "$KEYSTORE_PATH"
+          APPS_KEYSTORE_DIR="appsflutter/android/upload-keystore"
+          APPS_KEYSTORE_PATH="$APPS_KEYSTORE_DIR/release.jks"
+
+          mkdir -p "$APPS_KEYSTORE_DIR"
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$APPS_KEYSTORE_PATH"
+          chmod 600 "$APPS_KEYSTORE_PATH"
 
           mkdir -p "appsflutter/android"
           printf 'storeFile=%s\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
-            "$KEYSTORE_PATH" \
+            "$APPS_KEYSTORE_PATH" \
             "$KEYSTORE_PASSWORD" \
             "$KEY_ALIAS" \
             "$KEY_PASSWORD" > "appsflutter/android/key.properties"
