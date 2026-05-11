@@ -191,14 +191,28 @@ jobs:
           printf '%s' "$ANDROID_KEYSTORE_BASE64" | tr -d '\r\n' | base64 -d > "$APPS_KEYSTORE_PATH_REL"
           chmod 600 "$APPS_KEYSTORE_PATH_REL"
 
-          # Fail fast if keystore/password/alias are inconsistent
-          keytool -list \
-            -keystore "$APPS_KEYSTORE_PATH_ABS" \
-            -storepass "$KEYSTORE_PASSWORD" \
-            -alias "$KEY_ALIAS" \
-            -keypass "$KEY_PASSWORD" >/dev/null
+          # Fail fast if keystore/password/alias are inconsistent (validate KEY_PASSWORD by actually signing)
+          # keytool -list may succeed even if -keypass is wrong, so we sign a tiny jar to force key decryption.
+          if ! command -v jarsigner >/dev/null 2>&1; then
+            echo "jarsigner not found; cannot validate signing credentials." >&2
+            exit 1
+          fi
 
-          echo "Keystore sanity check passed"
+          JAR_TEST_DIR="$(mktemp -d)"
+          JAR_TEST_FILE="$JAR_TEST_DIR/hello.txt"
+          JAR_TEST_JAR="$JAR_TEST_DIR/signcheck.jar"
+          echo "ok" > "$JAR_TEST_FILE"
+          jar cf "$JAR_TEST_JAR" -C "$JAR_TEST_DIR" hello.txt
+
+          jarsigner -keystore "$APPS_KEYSTORE_PATH_ABS" \
+            -storepass "$KEYSTORE_PASSWORD" \
+            -keypass "$KEY_PASSWORD" \
+            "$JAR_TEST_JAR" "$KEY_ALIAS" >/dev/null
+
+          # Verify signature (also proves signing succeeded)
+          jarsigner -verify "$JAR_TEST_JAR" >/dev/null
+
+          echo "Keystore sanity check passed (jarsigner validated KEY_PASSWORD)"
 
           mkdir -p "appsflutter/android"
           printf 'storeFile=%s\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
