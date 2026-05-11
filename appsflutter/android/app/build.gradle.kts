@@ -75,19 +75,10 @@ android {
             // Signed with release keystore (from appsflutter/android/key.properties).
             signingConfig = signingConfigs.getByName("release")
 
-            // Avoid native debug symbol stripping failures that break AAB builds
+            // Avoid native debug symbol stripping failures that break AAB builds.
+            // NONE tells Gradle/AGP not to run the failing strip step in release.
             ndk {
-                // Prevent AGP from failing during "strip debug symbols" for native libs on CI.
-                // Full keeps debug symbols instead of trying to strip them.
-                debugSymbolLevel = "FULL"
-            }
-
-            // Workaround for Flutter/AGP "failed to strip debug symbols from native libraries"
-            // Keep debug symbols for native .so files in release to prevent the failing strip task.
-            packaging {
-                jniLibs {
-                    keepDebugSymbols.add("**/*.so")
-                }
+                debugSymbolLevel = "NONE"
             }
         }
     }
