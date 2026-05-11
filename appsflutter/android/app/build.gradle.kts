@@ -72,7 +72,15 @@ android {
 
             // Avoid native debug symbol stripping failures that break AAB builds
             ndk {
-                debugSymbolLevel = "none"
+                debugSymbolLevel = "NONE"
+            }
+
+            // Workaround for Flutter/AGP "failed to strip debug symbols from native libraries"
+            // Keep debug symbols for native .so files in release to prevent the failing strip task.
+            packaging {
+                jniLibs {
+                    keepDebugSymbols.add("**/*.so")
+                }
             }
         }
     }
