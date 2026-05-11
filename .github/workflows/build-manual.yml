@@ -119,8 +119,8 @@ jobs:
           if [ -z "${KEY_ALIAS:-}" ]; then echo "Missing KEY_ALIAS secret"; exit 1; fi
           if [ -z "${KEY_PASSWORD:-}" ]; then echo "Missing KEY_PASSWORD secret"; exit 1; fi
 
-          APPS_KEYSTORE_DIR="appsflutter/android/upload-keystore"
-          APPS_KEYSTORE_PATH_REL="$APPS_KEYSTORE_DIR/release.jks"
+          APPS_KEYSTORE_DIR="appsflutter/android/keystore"
+          APPS_KEYSTORE_PATH_REL="$APPS_KEYSTORE_DIR/classify-release-2026.jks"
           APPS_KEYSTORE_PATH_ABS="$(pwd)/$APPS_KEYSTORE_PATH_REL"
 
           mkdir -p "$APPS_KEYSTORE_DIR"
@@ -137,7 +137,7 @@ jobs:
 
       - name: Publish signed Android release (AAB + APK)
         env:
-          ANDROID_KEYSTORE_PATH: appsflutter/android/upload-keystore/release.jks
+          ANDROID_KEYSTORE_PATH: appsflutter/android/keystore/classify-release-2026.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
