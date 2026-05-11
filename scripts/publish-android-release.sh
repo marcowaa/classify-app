@@ -671,6 +671,13 @@ if [ "$SKIP_WEB_BUILD" != "true" ]; then
   trap cleanup_mobile_apps_backup EXIT
 
   npx cap sync android
+  # CI uses JDK 17; Capacitor may generate Java 21 compileOptions.
+  # Patch generated Gradle to avoid: "error: invalid source release: 21".
+  CAPACITOR_BUILD_GRADLE="$ANDROID_ROOT/app/capacitor.build.gradle"
+  if [ -f "$CAPACITOR_BUILD_GRADLE" ]; then
+    step "Patching generated Capacitor Gradle Java compatibility to 17"
+    sed -i 's/JavaVersion\.VERSION_21/JavaVersion.VERSION_17/g' "$CAPACITOR_BUILD_GRADLE"
+  fi
 
   step "Running strict Capacitor production checks"
   node ./scripts/capacitor-production-check.cjs --strict
