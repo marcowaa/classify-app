@@ -9,14 +9,17 @@ const artifactsDir = path.join(root, 'artifacts');
 const releaseDir = path.join(root, 'release-bundle');
 const manifestPath = path.join(root, 'release-manifest.json');
 
+/** @param {string} dirPath */
 function ensureDir(dirPath) {
     fs.mkdirSync(dirPath, { recursive: true });
 }
 
+/** @param {string} filePath */
 function readJson(filePath) {
     return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }
 
+/** @param {string} filePath */
 function sha256(filePath) {
     const hash = crypto.createHash('sha256');
     const buffer = fs.readFileSync(filePath);
@@ -24,6 +27,7 @@ function sha256(filePath) {
     return hash.digest('hex');
 }
 
+/** @param {string} source @param {string} target */
 function copyRecursive(source, target) {
     const stat = fs.statSync(source);
     if (stat.isDirectory()) {
@@ -38,6 +42,7 @@ function copyRecursive(source, target) {
     fs.copyFileSync(source, target);
 }
 
+/** @param {string} sourceRoot @param {string} targetRoot */
 function flattenArtifacts(sourceRoot, targetRoot) {
     if (!fs.existsSync(sourceRoot)) {
         return;
@@ -56,6 +61,7 @@ function flattenArtifacts(sourceRoot, targetRoot) {
     }
 }
 
+/** @param {string} targetRoot */
 function writeChecksums(targetRoot) {
     /** @type {string[]} */
     const files = [];
@@ -84,6 +90,24 @@ function writeChecksums(targetRoot) {
     fs.writeFileSync(path.join(targetRoot, 'checksums.sha256'), `${lines}\n`);
 }
 
+/** @param {string} targetRoot */
+function writeArtifactChecksums(targetRoot) {
+    const apkPath = path.join(targetRoot, 'app-release.apk');
+    const aabPath = path.join(targetRoot, 'app-release.aab');
+
+    if (!fs.existsSync(apkPath)) throw new Error(`Missing artifact for checksum: ${apkPath}`);
+    if (!fs.existsSync(aabPath)) throw new Error(`Missing artifact for checksum: ${aabPath}`);
+
+    // deploy-release.sh expects:
+    // - app-release.apk.sha256 content with "sha app-release.apk"
+    // - app-release.aab.sha256 content with "sha app-release.aab"
+    const apkSha = sha256(apkPath);
+    const aabSha = sha256(aabPath);
+
+    fs.writeFileSync(path.join(targetRoot, 'app-release.apk.sha256'), `${apkSha}  app-release.apk\n`);
+    fs.writeFileSync(path.join(targetRoot, 'app-release.aab.sha256'), `${aabSha}  app-release.aab\n`);
+}
+
 function main() {
     if (!fs.existsSync(manifestPath)) {
         throw new Error(`Missing release manifest: ${manifestPath}`);
@@ -110,6 +134,7 @@ function main() {
     }
 
     writeChecksums(releaseDir);
+    writeArtifactChecksums(releaseDir);
     process.stdout.write(`Packaged release bundle at ${releaseDir}\n`);
 }
 
