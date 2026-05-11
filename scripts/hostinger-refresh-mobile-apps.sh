@@ -21,13 +21,14 @@ set -euo pipefail
 PROJECT_DIR="${PROJECT_DIR:-/opt/classify}"
 BRANCH="${BRANCH:-main}"
 COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-classify_main}"
+COMPOSE_PROJECT_NAME_SET="false"
 SKIP_ADMIN_SETUP="${SKIP_ADMIN_SETUP:-true}"
 
 while [ $# -gt 0 ]; do
   case "$1" in
     --project-dir) PROJECT_DIR="$2"; shift 2 ;;
     --branch) BRANCH="$2"; shift 2 ;;
-    --compose-project-name) COMPOSE_PROJECT_NAME="$2"; shift 2 ;;
+    --compose-project-name) COMPOSE_PROJECT_NAME="$2"; COMPOSE_PROJECT_NAME_SET="true"; shift 2 ;;
     --skip-admin-setup) SKIP_ADMIN_SETUP="true"; shift 1 ;;
     --no-skip-admin-setup) SKIP_ADMIN_SETUP="false"; shift 1 ;;
     -h|--help)
@@ -45,7 +46,24 @@ if [[ ! -d "$PROJECT_DIR" ]]; then
   exit 1
 fi
 
+is_placeholder_value() {
+  case "$1" in
+    ''|replace_*|change_me_*|YOUR_*|your_*|admin123|admin1234|undefined|null) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
 cd "$PROJECT_DIR"
+
+# If caller didn't explicitly pass COMPOSE_PROJECT_NAME, prefer what is in .env.
+if [[ "$COMPOSE_PROJECT_NAME_SET" == "false" && -f ".env" ]]; then
+  local_env_compose="$(
+    grep -E '^COMPOSE_PROJECT_NAME=' .env 2>/dev/null | head -n1 | cut -d= -f2- || true
+  )"
+  if [ -n "$local_env_compose" ] && ! is_placeholder_value "$local_env_compose"; then
+    COMPOSE_PROJECT_NAME="$local_env_compose"
+  fi
+fi
 
 chmod +x ./scripts/refresh-mobile-artifacts.sh || true
 

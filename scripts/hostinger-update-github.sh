@@ -38,6 +38,7 @@ PROJECT_DIR="/opt/classify"
 REPO_URL="https://github.com/marcowaa/classify-app.git"
 BRANCH="main"
 COMPOSE_PROJECT_NAME="classify_main"
+COMPOSE_PROJECT_NAME_SET="false"
 POSTGRES_HOST_PORT_PREF="5434"
 
 while [ $# -gt 0 ]; do
@@ -45,7 +46,7 @@ while [ $# -gt 0 ]; do
     --project-dir) PROJECT_DIR="$2"; shift 2 ;;
     --repo-url) REPO_URL="$2"; shift 2 ;;
     --branch) BRANCH="$2"; shift 2 ;;
-    --compose-project-name) COMPOSE_PROJECT_NAME="$2"; shift 2 ;;
+    --compose-project-name) COMPOSE_PROJECT_NAME="$2"; COMPOSE_PROJECT_NAME_SET="true"; shift 2 ;;
     --postgres-host-port) POSTGRES_HOST_PORT_PREF="$2"; shift 2 ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown arg: $1" >&2; usage; exit 1 ;;
@@ -202,6 +203,17 @@ main() {
       cp .env.production.example .env
     else
       die "No .env.example found"
+    fi
+  fi
+
+  # If caller didn't explicitly pass COMPOSE_PROJECT_NAME, prefer what is in .env.
+  if [[ "$COMPOSE_PROJECT_NAME_SET" == "false" ]]; then
+    local_env_compose="$(
+      grep -E '^COMPOSE_PROJECT_NAME=' .env 2>/dev/null | head -n1 | cut -d= -f2- || true
+    )"
+    if [ -n "$local_env_compose" ] && ! is_placeholder_value "$local_env_compose"; then
+      log "Detected COMPOSE_PROJECT_NAME from .env: $local_env_compose"
+      COMPOSE_PROJECT_NAME="$local_env_compose"
     fi
   fi
 

@@ -80,11 +80,9 @@ capacitor.config.json
 # Other folders not needed
 deployment
 nginx
-scripts
-!scripts/docker-entrypoint.sh
-!scripts/repair-object-urls.js
-!scripts/manage-admin.js
-!scripts/create-admin.js
+
+# scripts: DO NOT ignore (runtime + admin/setup require scripts/*.js to be present in image)
+
 server-production
 attached_assets
 

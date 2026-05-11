@@ -15,6 +15,7 @@ PROJECT_DIR="${PROJECT_DIR:-/opt/classify}"
 REPO_URL="${REPO_URL:-https://github.com/marcowaa/classify-app.git}"
 BRANCH="${BRANCH:-main}"
 COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-classify_main}"
+COMPOSE_PROJECT_NAME_SET="false"
 POSTGRES_HOST_PORT="${POSTGRES_HOST_PORT:-5434}"
 
 # Allow overriding via CLI:
@@ -28,7 +29,7 @@ while [ $# -gt 0 ]; do
     --project-dir) PROJECT_DIR="$2"; shift 2 ;;
     --repo-url) REPO_URL="$2"; shift 2 ;;
     --branch) BRANCH="$2"; shift 2 ;;
-    --compose-project-name) COMPOSE_PROJECT_NAME="$2"; shift 2 ;;
+    --compose-project-name) COMPOSE_PROJECT_NAME="$2"; COMPOSE_PROJECT_NAME_SET="true"; shift 2 ;;
     --postgres-host-port) POSTGRES_HOST_PORT="$2"; shift 2 ;;
     -h|--help)
       echo "Usage:"
@@ -52,11 +53,16 @@ cd "$PROJECT_DIR"
 chmod +x ./scripts/hostinger-update-github.sh || true
 
 # Execute the real logic (existing, battle-tested)
-./scripts/hostinger-update-github.sh \
-  --project-dir "$PROJECT_DIR" \
-  --repo-url "$REPO_URL" \
-  --branch "$BRANCH" \
-  --compose-project-name "$COMPOSE_PROJECT_NAME" \
+args=(
+  --project-dir "$PROJECT_DIR"
+  --repo-url "$REPO_URL"
+  --branch "$BRANCH"
   --postgres-host-port "$POSTGRES_HOST_PORT"
+)
 
+if [[ "$COMPOSE_PROJECT_NAME_SET" == "true" ]]; then
+  args+=(--compose-project-name "$COMPOSE_PROJECT_NAME")
+fi
+
+./scripts/hostinger-update-github.sh "${args[@]}"
 echo "[deploy-current] ✅ Done (deploy + smoke check succeeded)."

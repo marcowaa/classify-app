@@ -1,0 +1,4 @@
+classify_http_local-db-1|Up 6 hours (healthy)
+classify_http_local-app-1|Up 6 hours (healthy)
+classify_http_local-redis-1|Up 6 hours (healthy)
+classify_http_local-minio-1|Up 6 hours (healthy)
