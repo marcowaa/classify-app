@@ -187,8 +187,8 @@ jobs:
           APPS_KEYSTORE_PATH_ABS="$(pwd)/$APPS_KEYSTORE_PATH_REL"
 
           mkdir -p "$APPS_KEYSTORE_DIR"
-          # Some secrets may contain CR/LF; strip them before decoding to avoid corrupt keystore
-          printf '%s' "$ANDROID_KEYSTORE_BASE64" | tr -d '\r\n' | base64 -d > "$APPS_KEYSTORE_PATH_REL"
+          # Some secrets may contain whitespace/newlines; strip them before decoding to avoid corrupt keystore
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | tr -d '[:space:]' | base64 -d > "$APPS_KEYSTORE_PATH_REL"
           chmod 600 "$APPS_KEYSTORE_PATH_REL"
 
           # Fail fast if keystore/password/alias are inconsistent (validate KEY_PASSWORD by actually signing)
