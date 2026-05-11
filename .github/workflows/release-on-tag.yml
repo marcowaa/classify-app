@@ -225,6 +225,76 @@ jobs:
 
           echo "AAB signature verification passed."
 
+      - name: Commit signed APK/AAB into repo (latest + archive) + latest-release.json
+        shell: bash
+        env:
+          VERSION_NAME: ${{ steps.tag_version.outputs.version_name }}
+          VERSION_BUILD_NUMBER: ${{ steps.tag_version.outputs.version_build_number }}
+        run: |
+          set -euo pipefail
+
+          RELEASE_TAG_FULL="v${VERSION_NAME}-b${VERSION_BUILD_NUMBER}"
+          echo "RELEASE_TAG_FULL=$RELEASE_TAG_FULL"
+
+          # Ensure git-lfs present
+          if ! command -v git-lfs >/dev/null 2>&1; then
+            sudo apt-get update -y
+            sudo apt-get install -y git-lfs
+          fi
+          git lfs install --local
+
+          # Switch to main branch to commit artifacts there
+          git fetch origin main --tags
+          git checkout -B main origin/main
+
+          mkdir -p client/public/apps/archive
+
+          LATEST_APK_PATH="client/public/apps/classify-app-latest.apk"
+          LATEST_AAB_PATH="client/public/apps/classify-googleplay-latest.aab"
+          ARCHIVE_APK_PATH="client/public/apps/archive/classify-app-${RELEASE_TAG_FULL}.apk"
+          ARCHIVE_AAB_PATH="client/public/apps/archive/classify-googleplay-${RELEASE_TAG_FULL}.aab"
+
+          # Retention rule: keep ONLY newest archive artifacts on disk (overwrite older ones)
+          rm -f client/public/apps/archive/*.apk client/public/apps/archive/*.aab || true
+          rm -f client/public/apps/archive/release-*.json client/public/apps/archive/provenance-*.json client/public/apps/archive/checksums-*.txt || true
+
+          # Overwrite latest + write versioned archive
+          cp -f artifacts/app-release.apk "$LATEST_APK_PATH"
+          cp -f artifacts/app-release.aab "$LATEST_AAB_PATH"
+          cp -f artifacts/app-release.apk "$ARCHIVE_APK_PATH"
+          cp -f artifacts/app-release.aab "$ARCHIVE_AAB_PATH"
+
+          # Generate latest-release.json + archive release-$RELEASE_TAG_FULL.json
+          node ./scripts/write-flutter-mobile-release-metadata.cjs \
+            --apk-path "$LATEST_APK_PATH" \
+            --aab-path "$LATEST_AAB_PATH" \
+            --version "$VERSION_NAME" \
+            --buildNumber "$VERSION_BUILD_NUMBER" \
+            --releaseTag "$RELEASE_TAG_FULL" \
+            --output-latest-json "client/public/apps/latest-release.json" \
+            --output-archive-json "client/public/apps/archive/release-$RELEASE_TAG_FULL.json"
+
+          # Strictly validate metadata + ensure APK/AAB are real binaries (not LFS pointers)
+          node ./scripts/check-mobile-release-assets.cjs --strict
+
+          git add \
+            client/public/apps/latest-release.json \
+            client/public/apps/classify-app-latest.apk \
+            client/public/apps/classify-googleplay-latest.aab \
+            client/public/apps/archive/classify-app-${RELEASE_TAG_FULL}.apk \
+            client/public/apps/archive/classify-googleplay-${RELEASE_TAG_FULL}.aab \
+            client/public/apps/archive/release-$RELEASE_TAG_FULL.json
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -m "release(mobile): $RELEASE_TAG_FULL"
+          git push origin main
+
       - name: Write release manifest + package release-bundle
         shell: bash
         env:

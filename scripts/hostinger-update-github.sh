@@ -179,6 +179,15 @@ main() {
   clone_or_pull "$PROJECT_DIR" "$REPO_URL" "$BRANCH"
   cd "$PROJECT_DIR"
 
+  # Ensure Git LFS mobile artifacts are present as real binaries (APK/AAB).
+  # Without this, files under client/public/apps/*.apk|*.aab may remain as pointers.
+  if command -v git >/dev/null 2>&1; then
+    if git lfs version >/dev/null 2>&1; then
+      git lfs install --local >/dev/null 2>&1 || true
+      git lfs pull --include="client/public/apps/*.apk,client/public/apps/*.aab,client/public/apps/archive/*.apk,client/public/apps/archive/*.aab" >/dev/null 2>&1 || true
+    fi
+  fi
+
   patch_dockerignore_for_admin_scripts "$PROJECT_DIR"
   ensure_traefik_network
 
