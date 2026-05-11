@@ -231,6 +231,12 @@ jobs:
 
           echo "Keystore sanity check passed (jarsigner validated KEY_PASSWORD)"
 
+          echo "Keystore fingerprint verification (compare with expected values):"
+          keytool -list -v \
+            -keystore "$APPS_KEYSTORE_PATH_ABS" \
+            -storepass "$KEYSTORE_PASSWORD" \
+            -alias "$KEY_ALIAS" 2>&1 | grep -E "Alias name:|Entry type:|Serial number:|SHA1:|SHA256:" || true
+
           mkdir -p "appsflutter/android"
           printf 'storeFile=%s\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
             "$APPS_KEYSTORE_PATH_ABS" \

@@ -135,6 +135,12 @@ jobs:
             "$KEY_PASSWORD" > "appsflutter/android/key.properties"
           chmod 600 "appsflutter/android/key.properties"
 
+          echo "Keystore fingerprint verification (SHA1/SHA256 compare):"
+          keytool -list -v \
+            -keystore "$APPS_KEYSTORE_PATH_ABS" \
+            -storepass "$KEYSTORE_PASSWORD" \
+            -alias "$KEY_ALIAS" 2>&1 | grep -E "Alias name:|Serial number:|SHA1:|SHA256:" || true
+
       - name: Publish signed Android release (AAB + APK)
         env:
           ANDROID_KEYSTORE_PATH: appsflutter/android/keystore/classify-release-2026.jks
