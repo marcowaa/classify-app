@@ -271,15 +271,25 @@ services:
     restart: always
     command: server /data --console-address ":9001"
     environment:
-      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY:-classifyminio}
-      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY:-classifyminio123}
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY:?MINIO_ACCESS_KEY is required}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY:?MINIO_SECRET_KEY is required}
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik-gemj_default"
+
+      # Middlewares (P0)
+      - "traefik.http.middlewares.minio-console-auth.basicauth.users=${MINIO_CONSOLE_BASIC_AUTH_USERS:?MINIO_CONSOLE_BASIC_AUTH_USERS is required}"
+      - "traefik.http.middlewares.minio-console-rate-limit.ratelimit.average=10"
+      - "traefik.http.middlewares.minio-console-rate-limit.burst=20"
+
+      # Console router (secure)
       - "traefik.http.routers.classify-minio.rule=Host(`minio.classi-fy.com`)"
       - "traefik.http.routers.classify-minio.entrypoints=websecure"
       - "traefik.http.routers.classify-minio.tls.certresolver=letsencrypt"
       - "traefik.http.services.classify-minio.loadbalancer.server.port=9001"
+      - "traefik.http.routers.classify-minio.middlewares=classify-security-headers,minio-console-auth,minio-console-rate-limit"
+
+      # HTTP → HTTPS redirect
       - "traefik.http.routers.classify-minio-http.rule=Host(`minio.classi-fy.com`)"
       - "traefik.http.routers.classify-minio-http.entrypoints=web"
       - "traefik.http.routers.classify-minio-http.middlewares=https-redirect-classify-minio"
@@ -307,6 +317,10 @@ services:
           memory: 512M
         reservations:
           memory: 256M
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
 
   apprise-api:
     image: caronc/apprise:latest
@@ -318,6 +332,8 @@ services:
       - "traefik.http.routers.classify-apprise.entrypoints=websecure"
       - "traefik.http.routers.classify-apprise.tls.certresolver=letsencrypt"
       - "traefik.http.services.classify-apprise.loadbalancer.server.port=8000"
+      - "traefik.http.routers.classify-apprise.middlewares=classify-security-headers"
+
       - "traefik.http.routers.classify-apprise-http.rule=Host(`apprise.classi-fy.com`)"
       - "traefik.http.routers.classify-apprise-http.entrypoints=web"
       - "traefik.http.routers.classify-apprise-http.middlewares=https-redirect-classify-apprise"
@@ -339,6 +355,11 @@ services:
       timeout: 10s
       retries: 5
       start_period: 20s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   uptime-kuma:
     image: louislam/uptime-kuma:1
@@ -346,10 +367,20 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik-gemj_default"
+
+      # Middlewares (P0)
+      - "traefik.http.middlewares.kuma-auth.basicauth.users=${KUMA_BASIC_AUTH_USERS:?KUMA_BASIC_AUTH_USERS is required}"
+      - "traefik.http.middlewares.kuma-rate-limit.ratelimit.average=10"
+      - "traefik.http.middlewares.kuma-rate-limit.burst=20"
+
+      # Secure router
       - "traefik.http.routers.classify-kuma.rule=Host(`kuma.classi-fy.com`)"
       - "traefik.http.routers.classify-kuma.entrypoints=websecure"
       - "traefik.http.routers.classify-kuma.tls.certresolver=letsencrypt"
       - "traefik.http.services.classify-kuma.loadbalancer.server.port=3001"
+      - "traefik.http.routers.classify-kuma.middlewares=classify-security-headers,kuma-auth,kuma-rate-limit"
+
+      # HTTP → HTTPS redirect
       - "traefik.http.routers.classify-kuma-http.rule=Host(`kuma.classi-fy.com`)"
       - "traefik.http.routers.classify-kuma-http.entrypoints=web"
       - "traefik.http.routers.classify-kuma-http.middlewares=https-redirect-classify-kuma"
@@ -360,6 +391,27 @@ services:
     networks:
       - classify-network
       - traefik-gemj_default
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'curl -fsS http://localhost:3001/ >/dev/null 2>&1 || wget -qO- http://localhost:3001/ >/dev/null 2>&1'"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
 
   dozzle:
     image: amir20/dozzle:latest
@@ -367,10 +419,20 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik-gemj_default"
+
+      # Middlewares (P0)
+      - "traefik.http.middlewares.dozzle-auth.basicauth.users=${DOZZLE_BASIC_AUTH_USERS:?DOZZLE_BASIC_AUTH_USERS is required}"
+      - "traefik.http.middlewares.dozzle-rate-limit.ratelimit.average=10"
+      - "traefik.http.middlewares.dozzle-rate-limit.burst=20"
+
+      # Secure router
       - "traefik.http.routers.classify-dozzle.rule=Host(`dozzle.classi-fy.com`)"
       - "traefik.http.routers.classify-dozzle.entrypoints=websecure"
       - "traefik.http.routers.classify-dozzle.tls.certresolver=letsencrypt"
       - "traefik.http.services.classify-dozzle.loadbalancer.server.port=8080"
+      - "traefik.http.routers.classify-dozzle.middlewares=classify-security-headers,dozzle-auth,dozzle-rate-limit"
+
+      # HTTP → HTTPS redirect
       - "traefik.http.routers.classify-dozzle-http.rule=Host(`dozzle.classi-fy.com`)"
       - "traefik.http.routers.classify-dozzle-http.entrypoints=web"
       - "traefik.http.routers.classify-dozzle-http.middlewares=https-redirect-classify-dozzle"
@@ -381,6 +443,27 @@ services:
     networks:
       - classify-network
       - traefik-gemj_default
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'curl -fsS http://localhost:8080/ >/dev/null 2>&1 || wget -qO- http://localhost:8080/ >/dev/null 2>&1'"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
 
 networks:
   classify-network:
