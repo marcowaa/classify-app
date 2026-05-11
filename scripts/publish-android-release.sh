@@ -684,6 +684,37 @@ fi
 step "Building Android release artifacts (APK + AAB)"
 cd "$ANDROID_ROOT"
 
+sanitize_deprecated_agp_options() {
+  local needle="android.bundle.enableUncompressedNativeLibs"
+
+  # Gradle can map env vars like ORG_GRADLE_PROJECT_<prop> to project properties.
+  # Unset any matching ORG_GRADLE_PROJECT_* env vars.
+  if command -v env >/dev/null 2>&1; then
+    while IFS='=' read -r k _; do
+      local k_lc
+      k_lc="$(printf "%s" "$k" | tr '[:upper:]' '[:lower:]')"
+      if [[ "$k_lc" == org_gradle_project_* ]] && [[ "$k_lc" == *enableuncompressednativelibs* ]]; then
+        step "Unsetting deprecated AGP option from env: $k"
+        unset "$k" >/dev/null 2>&1 || true
+      fi
+    done < <(env)
+  fi
+
+  # Strip from GRADLE_OPTS if present.
+  if [ -n "${GRADLE_OPTS:-}" ] && echo "$GRADLE_OPTS" | grep -qi "$needle"; then
+    step "Sanitizing deprecated AGP option from GRADLE_OPTS: $needle"
+    GRADLE_OPTS="$(echo "$GRADLE_OPTS" | sed -E "s/(-P${needle//./\\.})[[:space:]]*[^[:space:]]+//g; s/(-D${needle//./\\.})[[:space:]]*[^[:space:]]+//g")"
+  fi
+
+  # Strip from JAVA_TOOL_OPTIONS if present.
+  if [ -n "${JAVA_TOOL_OPTIONS:-}" ] && echo "$JAVA_TOOL_OPTIONS" | grep -qi "$needle"; then
+    step "Unsetting deprecated AGP option from JAVA_TOOL_OPTIONS: $needle"
+    JAVA_TOOL_OPTIONS="$(echo "$JAVA_TOOL_OPTIONS" | sed -E "s/(-D${needle//./\\.})[[:space:]]*[^[:space:]]+//g")"
+  fi
+}
+
+sanitize_deprecated_agp_options
+
 sanitize_linux_gradle_java_home
 ensure_linux_android_sdk_location
 
