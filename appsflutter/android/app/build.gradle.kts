@@ -75,10 +75,17 @@ android {
             // Signed with release keystore (from appsflutter/android/key.properties).
             signingConfig = signingConfigs.getByName("release")
 
-            // Avoid native debug symbol stripping failures that break AAB builds.
-            // NONE tells Gradle/AGP not to run the failing strip step in release.
+            // Generate native debug symbol artifacts (.sym/.dbg) so Flutter’s appbundle check passes.
+            // Using SYMBOL_TABLE reduces payload vs FULL while still producing the expected symbol outputs.
             ndk {
-                debugSymbolLevel = "NONE"
+                debugSymbolLevel = "SYMBOL_TABLE"
+            }
+
+            // Keep debug symbols for native .so files in release to reduce/avoid failing strip behavior.
+            packaging {
+                jniLibs {
+                    keepDebugSymbols.add("**/*.so")
+                }
             }
         }
     }
