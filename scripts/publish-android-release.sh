@@ -718,9 +718,27 @@ if [ "$SKIP_WEB_BUILD" != "true" ]; then
 
   if [ "$PATCHED_TEMPLATE" = "false" ]; then
     echo "[android-release] WARNING: Could not find Capacitor template Gradle file to patch JavaVersion.VERSION_21 -> VERSION_17 (paths tried)" >&2
+    echo "  - $CAPACITOR_BUILD_GRADLE" >&2
     echo "  - $CAPACITOR_TEMPLATE_BUILD_GRADLE_CANDIDATE_1" >&2
     echo "  - $CAPACITOR_TEMPLATE_BUILD_GRADLE_CANDIDATE_2" >&2
     echo "  - $CAPACITOR_TEMPLATE_BUILD_GRADLE_CANDIDATE_3" >&2
+  fi
+
+  # Patch *all* Capacitor Android plugin build.gradle files, not just the core template.
+  # CI failures can come from modules like:
+  #   - :capacitor-push-notifications:compileReleaseJavaWithJavac
+  step "Patching all Capacitor plugin Gradle files Java compatibility to 17"
+  for f in $ROOT_DIR/node_modules/@capacitor/*/android/build.gradle; do
+    if [ -f "$f" ]; then
+      node -e "const fs=require('fs');const p=process.argv[1];let s=fs.readFileSync(p,'utf8');let t=s.replaceAll('JavaVersion.VERSION_21','JavaVersion.VERSION_17');if(t!==s)fs.writeFileSync(p,t,'utf8');" "$f"
+    fi
+  done
+
+  step "Verifying JavaVersion.VERSION_21 is not present anywhere under node_modules/@capacitor"
+  if grep -R 'JavaVersion\.VERSION_21' "$ROOT_DIR/node_modules/@capacitor" >/dev/null 2>&1; then
+    echo "[android-release] ERROR: JavaVersion.VERSION_21 still present after patching under node_modules/@capacitor" >&2
+    grep -R 'JavaVersion\.VERSION_21' "$ROOT_DIR/node_modules/@capacitor" -n 2>/dev/null | head -n 30 >&2
+    exit 1
   fi
 
   verify_java_17_patch() {
