@@ -106,6 +106,9 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'workflow_dispatch' }}
     needs: verify
+    defaults:
+      run:
+        shell: bash
     strategy:
       matrix:
         target: ${{ fromJSON(format('["{0}","{1}","{2}"]', inputs.build_apk && 'apk' || 'skip-apk', inputs.build_aab && 'appbundle' || 'skip-aab', inputs.build_web && 'web' || 'skip-web')) }}
@@ -445,7 +448,8 @@ jobs:
             LLVM_STRIP_DIR="$(dirname "$LLVM_STRIP")"
             echo "LLVM_STRIP_DIR=$LLVM_STRIP_DIR" >> "$GITHUB_ENV"
             echo "ANDROID_LLVM_STRIP=$LLVM_STRIP" >> "$GITHUB_ENV"
-            echo "PATH=$LLVM_STRIP_DIR:\$PATH" >> "$GITHUB_ENV"
+            # Expand $PATH now; do NOT write a literal "$PATH" into GITHUB_ENV, otherwise /usr/bin/env can't find bash.
+            echo "PATH=$LLVM_STRIP_DIR:$PATH" >> "$GITHUB_ENV"
 
             "$LLVM_STRIP" --version || true
           fi
