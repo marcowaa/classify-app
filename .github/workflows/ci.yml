@@ -419,22 +419,30 @@ jobs:
 
           # Try to locate llvm-strip reliably across NDK layouts.
           # NDK toolchain binaries are sometimes symlinks and sometimes named llvm-strip-<ver>.
-          # Search both exact and pattern matches under common llvm toolchain locations.
-          LLVM_STRIP="$(find "$ANDROID_HOME" -type f -o -type l 2>/dev/null -path "*/toolchains/llvm/*/bin/llvm-strip*" -print -quit || true)"
+          # Always keep -o expressions inside parentheses to avoid find precedence bugs.
+          LLVM_STRIP="$(
+            find "$ANDROID_HOME" \( -type f -o -type l \) \
+              -name "llvm-strip*" -path "*/toolchains/llvm/*/bin/*" \
+              -print -quit 2>/dev/null || true
+          )"
           if [ -z "${LLVM_STRIP:-}" ]; then
-            LLVM_STRIP="$(find "$ANDROID_HOME" -type f -o -type l 2>/dev/null -name "llvm-strip*" -path "*/toolchains/llvm/*/bin/*" -print -quit || true)"
-          fi
-
-          if [ -z "${LLVM_STRIP:-}" ]; then
-            # Fallback: any llvm-strip or llvm-strip-* anywhere under ANDROID_HOME.
-            LLVM_STRIP="$(find "$ANDROID_HOME" -type f -o -type l 2>/dev/null -name "llvm-strip*" -print -quit || true)"
+            # Broader fallback: any llvm-strip under ANDROID_HOME.
+            LLVM_STRIP="$(
+              find "$ANDROID_HOME" \( -type f -o -type l \) \
+                -name "llvm-strip*" \
+                -print -quit 2>/dev/null || true
+            )"
           fi
 
           if [ -z "${LLVM_STRIP:-}" ]; then
             # Last fallback: scan a few system roots.
             for root in "/usr/local" "/usr/lib" "/opt" "/root" "/home"; do
               [ -d "$root" ] || continue
-              LLVM_STRIP="$(find "$root" -type f -o -type l 2>/dev/null -name "llvm-strip*" -print -quit || true)"
+              LLVM_STRIP="$(
+                find "$root" \( -type f -o -type l \) \
+                  -name "llvm-strip*" \
+                  -print -quit 2>/dev/null || true
+              )"
               [ -n "${LLVM_STRIP:-}" ] && break
             done
           fi
@@ -442,7 +450,8 @@ jobs:
           echo "Found llvm-strip: ${LLVM_STRIP:-<none>}"
 
           if [ -z "${LLVM_STRIP:-}" ] || { [ ! -f "$LLVM_STRIP" ] && [ ! -L "$LLVM_STRIP" ]; }; then
-            echo "WARNING: llvm-strip missing. Continuing build anyway; if it still fails, we must install NDK or provide llvm-strip." >&2
+            echo "ERROR: llvm-strip missing. Failing early so we don't hit 'strip debug symbols' later in Gradle." >&2
+            exit 1
           else
             # Help build tools pick up the right binaries.
             LLVM_STRIP_DIR="$(dirname "$LLVM_STRIP")"
