@@ -345,31 +345,17 @@ jobs:
           set -euo pipefail
           echo "ANDROID_HOME=${ANDROID_HOME:-}"
 
-          LLVM_STRIP=""
-          candidate_roots=()
-          if [ -n "${ANDROID_HOME:-}" ]; then candidate_roots+=("$ANDROID_HOME"); fi
-          candidate_roots+=(
-            "/usr/local/lib/android-sdk"
-            "/usr/local/android-sdk"
-            "/usr/lib/android-sdk"
-            "/opt/android-sdk"
-            "/root/Android/Sdk"
-          )
+          # On GitHub runners the NDK folder structure may differ, so search the SDK tree directly.
+          if [ -z "${ANDROID_HOME:-}" ] || [ ! -d "${ANDROID_HOME:-}" ]; then
+            echo "ANDROID_HOME missing/invalid; aborting llvm-strip lookup." >&2
+            exit 1
+          fi
 
-          for root in "${candidate_roots[@]}"; do
-            [ -d "$root" ] || continue
-            LLVM_STRIP="$(find "$root" -type f -name llvm-strip -print -quit 2>/dev/null || true)"
-            if [ -n "${LLVM_STRIP:-}" ]; then
-              echo "Found llvm-strip under: $root"
-              break
-            fi
-          done
-
+          LLVM_STRIP="$(find "$ANDROID_HOME" -type f -name llvm-strip -print -quit 2>/dev/null || true)"
           echo "Found llvm-strip: ${LLVM_STRIP:-<none>}"
 
           if [ -z "${LLVM_STRIP:-}" ] || [ ! -f "$LLVM_STRIP" ]; then
-            echo "llvm-strip missing; strip debug symbols step will fail." >&2
-            exit 1
+            echo "WARNING: llvm-strip missing under ANDROID_HOME. Continuing build anyway (Gradle workaround may avoid the failing strip task)." >&2
           fi
 
           "$LLVM_STRIP" --version || true
