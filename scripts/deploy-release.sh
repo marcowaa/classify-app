@@ -320,11 +320,12 @@ main() {
   DEPLOY_EXPECTED_VERSION="$version" run_smoke_checks
 
   if [[ -d "$release_dir" ]]; then
-    log "Release already exists: $release_dir"
+    log "Release already exists: $release_dir (refreshing artifacts from staged bundle)"
   else
     mkdir -p "$release_dir"
-    cp -a "$tmp_dir/." "$release_dir/"
   fi
+  # Always copy staged artifacts into the release dir to avoid stale/partial release folders.
+  cp -a "$tmp_dir/." "$release_dir/"
 
   log "Activating release $release_tag"
   activate_release "$release_dir" "$version" "$build_number"
