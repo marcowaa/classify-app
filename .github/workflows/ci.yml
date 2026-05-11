@@ -344,20 +344,27 @@ jobs:
         run: |
           set -euo pipefail
           echo "ANDROID_HOME=${ANDROID_HOME:-}"
-          if [ -z "${ANDROID_HOME:-}" ]; then
-            echo "ANDROID_HOME is empty; trying fallback /usr/local/lib/android-sdk etc."
-            ANDROID_HOME="$(find / -maxdepth 4 -type d -name ndk -print -quit 2>/dev/null | xargs -I{} dirname {} | xargs -I{} dirname {} | head -n 1 || true)"
-            echo "Resolved ANDROID_HOME=$ANDROID_HOME"
-          fi
 
-          NDk_ROOT="${ANDROID_HOME:-}/ndk"
-          if [ ! -d "$NDk_ROOT" ]; then
-            echo "NDK root not found at: $NDk_ROOT" >&2
-            ls -la "${ANDROID_HOME:-}" || true
-            exit 1
-          fi
+          LLVM_STRIP=""
+          candidate_roots=()
+          if [ -n "${ANDROID_HOME:-}" ]; then candidate_roots+=("$ANDROID_HOME"); fi
+          candidate_roots+=(
+            "/usr/local/lib/android-sdk"
+            "/usr/local/android-sdk"
+            "/usr/lib/android-sdk"
+            "/opt/android-sdk"
+            "/root/Android/Sdk"
+          )
 
-          LLVM_STRIP="$(find "$NDk_ROOT" -type f -name llvm-strip -print -quit)"
+          for root in "${candidate_roots[@]}"; do
+            [ -d "$root" ] || continue
+            LLVM_STRIP="$(find "$root" -type f -name llvm-strip -print -quit 2>/dev/null || true)"
+            if [ -n "${LLVM_STRIP:-}" ]; then
+              echo "Found llvm-strip under: $root"
+              break
+            fi
+          done
+
           echo "Found llvm-strip: ${LLVM_STRIP:-<none>}"
 
           if [ -z "${LLVM_STRIP:-}" ] || [ ! -f "$LLVM_STRIP" ]; then
