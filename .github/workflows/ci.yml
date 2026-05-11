@@ -327,6 +327,46 @@ jobs:
 
           echo "APK signing verification passed for v2 & v3."
 
+      - name: Debug Android strip config (print gradle settings)
+        if: matrix.target == 'appbundle'
+        working-directory: appsflutter
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "=== appsflutter/android/app/build.gradle.kts: strip config ==="
+          grep -n "debugSymbolLevel" android/app/build.gradle.kts || true
+          grep -n "keepDebugSymbols" android/app/build.gradle.kts || true
+
+      - name: Verify NDK llvm-strip exists (needed for stripping symbols)
+        if: matrix.target == 'appbundle'
+        working-directory: appsflutter
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "ANDROID_HOME=${ANDROID_HOME:-}"
+          if [ -z "${ANDROID_HOME:-}" ]; then
+            echo "ANDROID_HOME is empty; trying fallback /usr/local/lib/android-sdk etc."
+            ANDROID_HOME="$(find / -maxdepth 4 -type d -name ndk -print -quit 2>/dev/null | xargs -I{} dirname {} | xargs -I{} dirname {} | head -n 1 || true)"
+            echo "Resolved ANDROID_HOME=$ANDROID_HOME"
+          fi
+
+          NDk_ROOT="${ANDROID_HOME:-}/ndk"
+          if [ ! -d "$NDk_ROOT" ]; then
+            echo "NDK root not found at: $NDk_ROOT" >&2
+            ls -la "${ANDROID_HOME:-}" || true
+            exit 1
+          fi
+
+          LLVM_STRIP="$(find "$NDk_ROOT" -type f -name llvm-strip -print -quit)"
+          echo "Found llvm-strip: ${LLVM_STRIP:-<none>}"
+
+          if [ -z "${LLVM_STRIP:-}" ] || [ ! -f "$LLVM_STRIP" ]; then
+            echo "llvm-strip missing; strip debug symbols step will fail." >&2
+            exit 1
+          fi
+
+          "$LLVM_STRIP" --version || true
+
       - name: Build App Bundle
         if: matrix.target == 'appbundle'
         working-directory: appsflutter
