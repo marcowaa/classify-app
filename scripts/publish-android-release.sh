@@ -676,7 +676,76 @@ if [ "$SKIP_WEB_BUILD" != "true" ]; then
   CAPACITOR_BUILD_GRADLE="$ANDROID_ROOT/app/capacitor.build.gradle"
   if [ -f "$CAPACITOR_BUILD_GRADLE" ]; then
     step "Patching generated Capacitor Gradle Java compatibility to 17"
-    sed -i 's/JavaVersion\.VERSION_21/JavaVersion.VERSION_17/g' "$CAPACITOR_BUILD_GRADLE"
+    node -e "const fs=require('fs');const p=process.argv[1];let s=fs.readFileSync(p,'utf8');let t=s.replaceAll('JavaVersion.VERSION_21','JavaVersion.VERSION_17');if(t!==s)fs.writeFileSync(p,t,'utf8');" "$CAPACITOR_BUILD_GRADLE"
+  fi
+
+  # Capacitor's Gradle plugin/template itself may still request Java 21, which can
+  # surface during `:capacitor-android:compileReleaseJavaWithJavac`.
+  #
+  # In some CI environments the hardcoded node_modules path can differ, so we
+  # resolve it via node and patch all known candidate locations.
+  patch_gradle_file_to_17() {
+    local f="$1"
+    if [ -f "$f" ]; then
+      step "Patching Gradle Java compatibility to 17: ${f#$ROOT_DIR/}"
+      node -e "const fs=require('fs');const p=process.argv[1];let s=fs.readFileSync(p,'utf8');let t=s.replaceAll('JavaVersion.VERSION_21','JavaVersion.VERSION_17');if(t!==s)fs.writeFileSync(p,t,'utf8');" "$f"
+      return 0
+    fi
+    return 1
+  }
+
+  CAPACITOR_TEMPLATE_BUILD_GRADLE_CANDIDATE_1="$ROOT_DIR/node_modules/@capacitor/android/capacitor/build.gradle"
+  CAPACITOR_TEMPLATE_BUILD_GRADLE_CANDIDATE_2="$(
+    node -e '
+      const path = require("path");
+      const { createRequire } = require("module");
+      try {
+        const req = createRequire(path.join(process.cwd(), "package.json"));
+        const pkgJson = req.resolve("@capacitor/android/package.json");
+        const dir = path.dirname(pkgJson);
+        process.stdout.write(path.join(dir, "capacitor", "build.gradle"));
+      } catch (e) {
+        process.exit(0);
+      }
+    ' 2>/dev/null || true
+  )"
+  CAPACITOR_TEMPLATE_BUILD_GRADLE_CANDIDATE_3="$ROOT_DIR/node_modules/@capacitor/android/capacitor/android/build.gradle"
+
+  PATCHED_TEMPLATE="false"
+  if patch_gradle_file_to_17 "$CAPACITOR_TEMPLATE_BUILD_GRADLE_CANDIDATE_1"; then PATCHED_TEMPLATE="true"; fi
+  if [ "$PATCHED_TEMPLATE" = "false" ] && patch_gradle_file_to_17 "$CAPACITOR_TEMPLATE_BUILD_GRADLE_CANDIDATE_2"; then PATCHED_TEMPLATE="true"; fi
+  if [ "$PATCHED_TEMPLATE" = "false" ] && patch_gradle_file_to_17 "$CAPACITOR_TEMPLATE_BUILD_GRADLE_CANDIDATE_3"; then PATCHED_TEMPLATE="true"; fi
+
+  if [ "$PATCHED_TEMPLATE" = "false" ]; then
+    echo "[android-release] WARNING: Could not find Capacitor template Gradle file to patch JavaVersion.VERSION_21 -> VERSION_17 (paths tried)" >&2
+    echo "  - $CAPACITOR_TEMPLATE_BUILD_GRADLE_CANDIDATE_1" >&2
+    echo "  - $CAPACITOR_TEMPLATE_BUILD_GRADLE_CANDIDATE_2" >&2
+    echo "  - $CAPACITOR_TEMPLATE_BUILD_GRADLE_CANDIDATE_3" >&2
+  fi
+
+  verify_java_17_patch() {
+    local f="$1"
+    if [ -f "$f" ] && grep -q 'JavaVersion\.VERSION_21' "$f"; then
+      echo "[android-release] ERROR: JavaVersion.VERSION_21 still present after patch in: ${f#$ROOT_DIR/}" >&2
+      echo "Fix did not apply; build will likely fail with invalid source release: 21" >&2
+      return 1
+    fi
+    return 0
+  }
+
+  PATCH_OK="true"
+  if [ -f "$CAPACITOR_BUILD_GRADLE" ]; then
+    if ! verify_java_17_patch "$CAPACITOR_BUILD_GRADLE"; then
+      PATCH_OK="false"
+    fi
+  fi
+  if ! verify_java_17_patch "$CAPACITOR_TEMPLATE_BUILD_GRADLE_CANDIDATE_1"; then PATCH_OK="false"; fi
+  if ! verify_java_17_patch "$CAPACITOR_TEMPLATE_BUILD_GRADLE_CANDIDATE_2"; then PATCH_OK="false"; fi
+  if ! verify_java_17_patch "$CAPACITOR_TEMPLATE_BUILD_GRADLE_CANDIDATE_3"; then PATCH_OK="false"; fi
+
+  if [ "$PATCH_OK" != "true" ]; then
+    echo "[android-release] Java compatibility patch verification failed." >&2
+    exit 1
   fi
 
   step "Running strict Capacitor production checks"
