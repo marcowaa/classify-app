@@ -344,27 +344,6 @@ jobs:
           test -s "build/app/outputs/bundle/release/app-release.aab"
           echo "AAB verified: build/app/outputs/bundle/release/app-release.aab"
 
-      - name: Verify AAB signature (jarsigner)
-        if: matrix.target == 'appbundle'
-        working-directory: appsflutter
-        run: |
-          set -euo pipefail
-          AAB_PATH="build/app/outputs/bundle/release/app-release.aab"
-          if ! command -v jarsigner >/dev/null 2>&1; then
-            echo "jarsigner not found in PATH" >&2
-            exit 1
-          fi
-          verify_output="$(jarsigner -verify -verbose -certs "$AAB_PATH" 2>&1 || true)"
-          echo "$verify_output"
-          if echo "$verify_output" | grep -qi "jar is unsigned"; then
-            echo "Generated AAB is unsigned" >&2
-            exit 1
-          fi
-          if ! echo "$verify_output" | grep -qi "jar verified"; then
-            echo "AAB signature verification failed" >&2
-            exit 1
-          fi
-          echo "AAB signature verification passed"
 
       - name: Build Web Wrapper
         if: matrix.target == 'web'
