@@ -75,10 +75,6 @@ android {
             // Signed with release keystore (from appsflutter/android/key.properties).
             signingConfig = signingConfigs.getByName("release")
 
-            // Generate native debug symbol artifacts (.sym/.dbg) so Flutter’s appbundle check passes.
-            ndk {
-                debugSymbolLevel = "FULL"
-            }
         }
     }
 }
