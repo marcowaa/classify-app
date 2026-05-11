@@ -729,7 +729,7 @@ if [ -n "${ANDROID_KEYSTORE_PATH:-}" ] && [ -n "${ANDROID_KEYSTORE_PASSWORD:-}" 
   # CI/workflows commonly pass a relative keystore path. Convert to an absolute path
   # so Gradle can’t accidentally resolve it relative to a different module.
   ANDROID_KEYSTORE_PATH_ABS="$ANDROID_KEYSTORE_PATH"
-  if [[ "$ANDROID_KEYSTORE_PATH_ABS" != /* && "$ANDROID_KEYSTORE_PATH_ABS" !~ ^[A-Za-z]:\\ ]]; then
+  if [[ "$ANDROID_KEYSTORE_PATH_ABS" != /* ]] && [[ ! "$ANDROID_KEYSTORE_PATH_ABS" =~ ^[A-Za-z]:\\ ]]; then
     ANDROID_KEYSTORE_PATH_ABS="$(resolve_abs_path "$ROOT_DIR/$ANDROID_KEYSTORE_PATH_ABS" || echo "$ROOT_DIR/$ANDROID_KEYSTORE_PATH_ABS")"
   fi
   step "Resolved CLASSIFY_SIGNING_STORE_FILE=$ANDROID_KEYSTORE_PATH_ABS"
