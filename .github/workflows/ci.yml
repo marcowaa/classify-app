@@ -414,19 +414,31 @@ jobs:
             exit 1
           fi
 
-          # Try a broader lookup because some runners have NDK installed outside ANDROID_HOME.
-          LLVM_STRIP="$(find "$ANDROID_HOME" -type f -name llvm-strip -print -quit 2>/dev/null || true)"
+          # Try to locate llvm-strip reliably across NDK layouts.
+          # NDK toolchain binaries are sometimes symlinks and sometimes named llvm-strip-<ver>.
+          # Search both exact and pattern matches under common llvm toolchain locations.
+          LLVM_STRIP="$(find "$ANDROID_HOME" -type f -o -type l 2>/dev/null -path "*/toolchains/llvm/*/bin/llvm-strip*" -print -quit || true)"
           if [ -z "${LLVM_STRIP:-}" ]; then
+            LLVM_STRIP="$(find "$ANDROID_HOME" -type f -o -type l 2>/dev/null -name "llvm-strip*" -path "*/toolchains/llvm/*/bin/*" -print -quit || true)"
+          fi
+
+          if [ -z "${LLVM_STRIP:-}" ]; then
+            # Fallback: any llvm-strip or llvm-strip-* anywhere under ANDROID_HOME.
+            LLVM_STRIP="$(find "$ANDROID_HOME" -type f -o -type l 2>/dev/null -name "llvm-strip*" -print -quit || true)"
+          fi
+
+          if [ -z "${LLVM_STRIP:-}" ]; then
+            # Last fallback: scan a few system roots.
             for root in "/usr/local" "/usr/lib" "/opt" "/root" "/home"; do
               [ -d "$root" ] || continue
-              LLVM_STRIP="$(find "$root" -type f -name llvm-strip -print -quit 2>/dev/null || true)"
-              [ -n "${LLVM_STRIP:-}" ] && [ -f "$LLVM_STRIP" ] && break
+              LLVM_STRIP="$(find "$root" -type f -o -type l 2>/dev/null -name "llvm-strip*" -print -quit || true)"
+              [ -n "${LLVM_STRIP:-}" ] && break
             done
           fi
 
           echo "Found llvm-strip: ${LLVM_STRIP:-<none>}"
 
-          if [ -z "${LLVM_STRIP:-}" ] || [ ! -f "$LLVM_STRIP" ]; then
+          if [ -z "${LLVM_STRIP:-}" ] || { [ ! -f "$LLVM_STRIP" ] && [ ! -L "$LLVM_STRIP" ]; }; then
             echo "WARNING: llvm-strip missing. Continuing build anyway; if it still fails, we must install NDK or provide llvm-strip." >&2
           else
             # Help build tools pick up the right binaries.
