@@ -48,6 +48,11 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        // Limit ABIs to reduce native strip failures from plugins shipping extra architectures.
+        ndk {
+            abiFilters += setOf("arm64-v8a", "armeabi-v7a")
+        }
     }
 
     signingConfigs {
@@ -72,7 +77,9 @@ android {
 
             // Avoid native debug symbol stripping failures that break AAB builds
             ndk {
-                debugSymbolLevel = "NONE"
+                // Prevent AGP from failing during "strip debug symbols" for native libs on CI.
+                // Full keeps debug symbols instead of trying to strip them.
+                debugSymbolLevel = "FULL"
             }
 
             // Workaround for Flutter/AGP "failed to strip debug symbols from native libraries"

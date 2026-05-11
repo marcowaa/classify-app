@@ -466,7 +466,7 @@ jobs:
       - name: Build App Bundle
         if: matrix.target == 'appbundle'
         working-directory: appsflutter
-        run: flutter build appbundle --release
+        run: flutter build appbundle --release --verbose
 
       - name: Verify produced AAB exists and is non-empty
         if: matrix.target == 'appbundle'
