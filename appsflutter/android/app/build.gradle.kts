@@ -76,16 +76,8 @@ android {
             signingConfig = signingConfigs.getByName("release")
 
             // Generate native debug symbol artifacts (.sym/.dbg) so Flutter’s appbundle check passes.
-            // Using SYMBOL_TABLE reduces payload vs FULL while still producing the expected symbol outputs.
             ndk {
-                debugSymbolLevel = "SYMBOL_TABLE"
-            }
-
-            // Keep debug symbols for native .so files in release to reduce/avoid failing strip behavior.
-            packaging {
-                jniLibs {
-                    keepDebugSymbols.add("**/*.so")
-                }
+                debugSymbolLevel = "FULL"
             }
         }
     }
