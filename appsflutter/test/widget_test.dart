@@ -1,30 +1,42 @@
-// This is a basic Flutter widget test.
+// Smoke test for the Flutter app.
 //
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+// Note: The real SplashScreen triggers async auth checks that depend on secure
+// storage/plugins. In widget tests we override authStateProvider with a fake
+// notifier to avoid platform/plugin calls.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:classify_flutter/main.dart';
+import 'package:classify_flutter/app.dart';
+import 'package:classify_flutter/domain/providers/auth_provider.dart';
+
+class FakeAuthNotifier extends AuthNotifier {
+  @override
+  AuthState build() => const AuthState(isAuthenticated: false);
+
+  @override
+  Future<void> checkAuthStatus() async {
+    // Never touch secure storage in widget tests.
+    state = const AuthState(isAuthenticated: false);
+  }
+}
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('Smoke test app builds', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authStateProvider.overrideWith(() => FakeAuthNotifier()),
+        ],
+        child: const ClassifyApp(),
+      ),
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // SplashScreen waits 2s before calling checkAuthStatus().
+    await tester.pump(const Duration(seconds: 3));
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verify a root widget exists (MaterialApp.router).
+    expect(find.byType(MaterialApp), findsOneWidget);
   });
 }

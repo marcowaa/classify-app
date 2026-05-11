@@ -25,6 +25,7 @@ import 'package:classify_flutter/presentation/screens/child/game_webview_screen.
 
 /// Route path constants
 class RoutePaths {
+  // ignore: unnecessary_underscores
   RoutePaths._();
 
   static const String splash = '/';
@@ -55,13 +56,27 @@ class RoutePaths {
   static const String childGamePlay = '/child/game/:gameId';
 }
 
+class AuthRouterRefresh extends ChangeNotifier {
+  void refresh() => notifyListeners();
+}
+
 final routerProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authStateProvider);
+  // Important: Do NOT `ref.watch(authStateProvider)` here.
+  // That would recreate the GoRouter during splash/auth initialization.
+  // Instead we refresh the existing router when auth changes.
+  final refreshListenable = AuthRouterRefresh();
+
+  ref.listen<AuthState>(authStateProvider, (previous, next) {
+    refreshListenable.refresh();
+  });
+  ref.onDispose(refreshListenable.dispose);
 
   return GoRouter(
     initialLocation: RoutePaths.splash,
     debugLogDiagnostics: false,
+    refreshListenable: refreshListenable,
     redirect: (context, state) {
+      final authState = ref.read(authStateProvider);
       final isLoggedIn = authState.isAuthenticated;
 
       // Routes that must be reachable when the user is NOT authenticated.
@@ -158,7 +173,8 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: RoutePaths.parentDashboard,
-                builder: (context, state) => const ParentDashboardScreen(),
+                builder: (context, state) =>
+                    const ParentDashboardScreen(),
               ),
             ],
           ),
@@ -191,7 +207,8 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: RoutePaths.parentProfile,
-                builder: (context, state) => const ParentProfileScreen(),
+                builder: (context, state) =>
+                    const ParentProfileScreen(),
               ),
             ],
           ),
