@@ -22,6 +22,9 @@ param(
 
   [Parameter(Mandatory = $false)]
   [switch]$AllowVersionReuse
+
+  , [Parameter(Mandatory = $false)]
+  [switch]$ApkOnly
 )
 
 $ErrorActionPreference = "Stop"
@@ -470,7 +473,12 @@ else {
   Step "SkipWebBuild enabled - skipping web build and cap sync"
 }
 
-Step "Building Android release artifacts (APK + AAB)"
+if ($ApkOnly) {
+  Step "Building Android release artifacts (APK only)"
+}
+else {
+  Step "Building Android release artifacts (APK + AAB)"
+}
 Push-Location $androidRoot
 try {
   Ensure-WindowsGradleJavaCompatibility
@@ -508,9 +516,11 @@ try {
     throw "gradlew assembleRelease failed"
   }
 
-  & $gradleWrapper bundleRelease @gradleProps @gradleReleaseSkips
-  if ($LASTEXITCODE -ne 0) {
-    throw "gradlew bundleRelease failed"
+  if (-not $ApkOnly) {
+    & $gradleWrapper bundleRelease @gradleProps @gradleReleaseSkips
+    if ($LASTEXITCODE -ne 0) {
+      throw "gradlew bundleRelease failed"
+    }
   }
 }
 finally {
@@ -518,11 +528,13 @@ finally {
 }
 
 $apkSource = Join-Path $androidRoot "app/build/outputs/apk/release/app-release.apk"
-$aabSource = Join-Path $androidRoot "app/build/outputs/bundle/release/app-release.aab"
 
 Ensure-File $apkSource "APK output"
-Ensure-File $aabSource "AAB output"
-Assert-AabSigned -aabPath $aabSource
+if (-not $ApkOnly) {
+  $aabSource = Join-Path $androidRoot "app/build/outputs/bundle/release/app-release.aab"
+  Ensure-File $aabSource "AAB output"
+  Assert-AabSigned -aabPath $aabSource
+}
 
 $latestApkName = "classify-app-latest.apk"
 $latestAabName = "classify-googleplay-latest.aab"
@@ -532,18 +544,26 @@ $versionedAabName = "classify-googleplay-$releaseTag.aab"
 Step "Publishing artifacts to apps/ and apps/archive"
 foreach ($appsDir in $appsDirs) {
   Copy-Artifact $apkSource (Join-Path $appsDir $latestApkName) "latest APK"
-  Copy-Artifact $aabSource (Join-Path $appsDir $latestAabName) "latest AAB"
+  if (-not $ApkOnly) {
+    Copy-Artifact $aabSource (Join-Path $appsDir $latestAabName) "latest AAB"
+  }
 }
 
-foreach ($archiveDir in $archiveDirs) {
-  Copy-Artifact $apkSource (Join-Path $archiveDir $versionedApkName) "versioned APK"
-  Copy-Artifact $aabSource (Join-Path $archiveDir $versionedAabName) "versioned AAB"
+if (-not $ApkOnly) {
+  foreach ($archiveDir in $archiveDirs) {
+    Copy-Artifact $apkSource (Join-Path $archiveDir $versionedApkName) "versioned APK"
+    Copy-Artifact $aabSource (Join-Path $archiveDir $versionedAabName) "versioned AAB"
+  }
 }
 
 $apkInfo = Get-Item -LiteralPath (Join-Path $root "client/public/apps/$latestApkName")
-$aabInfo = Get-Item -LiteralPath (Join-Path $root "client/public/apps/$latestAabName")
 $apkSha256 = Get-FileSha256 -path $apkInfo.FullName
-$aabSha256 = Get-FileSha256 -path $aabInfo.FullName
+$signedAabVerified = -not $ApkOnly
+
+if (-not $ApkOnly) {
+  $aabInfo = Get-Item -LiteralPath (Join-Path $root "client/public/apps/$latestAabName")
+  $aabSha256 = Get-FileSha256 -path $aabInfo.FullName
+}
 
 $gitCommit = Get-GitRefValue -arguments @("-C", "$root", "rev-parse", "HEAD")
 $gitBranch = Get-GitRefValue -arguments @("-C", "$root", "rev-parse", "--abbrev-ref", "HEAD")
@@ -551,7 +571,7 @@ $provenance = [ordered]@{
   scriptPath         = "scripts/publish-android-release.ps1"
   gitCommit          = $gitCommit
   gitBranch          = $gitBranch
-  signedAabVerified  = $true
+  signedAabVerified  = $signedAabVerified
   versionReuseBypass = [bool]$AllowVersionReuse
   generatedAt        = (Get-Date).ToUniversalTime().ToString("o")
 }
@@ -562,7 +582,6 @@ $releaseContent = [ordered]@{
     downloadDescription = "downloadAppDesc"
     screenshotsTitle    = "downloadAppPage.screenshotsTitle"
     apkCta              = "downloadAppPage.downloadApkCta"
-    aabAriaLabel        = "downloadAppPage.aabAriaLabel"
     pwaAriaLabel        = "downloadAppPage.pwaZipAriaLabel"
   }
   listing     = [ordered]@{
@@ -582,14 +601,18 @@ $releaseContent = [ordered]@{
       label     = "APK"
       latestUrl = "/apps/$latestApkName"
     }
-    aab = [ordered]@{
-      label     = "AAB"
-      latestUrl = "/apps/$latestAabName"
-    }
     pwa = [ordered]@{
       label     = "PWA"
       latestUrl = "/apps/classify-pwa-latest.zip"
     }
+  }
+}
+
+if (-not $ApkOnly) {
+  $releaseContent.copyKeys.aabAriaLabel = "downloadAppPage.aabAriaLabel"
+  $releaseContent.channels.aab = [ordered]@{
+    label     = "AAB"
+    latestUrl = "/apps/$latestAabName"
   }
 }
 
@@ -600,7 +623,11 @@ if (Test-Path -LiteralPath $releaseContentPath) {
     $parsedReleaseContent = $rawReleaseContent | ConvertFrom-Json
 
     if ($parsedReleaseContent.copyKeys) {
-      foreach ($key in @("downloadTitle", "downloadDescription", "screenshotsTitle", "apkCta", "aabAriaLabel", "pwaAriaLabel")) {
+      $copyKeyList = @("downloadTitle", "downloadDescription", "screenshotsTitle", "apkCta", "pwaAriaLabel")
+      if (-not $ApkOnly) {
+        $copyKeyList += "aabAriaLabel"
+      }
+      foreach ($key in $copyKeyList) {
         $value = $parsedReleaseContent.copyKeys.$key
         if ($value -is [string] -and -not [string]::IsNullOrWhiteSpace($value)) {
           $releaseContent.copyKeys[$key] = $value
@@ -625,7 +652,11 @@ if (Test-Path -LiteralPath $releaseContentPath) {
     }
 
     if ($parsedReleaseContent.channels) {
-      foreach ($channel in @("apk", "aab", "pwa")) {
+      $channelList = @("apk", "pwa")
+      if (-not $ApkOnly) {
+        $channelList += "aab"
+      }
+      foreach ($channel in $channelList) {
         $entry = $parsedReleaseContent.channels.$channel
         if (-not $entry) {
           continue
@@ -648,6 +679,33 @@ if (Test-Path -LiteralPath $releaseContentPath) {
   }
 }
 
+$apkFileEntry = [ordered]@{
+  latestUrl = "/apps/$latestApkName"
+  bytes     = $apkInfo.Length
+  size      = (File-SizeLabel $apkInfo.Length)
+  sha256    = $apkSha256
+  name      = $latestApkName
+}
+
+if (-not $ApkOnly) {
+  $apkFileEntry.archiveUrl = "/apps/archive/$versionedApkName"
+}
+
+$metadataFiles = [ordered]@{
+  apk = $apkFileEntry
+}
+
+if (-not $ApkOnly) {
+  $metadataFiles.aab = @{
+    latestUrl  = "/apps/$latestAabName"
+    archiveUrl = "/apps/archive/$versionedAabName"
+    bytes      = $aabInfo.Length
+    size       = (File-SizeLabel $aabInfo.Length)
+    sha256     = $aabSha256
+    name       = $latestAabName
+  }
+}
+
 $metadata = [ordered]@{
   releaseTag  = $releaseTag
   version     = $Version
@@ -657,59 +715,62 @@ $metadata = [ordered]@{
   apiBase     = $ApiBase
   provenance  = $provenance
   aso         = $releaseContent
-  files       = @{
-    apk = @{
-      latestUrl  = "/apps/$latestApkName"
-      archiveUrl = "/apps/archive/$versionedApkName"
-      bytes      = $apkInfo.Length
-      size       = (File-SizeLabel $apkInfo.Length)
-      sha256     = $apkSha256
-      name       = $latestApkName
-    }
-    aab = @{
-      latestUrl  = "/apps/$latestAabName"
-      archiveUrl = "/apps/archive/$versionedAabName"
-      bytes      = $aabInfo.Length
-      size       = (File-SizeLabel $aabInfo.Length)
-      sha256     = $aabSha256
-      name       = $latestAabName
-    }
-  }
+  files       = $metadataFiles
 }
 
 $metadataJson = $metadata | ConvertTo-Json -Depth 10
 
 $metadataTargets = @(
   (Join-Path $root "client/public/apps/latest-release.json"),
-  (Join-Path $root "client/public/apps/archive/release-$releaseTag.json"),
-  (Join-Path $root "dist/public/apps/latest-release.json"),
-  (Join-Path $root "dist/public/apps/archive/release-$releaseTag.json")
+  (Join-Path $root "dist/public/apps/latest-release.json")
 )
+
+if (-not $ApkOnly) {
+  $metadataTargets += @(
+    (Join-Path $root "client/public/apps/archive/release-$releaseTag.json"),
+    (Join-Path $root "dist/public/apps/archive/release-$releaseTag.json")
+  )
+}
 
 $provenanceJson = ($provenance | ConvertTo-Json -Depth 10)
 $provenanceTargets = @(
   (Join-Path $root "client/public/apps/latest-provenance.json"),
-  (Join-Path $root "client/public/apps/archive/provenance-$releaseTag.json"),
-  (Join-Path $root "dist/public/apps/latest-provenance.json"),
-  (Join-Path $root "dist/public/apps/archive/provenance-$releaseTag.json")
+  (Join-Path $root "dist/public/apps/latest-provenance.json")
 )
 
-$checksumsLatestContent = @(
-  "$apkSha256  $latestApkName",
-  "$aabSha256  $latestAabName"
-) -join "`n"
+if (-not $ApkOnly) {
+  $provenanceTargets += @(
+    (Join-Path $root "client/public/apps/archive/provenance-$releaseTag.json"),
+    (Join-Path $root "dist/public/apps/archive/provenance-$releaseTag.json")
+  )
+}
 
-$checksumsArchiveContent = @(
-  "$apkSha256  $versionedApkName",
-  "$aabSha256  $versionedAabName"
-) -join "`n"
+$checksumsLatestContent = if ($ApkOnly) {
+  "$apkSha256  $latestApkName"
+}
+else {
+  @(
+    "$apkSha256  $latestApkName",
+    "$aabSha256  $latestAabName"
+  ) -join "`n"
+}
 
 $checksumsTargets = @(
   [pscustomobject]@{ Path = (Join-Path $root "client/public/apps/checksums-latest.txt"); Content = $checksumsLatestContent },
-  [pscustomobject]@{ Path = (Join-Path $root "client/public/apps/archive/checksums-$releaseTag.txt"); Content = $checksumsArchiveContent },
-  [pscustomobject]@{ Path = (Join-Path $root "dist/public/apps/checksums-latest.txt"); Content = $checksumsLatestContent },
-  [pscustomobject]@{ Path = (Join-Path $root "dist/public/apps/archive/checksums-$releaseTag.txt"); Content = $checksumsArchiveContent }
+  [pscustomobject]@{ Path = (Join-Path $root "dist/public/apps/checksums-latest.txt"); Content = $checksumsLatestContent }
 )
+
+if (-not $ApkOnly) {
+  $checksumsArchiveContent = @(
+    "$apkSha256  $versionedApkName",
+    "$aabSha256  $versionedAabName"
+  ) -join "`n"
+
+  $checksumsTargets += @(
+    [pscustomobject]@{ Path = (Join-Path $root "client/public/apps/archive/checksums-$releaseTag.txt"); Content = $checksumsArchiveContent },
+    [pscustomobject]@{ Path = (Join-Path $root "dist/public/apps/archive/checksums-$releaseTag.txt"); Content = $checksumsArchiveContent }
+  )
+}
 
 foreach ($target in $metadataTargets) {
   Ensure-Directory (Split-Path -Parent $target)
@@ -730,9 +791,14 @@ if (-not $SkipAdminUpload -and $env:CLASSIFY_ADMIN_TOKEN) {
   $adminApiBase = if ($env:CLASSIFY_API_BASE) { $env:CLASSIFY_API_BASE } else { $ApiBase }
   $registerEndpoint = "$($adminApiBase.TrimEnd('/'))/api/admin/mobile-apk-builds/register"
   $legacyUploadEndpoint = "$($adminApiBase.TrimEnd('/'))/api/admin/mobile-apk-builds/upload"
-  $aabLatestPath = "/apps/$latestAabName"
-  $aabArchivePath = "/apps/archive/$versionedAabName"
-  $adminNotes = "Automated publish ($releaseTag) | AAB: $aabLatestPath | AAB archive: $aabArchivePath"
+  if ($ApkOnly) {
+    $adminNotes = "Automated publish ($releaseTag) | APK-only"
+  }
+  else {
+    $aabLatestPath = "/apps/$latestAabName"
+    $aabArchivePath = "/apps/archive/$versionedAabName"
+    $adminNotes = "Automated publish ($releaseTag) | AAB: $aabLatestPath | AAB archive: $aabArchivePath"
+  }
 
   Step "Registering latest APK in admin builds API: $registerEndpoint"
   try {
@@ -785,6 +851,8 @@ else {
 
 Step "Done. Download links now point to:"
 Write-Host "  - /apps/$latestApkName"
-Write-Host "  - /apps/$latestAabName"
-Write-Host "  - archive: /apps/archive/$versionedApkName"
-Write-Host "  - archive: /apps/archive/$versionedAabName"
+if (-not $ApkOnly) {
+  Write-Host "  - /apps/$latestAabName"
+  Write-Host "  - archive: /apps/archive/$versionedApkName"
+  Write-Host "  - archive: /apps/archive/$versionedAabName"
+}

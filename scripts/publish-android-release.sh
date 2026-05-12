@@ -9,6 +9,7 @@ SKIP_WEB_BUILD="false"
 SKIP_ADMIN_UPLOAD="false"
 USE_KEYSTORE_FALLBACK="true"
 ALLOW_VERSION_REUSE="false"
+APK_ONLY="false"
 
 LAST_RELEASE_VERSION=""
 LAST_RELEASE_BUILD_NUMBER=""
@@ -245,10 +246,12 @@ build_release_content_json() {
   local release_content_file="$ROOT_DIR/client/public/apps/release-content.json"
   local latest_apk_name="$1"
   local latest_aab_name="$2"
+  local apk_only="$3"
 
   node -e '
 const fs = require("fs");
-const [filePath, latestApkName, latestAabName] = process.argv.slice(1);
+const [filePath, latestApkName, latestAabName, apkOnlyFlag] = process.argv.slice(1);
+const apkOnly = apkOnlyFlag === "true";
 
 const defaults = {
   copyKeys: {
@@ -256,7 +259,6 @@ const defaults = {
     downloadDescription: "downloadAppDesc",
     screenshotsTitle: "downloadAppPage.screenshotsTitle",
     apkCta: "downloadAppPage.downloadApkCta",
-    aabAriaLabel: "downloadAppPage.aabAriaLabel",
     pwaAriaLabel: "downloadAppPage.pwaZipAriaLabel"
   },
   listing: {
@@ -273,10 +275,14 @@ const defaults = {
   ],
   channels: {
     apk: { label: "APK", latestUrl: `/apps/${latestApkName}` },
-    aab: { label: "AAB", latestUrl: `/apps/${latestAabName}` },
     pwa: { label: "PWA", latestUrl: "/apps/classify-pwa-latest.zip" }
   }
 };
+
+if (!apkOnly) {
+  defaults.copyKeys.aabAriaLabel = "downloadAppPage.aabAriaLabel";
+  defaults.channels.aab = { label: "AAB", latestUrl: `/apps/${latestAabName}` };
+}
 
 const merged = JSON.parse(JSON.stringify(defaults));
 
@@ -329,7 +335,7 @@ if (fs.existsSync(filePath)) {
 }
 
 process.stdout.write(JSON.stringify(merged));
-' "$release_content_file" "$latest_apk_name" "$latest_aab_name"
+' "$release_content_file" "$latest_apk_name" "$latest_aab_name" "$apk_only"
 }
 
 is_tty() {
@@ -567,6 +573,10 @@ while [ "$#" -gt 0 ]; do
       ALLOW_VERSION_REUSE="true"
       shift
       ;;
+    --apk-only)
+      APK_ONLY="true"
+      shift
+      ;;
     *)
       echo "Unknown argument: $1" >&2
       exit 1
@@ -702,7 +712,11 @@ else
   step "SkipWebBuild enabled - skipping web build and cap sync"
 fi
 
-step "Building Android release artifacts (APK + AAB)"
+if [ "$APK_ONLY" = "true" ]; then
+  step "Building Android release artifacts (APK only)"
+else
+  step "Building Android release artifacts (APK + AAB)"
+fi
 cd "$ANDROID_ROOT"
 
 sanitize_deprecated_agp_options() {
@@ -778,16 +792,20 @@ fi
 
 bash ./gradlew clean
 bash ./gradlew assembleRelease "${GRADLE_PROPS[@]}"
-bash ./gradlew bundleRelease "${GRADLE_PROPS[@]}"
+if [ "$APK_ONLY" != "true" ]; then
+  bash ./gradlew bundleRelease "${GRADLE_PROPS[@]}"
+fi
 
 cd "$ROOT_DIR"
 
 APK_SOURCE="$ANDROID_ROOT/app/build/outputs/apk/release/app-release.apk"
-AAB_SOURCE="$ANDROID_ROOT/app/build/outputs/bundle/release/app-release.aab"
 
 ensure_file "$APK_SOURCE" "APK output"
-ensure_file "$AAB_SOURCE" "AAB output"
-verify_aab_signed "$AAB_SOURCE"
+if [ "$APK_ONLY" != "true" ]; then
+  AAB_SOURCE="$ANDROID_ROOT/app/build/outputs/bundle/release/app-release.aab"
+  ensure_file "$AAB_SOURCE" "AAB output"
+  verify_aab_signed "$AAB_SOURCE"
+fi
 
 LATEST_APK_NAME="classify-app-latest.apk"
 LATEST_AAB_NAME="classify-googleplay-latest.aab"
@@ -805,32 +823,72 @@ rm -f "$CLIENT_ARCHIVE_DIR"/release-*.json "$CLIENT_ARCHIVE_DIR"/provenance-*.js
 rm -f "$DIST_ARCHIVE_DIR"/release-*.json "$DIST_ARCHIVE_DIR"/provenance-*.json "$DIST_ARCHIVE_DIR"/checksums-*.txt 2>/dev/null || true
 
 copy_artifact "$APK_SOURCE" "$CLIENT_APPS_DIR/$LATEST_APK_NAME" "latest APK"
-copy_artifact "$AAB_SOURCE" "$CLIENT_APPS_DIR/$LATEST_AAB_NAME" "latest AAB"
 copy_artifact "$APK_SOURCE" "$DIST_APPS_DIR/$LATEST_APK_NAME" "latest APK"
-copy_artifact "$AAB_SOURCE" "$DIST_APPS_DIR/$LATEST_AAB_NAME" "latest AAB"
+if [ "$APK_ONLY" != "true" ]; then
+  copy_artifact "$AAB_SOURCE" "$CLIENT_APPS_DIR/$LATEST_AAB_NAME" "latest AAB"
+  copy_artifact "$AAB_SOURCE" "$DIST_APPS_DIR/$LATEST_AAB_NAME" "latest AAB"
+fi
 
-copy_artifact "$APK_SOURCE" "$CLIENT_ARCHIVE_DIR/$VERSIONED_APK_NAME" "versioned APK"
-copy_artifact "$AAB_SOURCE" "$CLIENT_ARCHIVE_DIR/$VERSIONED_AAB_NAME" "versioned AAB"
-copy_artifact "$APK_SOURCE" "$DIST_ARCHIVE_DIR/$VERSIONED_APK_NAME" "versioned APK"
-copy_artifact "$AAB_SOURCE" "$DIST_ARCHIVE_DIR/$VERSIONED_AAB_NAME" "versioned AAB"
+if [ "$APK_ONLY" != "true" ]; then
+  copy_artifact "$APK_SOURCE" "$CLIENT_ARCHIVE_DIR/$VERSIONED_APK_NAME" "versioned APK"
+  copy_artifact "$APK_SOURCE" "$DIST_ARCHIVE_DIR/$VERSIONED_APK_NAME" "versioned APK"
+  copy_artifact "$AAB_SOURCE" "$CLIENT_ARCHIVE_DIR/$VERSIONED_AAB_NAME" "versioned AAB"
+  copy_artifact "$AAB_SOURCE" "$DIST_ARCHIVE_DIR/$VERSIONED_AAB_NAME" "versioned AAB"
+fi
 
 APK_BYTES="$(stat -c%s "$CLIENT_APPS_DIR/$LATEST_APK_NAME")"
-AAB_BYTES="$(stat -c%s "$CLIENT_APPS_DIR/$LATEST_AAB_NAME")"
 APK_SHA256="$(compute_sha256 "$CLIENT_APPS_DIR/$LATEST_APK_NAME")"
-AAB_SHA256="$(compute_sha256 "$CLIENT_APPS_DIR/$LATEST_AAB_NAME")"
+if [ "$APK_ONLY" != "true" ]; then
+  AAB_BYTES="$(stat -c%s "$CLIENT_APPS_DIR/$LATEST_AAB_NAME")"
+  AAB_SHA256="$(compute_sha256 "$CLIENT_APPS_DIR/$LATEST_AAB_NAME")"
+fi
 
 GENERATED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 GIT_COMMIT="$(git -C "$ROOT_DIR" rev-parse HEAD 2>/dev/null || echo unknown)"
 GIT_BRANCH="$(git -C "$ROOT_DIR" rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
+SIGNED_AAB_VERIFIED="false"
+if [ "$APK_ONLY" != "true" ]; then
+  SIGNED_AAB_VERIFIED="true"
+fi
 
 METADATA_FILE_CLIENT="$CLIENT_APPS_DIR/latest-release.json"
 METADATA_FILE_CLIENT_ARCHIVE="$CLIENT_ARCHIVE_DIR/release-$RELEASE_TAG.json"
 METADATA_FILE_DIST="$DIST_APPS_DIR/latest-release.json"
 METADATA_FILE_DIST_ARCHIVE="$DIST_ARCHIVE_DIR/release-$RELEASE_TAG.json"
 
-ASO_JSON="$(build_release_content_json "$LATEST_APK_NAME" "$LATEST_AAB_NAME")"
+ASO_JSON="$(build_release_content_json "$LATEST_APK_NAME" "$LATEST_AAB_NAME" "$APK_ONLY")"
 
-cat > "$METADATA_FILE_CLIENT" <<EOF
+if [ "$APK_ONLY" = "true" ]; then
+  cat > "$METADATA_FILE_CLIENT" <<EOF
+{
+  "releaseTag": "$RELEASE_TAG",
+  "version": "$VERSION",
+  "buildNumber": "$BUILD_NUMBER",
+  "versionCode": $VERSION_CODE,
+  "generatedAt": "$GENERATED_AT",
+  "apiBase": "$API_BASE",
+  "provenance": {
+    "scriptPath": "scripts/publish-android-release.sh",
+    "gitCommit": "$GIT_COMMIT",
+    "gitBranch": "$GIT_BRANCH",
+    "signedAabVerified": false,
+    "versionReuseBypass": $ALLOW_VERSION_REUSE,
+    "generatedAt": "$GENERATED_AT"
+  },
+  "aso": $ASO_JSON,
+  "files": {
+    "apk": {
+      "latestUrl": "/apps/$LATEST_APK_NAME",
+      "bytes": $APK_BYTES,
+      "size": "$(size_label "$APK_BYTES")",
+      "sha256": "$APK_SHA256",
+      "name": "$LATEST_APK_NAME"
+    }
+  }
+}
+EOF
+else
+  cat > "$METADATA_FILE_CLIENT" <<EOF
 {
   "releaseTag": "$RELEASE_TAG",
   "version": "$VERSION",
@@ -867,6 +925,7 @@ cat > "$METADATA_FILE_CLIENT" <<EOF
   }
 }
 EOF
+fi
 
 cat > "$CLIENT_APPS_DIR/latest-provenance.json" <<EOF
 {
@@ -874,31 +933,46 @@ cat > "$CLIENT_APPS_DIR/latest-provenance.json" <<EOF
   "scriptPath": "scripts/publish-android-release.sh",
   "gitCommit": "$GIT_COMMIT",
   "gitBranch": "$GIT_BRANCH",
-  "signedAabVerified": true,
+  "signedAabVerified": $SIGNED_AAB_VERIFIED,
   "versionReuseBypass": $ALLOW_VERSION_REUSE,
   "generatedAt": "$GENERATED_AT"
 }
 EOF
 
-cp -f "$CLIENT_APPS_DIR/latest-provenance.json" "$CLIENT_ARCHIVE_DIR/provenance-$RELEASE_TAG.json"
 cp -f "$CLIENT_APPS_DIR/latest-provenance.json" "$DIST_APPS_DIR/latest-provenance.json"
-cp -f "$CLIENT_APPS_DIR/latest-provenance.json" "$DIST_ARCHIVE_DIR/provenance-$RELEASE_TAG.json"
+if [ "$APK_ONLY" != "true" ]; then
+  cp -f "$CLIENT_APPS_DIR/latest-provenance.json" "$CLIENT_ARCHIVE_DIR/provenance-$RELEASE_TAG.json"
+  cp -f "$CLIENT_APPS_DIR/latest-provenance.json" "$DIST_ARCHIVE_DIR/provenance-$RELEASE_TAG.json"
+fi
 
-printf "%s  %s\n%s  %s\n" "$APK_SHA256" "$LATEST_APK_NAME" "$AAB_SHA256" "$LATEST_AAB_NAME" > "$CLIENT_APPS_DIR/checksums-latest.txt"
-printf "%s  %s\n%s  %s\n" "$APK_SHA256" "$VERSIONED_APK_NAME" "$AAB_SHA256" "$VERSIONED_AAB_NAME" > "$CLIENT_ARCHIVE_DIR/checksums-$RELEASE_TAG.txt"
+if [ "$APK_ONLY" = "true" ]; then
+  printf "%s  %s\n" "$APK_SHA256" "$LATEST_APK_NAME" > "$CLIENT_APPS_DIR/checksums-latest.txt"
+  printf "%s  %s\n" "$APK_SHA256" "$VERSIONED_APK_NAME" > "$CLIENT_ARCHIVE_DIR/checksums-$RELEASE_TAG.txt"
+else
+  printf "%s  %s\n%s  %s\n" "$APK_SHA256" "$LATEST_APK_NAME" "$AAB_SHA256" "$LATEST_AAB_NAME" > "$CLIENT_APPS_DIR/checksums-latest.txt"
+  printf "%s  %s\n%s  %s\n" "$APK_SHA256" "$VERSIONED_APK_NAME" "$AAB_SHA256" "$VERSIONED_AAB_NAME" > "$CLIENT_ARCHIVE_DIR/checksums-$RELEASE_TAG.txt"
+fi
 cp -f "$CLIENT_APPS_DIR/checksums-latest.txt" "$DIST_APPS_DIR/checksums-latest.txt"
-cp -f "$CLIENT_ARCHIVE_DIR/checksums-$RELEASE_TAG.txt" "$DIST_ARCHIVE_DIR/checksums-$RELEASE_TAG.txt"
+if [ "$APK_ONLY" != "true" ]; then
+  cp -f "$CLIENT_ARCHIVE_DIR/checksums-$RELEASE_TAG.txt" "$DIST_ARCHIVE_DIR/checksums-$RELEASE_TAG.txt"
+fi
 
-cp -f "$METADATA_FILE_CLIENT" "$METADATA_FILE_CLIENT_ARCHIVE"
 cp -f "$METADATA_FILE_CLIENT" "$METADATA_FILE_DIST"
-cp -f "$METADATA_FILE_CLIENT" "$METADATA_FILE_DIST_ARCHIVE"
+if [ "$APK_ONLY" != "true" ]; then
+  cp -f "$METADATA_FILE_CLIENT" "$METADATA_FILE_CLIENT_ARCHIVE"
+  cp -f "$METADATA_FILE_CLIENT" "$METADATA_FILE_DIST_ARCHIVE"
+fi
 
 if [ "$SKIP_ADMIN_UPLOAD" != "true" ] && [ -n "${CLASSIFY_ADMIN_TOKEN:-}" ]; then
   ADMIN_API_BASE="${CLASSIFY_API_BASE:-$API_BASE}"
   REGISTER_ENDPOINT="${ADMIN_API_BASE%/}/api/admin/mobile-apk-builds/register"
   LEGACY_UPLOAD_ENDPOINT="${ADMIN_API_BASE%/}/api/admin/mobile-apk-builds/upload"
   step "Registering latest APK in admin builds API: $REGISTER_ENDPOINT"
-  ADMIN_NOTES="Automated publish ($RELEASE_TAG) | AAB: /apps/$LATEST_AAB_NAME | AAB archive: /apps/archive/$VERSIONED_AAB_NAME"
+  if [ "$APK_ONLY" = "true" ]; then
+    ADMIN_NOTES="Automated publish ($RELEASE_TAG) | APK-only"
+  else
+    ADMIN_NOTES="Automated publish ($RELEASE_TAG) | AAB: /apps/$LATEST_AAB_NAME | AAB archive: /apps/archive/$VERSIONED_AAB_NAME"
+  fi
   if ! curl -fsS -X POST "$REGISTER_ENDPOINT" \
       -H "Authorization: Bearer $CLASSIFY_ADMIN_TOKEN" \
       -H "Content-Type: application/json" \
@@ -920,6 +994,10 @@ fi
 
 step "Done. Download links now point to:"
 echo "  - /apps/$LATEST_APK_NAME"
-echo "  - /apps/$LATEST_AAB_NAME"
+if [ "$APK_ONLY" != "true" ]; then
+  echo "  - /apps/$LATEST_AAB_NAME"
+fi
 echo "  - archive: /apps/archive/$VERSIONED_APK_NAME"
-echo "  - archive: /apps/archive/$VERSIONED_AAB_NAME"
+if [ "$APK_ONLY" != "true" ]; then
+  echo "  - archive: /apps/archive/$VERSIONED_AAB_NAME"
+fi

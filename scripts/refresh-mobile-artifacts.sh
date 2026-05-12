@@ -111,7 +111,7 @@ APPS_DIR="client/public/apps"
 ARCHIVE_DIR="$APPS_DIR/archive"
 
 [[ -d "$APPS_DIR" ]] || die "Missing apps dir: $APPS_DIR"
-[[ -d "$ARCHIVE_DIR" ]] || die "Missing archive dir: $ARCHIVE_DIR"
+mkdir -p "$ARCHIVE_DIR"
 
 log "Removing old mobile artifacts (latest + archive)..."
 # Binaries only (keep metadata json so strict validation has latest-release.json)
@@ -133,7 +133,7 @@ fi
 log "Pulling Git LFS mobile artifacts..."
 git lfs install --local >/dev/null 2>&1 || true
 if [[ "$APK_ONLY" == "true" ]]; then
-  git lfs pull --include="client/public/apps/*.apk,client/public/apps/archive/*.apk"
+  git lfs pull --include="client/public/apps/*.apk"
 else
   git lfs pull --include="client/public/apps/*.apk,client/public/apps/*.aab,client/public/apps/archive/*.apk,client/public/apps/archive/*.aab"
 fi
@@ -144,29 +144,28 @@ release_tag="$(
   node -e "const m=require(process.argv[1]); console.log(m.releaseTag||'')" "$APPS_DIR/latest-release.json" 2>/dev/null || true
 )"
 
-if [[ -n "$release_tag" ]]; then
-  keep_apk="classify-app-${release_tag}.apk"
-  keep_aab="classify-googleplay-${release_tag}.aab"
+if [[ "$APK_ONLY" == "true" ]]; then
+  log "Removing archive artifacts for APK-only releases..."
+  rm -f "$ARCHIVE_DIR"/* 2>/dev/null || true
+else
+  if [[ -n "$release_tag" ]]; then
+    keep_apk="classify-app-${release_tag}.apk"
+    keep_aab="classify-googleplay-${release_tag}.aab"
 
-  if [[ "$APK_ONLY" == "true" ]]; then
-    log "Pruning archive APK binaries only (keeping: $keep_apk)..."
-  else
     log "Pruning archive binaries (keeping: $keep_apk and $keep_aab)..."
-  fi
 
-  for f in "$ARCHIVE_DIR"/classify-app-*.apk; do
-    [[ -e "$f" ]] || continue
-    if [[ "$(basename "$f")" != "$keep_apk" ]]; then rm -f "$f" 2>/dev/null || true; fi
-  done
+    for f in "$ARCHIVE_DIR"/classify-app-*.apk; do
+      [[ -e "$f" ]] || continue
+      if [[ "$(basename "$f")" != "$keep_apk" ]]; then rm -f "$f" 2>/dev/null || true; fi
+    done
 
-  if [[ "$APK_ONLY" != "true" ]]; then
     for f in "$ARCHIVE_DIR"/classify-googleplay-*.aab; do
       [[ -e "$f" ]] || continue
       if [[ "$(basename "$f")" != "$keep_aab" ]]; then rm -f "$f" 2>/dev/null || true; fi
     done
+  else
+    warn "Could not resolve releaseTag from $APPS_DIR/latest-release.json; skipping archive pruning."
   fi
-else
-  warn "Could not resolve releaseTag from $APPS_DIR/latest-release.json; skipping archive pruning."
 fi
 
 log "Validating mobile release assets..."

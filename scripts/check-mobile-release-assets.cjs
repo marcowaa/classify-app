@@ -93,7 +93,10 @@ if (fs.existsSync(metadataPath)) {
   }
 }
 
-const expectedArtifacts = apkOnly
+const aabDeclared = Boolean(metadata?.files?.aab || metadata?.aso?.channels?.aab);
+const effectiveApkOnly = apkOnly || !aabDeclared;
+
+const expectedArtifacts = effectiveApkOnly
   ? [{ key: "apk", label: "APK", url: metadata?.files?.apk?.latestUrl }]
   : [
     { key: "apk", label: "APK", url: metadata?.files?.apk?.latestUrl },
@@ -347,11 +350,11 @@ function verifyAabSigning(aabPath) {
 }
 
 verifyApkSigning(resolvedFiles.apk);
-if (!apkOnly) {
+if (!effectiveApkOnly) {
   verifyAabSigning(resolvedFiles.aab);
 }
 
-const requiredCopyKeys = apkOnly
+const requiredCopyKeys = effectiveApkOnly
   ? ["downloadTitle", "downloadDescription", "screenshotsTitle", "apkCta", "pwaAriaLabel"]
   : ["downloadTitle", "downloadDescription", "screenshotsTitle", "apkCta", "aabAriaLabel", "pwaAriaLabel"];
 
@@ -404,7 +407,7 @@ if (typeof asoApkUrl !== "string" || !asoApkUrl.trim()) {
   addProblem(`ASO APK latestUrl mismatch (files.apk.latestUrl=${metadataApkUrl}, aso.channels.apk.latestUrl=${asoApkUrl})`);
 }
 
-if (!apkOnly) {
+if (!effectiveApkOnly) {
   if (typeof asoAabUrl !== "string" || !asoAabUrl.trim()) {
     addProblem("ASO channels.aab.latestUrl is missing in metadata");
   } else if (typeof metadataAabUrl === "string" && metadataAabUrl.trim() && metadataAabUrl !== asoAabUrl) {

@@ -47,9 +47,9 @@ npm run <script-name>
 | `cap:doctor:prod` | `node ./scripts/capacitor-production-check.cjs --strict` | فحص إنتاج Capacitor |
 | `cap:build` | `cross-env VITE_API_BASE=... npm run build && npx cap sync android` | بناء + مزامنة Capacitor |
 | `cap:build:win` | `set VITE_API_BASE=...&& npm run build && npx cap sync android` | نسخة ويندوز فقط |
-| `android:release:publish` | `bash ./scripts/publish-android-release.sh` | نشر Android release |
+| `android:release:publish` | `bash ./scripts/publish-android-release.sh` | نشر Android release (أضف `--apk-only` لنسخة APK فقط) |
 | `android:release:publish:skip-web` | `bash ./scripts/publish-android-release.sh --skip-web-build` | نشر Android بدون ويب |
-| `android:release:publish:win` | `powershell -ExecutionPolicy Bypass -File ./scripts/publish-android-release.ps1` | نشر Android على ويندوز فقط |
+| `android:release:publish:win` | `powershell -ExecutionPolicy Bypass -File ./scripts/publish-android-release.ps1` | نشر Android على ويندوز فقط (أضف `-ApkOnly`) |
 | `android:release:publish:skip-web:win` | `powershell -ExecutionPolicy Bypass -File ./scripts/publish-android-release.ps1 -SkipWebBuild` | نشر Android ويندوز فقط بدون ويب |
 | `prestart` | `npm run check-env-dynamic` | فحص قبل start |
 | `check` | `tsc` | TypeScript check |
@@ -126,22 +126,16 @@ npm run <script-name>
   3) التحقق الصارم (`--strict`) من وجود/عدم كونها LFS pointers
   4) (اختياري) rebuild + restart للحاوية حتى تخدم روابط `/apps/*`
 
-#### 1) على جهازك: جهّز وارفع أحدث APK/AAB إلى GitHub
+#### 1) على جهازك: جهّز وارفع أحدث APK إلى GitHub (APK-only)
 انسخ الـ binaries (النهائية الموقعة) إلى هذه المسارات داخل الريبو وادفعها على فرع `main`:
 
 - أحدث APK (Latest):
   - `client/public/apps/classify-app-latest.apk`
-- أحدث AAB (Latest):
-  - `client/public/apps/classify-googleplay-latest.aab`
 
-- أحدث APK (Archive بتاريخ الإصدار/الـ tag):
-  - `client/public/apps/archive/classify-app-<releaseTag>.apk`
-- أحدث AAB (Archive بتاريخ الإصدار/الـ tag):
-  - `client/public/apps/archive/classify-googleplay-<releaseTag>.aab`
+> ملاحظة: لا تحفظ أرشيفات قديمة في `client/public/apps/archive/`.
 
-> ملاحظة: سكربتات التحقق/الواجهات في الموقع تربط روابط التحميل بـ:
+> ملاحظة: سكربتات التحقق/الواجهات في الموقع تربط رابط التحميل بـ:
 > - `/apps/classify-app-latest.apk`
-> - `/apps/classify-googleplay-latest.aab`
 
 #### 2) على السيرفر: شغّل Refresh (يستبدل القديم بالجديد)
 نفّذ من داخل السيرفر (Linux/Ubuntu):
@@ -162,9 +156,9 @@ node ./scripts/check-mobile-release-assets.cjs --strict
 
 **بوابة التحقق (`--strict`) تشمل:**
 - وجود `client/public/apps/latest-release.json`
-- التأكد أن الـ APK/AAB **ليسوا** Git LFS pointers (لازم يكونوا binaries حقيقية)
+- التأكد أن الـ APK **ليس** Git LFS pointer (لازم يكون binary حقيقي)
 - تحقق توقيع الـ APK عبر `apksigner` (v2/v3 = true + رفض debug key)
-- تحقق توقيع الـ AAB عبر `jarsigner` (رفض unsigned + رفض debug key / قبول relax في بعض حالات chain)
+> إذا كانت بيانات الـ AAB غير موجودة في `latest-release.json`، فالفحص يتحول تلقائيًا إلى APK-only.
 
 > إذا فشل التحقق لأن `apksigner`/`jarsigner` غير موجودين على PATH، لازم تثبيت أدوات التوقيع على بيئة السيرفر/الدخول لهم داخل الـ PATH أو جعلها متاحة للمستخدم اللي يشغّل السكربت.
 

@@ -199,7 +199,6 @@ export default function DownloadApp() {
   const showHomeApkButton = appSettings.showHomeApkButton !== false;
   const showHomeAabButton = appSettings.showHomeAabButton !== false;
   const showHomePwaButton = appSettings.showHomePwaButton !== false;
-  const hasAnyDownloadButton = showHomeApkButton || showHomeAabButton || showHomePwaButton;
   const latestApkUrl = typeof latestRelease?.files?.apk?.latestUrl === "string" && latestRelease.files.apk.latestUrl.trim()
     ? latestRelease.files.apk.latestUrl
     : "";
@@ -213,6 +212,10 @@ export default function DownloadApp() {
       : typeof appSettings.apkUrl === "string" && appSettings.apkUrl.trim()
         ? appSettings.apkUrl
         : "/apps/classify-app-latest.apk";
+  const hasAabRelease = latestAabUrl.length > 0;
+  const showApkButton = apkEnabled && showHomeApkButton;
+  const showAabButton = showHomeAabButton && hasAabRelease;
+  const hasAnyDownloadButton = showApkButton || showAabButton || showHomePwaButton;
   const apkVersionLabel = typeof activeApkBuild?.version === "string" && activeApkBuild.version.trim()
     ? activeApkBuild.version
     : (typeof appSettings.appVersion === "string" && appSettings.appVersion.trim() ? appSettings.appVersion : "1.3");
@@ -221,7 +224,7 @@ export default function DownloadApp() {
     : (typeof latestRelease?.files?.apk?.size === "string" && latestRelease.files.apk.size.trim()
       ? latestRelease.files.apk.size
       : (typeof appSettings.apkSize === "string" && appSettings.apkSize.trim() ? appSettings.apkSize : "16 MB"));
-  const aabUrl = latestAabUrl || "/apps/classify-googleplay-latest.aab";
+  const aabUrl = hasAabRelease ? latestAabUrl : "";
   const latestReleaseTag = typeof latestRelease?.releaseTag === "string" ? latestRelease.releaseTag.trim() : "";
   const latestReleaseVersion = typeof latestRelease?.version === "string" ? latestRelease.version.trim() : "";
   const latestReleaseBuildNumber = typeof latestRelease?.buildNumber === "number"
@@ -346,7 +349,7 @@ export default function DownloadApp() {
           <div className="w-full flex flex-col items-center gap-3">
             {hasAnyDownloadButton && (
               <div className="w-full max-w-xl sm:max-w-none flex flex-col sm:flex-row items-center justify-center gap-3">
-                {apkEnabled && showHomeApkButton && (
+                {showApkButton && (
                   <a
                     href={apkUrl}
                     download={apkDownloadName}
@@ -374,7 +377,7 @@ export default function DownloadApp() {
                   </a>
                 )}
 
-                {showHomeAabButton && (
+                {showAabButton && (
                   <a
                     href={aabUrl}
                     download={aabDownloadName}
@@ -402,12 +405,12 @@ export default function DownloadApp() {
 
             {hasAnyDownloadButton && (
               <div className="flex flex-wrap items-center justify-center gap-2">
-                {apkEnabled && showHomeApkButton && (
+                {showApkButton && (
                   <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-bold bg-green-900/30 text-green-200 border border-green-700/80">
                     APK • {t("downloadAppPage.version")} {releaseVersionWithBuild}
                   </span>
                 )}
-                {showHomeAabButton && (
+                {showAabButton && (
                   <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-bold bg-blue-900/30 text-blue-200 border border-blue-700/80">
                     AAB • {t("downloadAppPage.version")} {releaseVersionWithBuild}
                   </span>

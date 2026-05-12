@@ -88,8 +88,9 @@ classify-googleplay.*
 # APK builds (except the published one)
 android/app/build/
 
-# Published web-download artifacts (generated; do not track in source repo)
-client/public/apps/
+# Published web-download artifacts (track latest APK + metadata only)
+client/public/apps/archive/
+client/public/apps/*.aab
 
 # Replit artifacts
 .replit
