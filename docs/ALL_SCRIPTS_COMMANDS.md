@@ -117,7 +117,57 @@ npm run <script-name>
 - `deploy-fast.sh` يشغّل فحص إلزامي لسلامة ملفات الموبايل (`APK/AAB`) عبر `check-mobile-release-assets.cjs --strict` قبل البناء.
 - للتجاوز الطارئ فقط: `ALLOW_MISSING_MOBILE_RELEASE_ASSETS=true bash ./scripts/deploy-fast.sh`
 
-### D) PowerShell scripts
+### E) تحديث ملفات الموبايل (APK/AAB) من GitHub على السيرفر
+
+**الفكرة:**
+- عند رفع Android APK/AAB الجديدة وتحديثها داخل الريبو (GitHub)، سكربت السيرفر يعمل:
+  1) `git pull` + `git lfs pull` للـ binaries
+  2) حذف الـ binaries القديمة (latest + archive)
+  3) التحقق الصارم (`--strict`) من وجود/عدم كونها LFS pointers
+  4) (اختياري) rebuild + restart للحاوية حتى تخدم روابط `/apps/*`
+
+#### 1) على جهازك: جهّز وارفع أحدث APK/AAB إلى GitHub
+انسخ الـ binaries (النهائية الموقعة) إلى هذه المسارات داخل الريبو وادفعها على فرع `main`:
+
+- أحدث APK (Latest):
+  - `client/public/apps/classify-app-latest.apk`
+- أحدث AAB (Latest):
+  - `client/public/apps/classify-googleplay-latest.aab`
+
+- أحدث APK (Archive بتاريخ الإصدار/الـ tag):
+  - `client/public/apps/archive/classify-app-<releaseTag>.apk`
+- أحدث AAB (Archive بتاريخ الإصدار/الـ tag):
+  - `client/public/apps/archive/classify-googleplay-<releaseTag>.aab`
+
+> ملاحظة: سكربتات التحقق/الواجهات في الموقع تربط روابط التحميل بـ:
+> - `/apps/classify-app-latest.apk`
+> - `/apps/classify-googleplay-latest.aab`
+
+#### 2) على السيرفر: شغّل Refresh (يستبدل القديم بالجديد)
+نفّذ من داخل السيرفر (Linux/Ubuntu):
+
+```bash
+bash ./scripts/hostinger-refresh-mobile-apps.sh \
+  --project-dir /opt/classify \
+  --branch main \
+  --compose-project-name classify_main \
+  --skip-admin-setup
+```
+
+#### 3) تحقق يدوي قبل/بعد التشغيل (مستحسن)
+```bash
+node ./scripts/check-mobile-release-assets.cjs --strict
+```
+
+**بوابة التحقق (`--strict`) تشمل:**
+- وجود `client/public/apps/latest-release.json`
+- التأكد أن الـ APK/AAB **ليسوا** Git LFS pointers (لازم يكونوا binaries حقيقية)
+- تحقق توقيع الـ APK عبر `apksigner` (v2/v3 = true + رفض debug key)
+- تحقق توقيع الـ AAB عبر `jarsigner` (رفض unsigned + رفض debug key / قبول relax في بعض حالات chain)
+
+> إذا فشل التحقق لأن `apksigner`/`jarsigner` غير موجودين على PATH، لازم تثبيت أدوات التوقيع على بيئة السيرفر/الدخول لهم داخل الـ PATH أو جعلها متاحة للمستخدم اللي يشغّل السكربت.
+
+### F) PowerShell scripts
 
 - Windows only: `powershell -ExecutionPolicy Bypass -File ./scripts/publish-android-release.ps1`
 

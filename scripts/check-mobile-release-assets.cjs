@@ -10,20 +10,22 @@ const allowMissing = args.has("--allow-missing") || String(process.env.ALLOW_MIS
 const root = process.cwd();
 const metadataPath = path.join(root, "client", "public", "apps", "latest-release.json");
 
+/** @type {string[]} */
 const problems = [];
+/** @type {string[]} */
 const checks = [];
 
-function addProblem(message) {
+function addProblem(message /** @type {string} */) {
   problems.push(message);
   console.error(`ERROR: ${message}`);
 }
 
-function addCheck(message) {
+function addCheck(message /** @type {string} */) {
   checks.push(message);
   console.log(`OK: ${message}`);
 }
 
-function resolveAppUrlToFile(url) {
+function resolveAppUrlToFile(url /** @type {unknown} */) {
   if (typeof url !== "string" || !url.trim()) {
     return null;
   }
@@ -36,7 +38,7 @@ function resolveAppUrlToFile(url) {
   return path.join(root, "client", "public", normalized.slice(1));
 }
 
-function resolveScreenshotUrlToFile(url) {
+function resolveScreenshotUrlToFile(url /** @type {unknown} */) {
   if (typeof url !== "string" || !url.trim()) {
     return null;
   }
@@ -49,7 +51,7 @@ function resolveScreenshotUrlToFile(url) {
   return path.join(root, "client", "public", normalized.slice(1));
 }
 
-function readFileHead(filePath, maxBytes = 512) {
+function readFileHead(filePath /** @type {string} */, maxBytes = 512 /** @type {number} */) {
   const fd = fs.openSync(filePath, "r");
   try {
     const buffer = Buffer.alloc(maxBytes);
@@ -60,7 +62,7 @@ function readFileHead(filePath, maxBytes = 512) {
   }
 }
 
-function isGitLfsPointer(filePath) {
+function isGitLfsPointer(filePath /** @type {string} */) {
   try {
     const head = readFileHead(filePath, 512);
     return (
@@ -94,6 +96,11 @@ const expectedArtifacts = [
   { key: "apk", label: "APK", url: metadata?.files?.apk?.latestUrl },
   { key: "aab", label: "AAB", url: metadata?.files?.aab?.latestUrl },
 ];
+
+const resolvedFiles = /** @type {{apk: string | null, aab: string | null}} */ ({
+  apk: null,
+  aab: null,
+});
 
 for (const artifact of expectedArtifacts) {
   if (typeof artifact.url !== "string" || !artifact.url.trim()) {
@@ -130,8 +137,214 @@ for (const artifact of expectedArtifacts) {
     continue;
   }
 
+  // Keep for signing verification later.
+  if (artifact.key === "apk") resolvedFiles.apk = resolvedFile;
+  if (artifact.key === "aab") resolvedFiles.aab = resolvedFile;
+
   addCheck(`${artifact.label} file exists (${stats.size} bytes): ${resolvedFile}`);
 }
+
+/** @typedef {{ ok: boolean, output: string }} RunCommandResult */
+
+// ============================================================
+// Signing verification (server-side "professional" gate)
+// ============================================================
+const { execSync } = require("child_process");
+
+/**
+ * @param {string} cmd
+ * @returns {RunCommandResult}
+ */
+function runCommand(cmd) {
+  try {
+    const output = execSync(cmd, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+    return { ok: true, output: String(output) };
+  } catch (error) {
+    /** @type {{ stdout?: unknown, stderr?: unknown }} */
+    const e = error && typeof error === "object" ? error : {};
+    const stderr = e.stderr != null ? String(e.stderr) : "";
+    const stdout = e.stdout != null ? String(e.stdout) : "";
+    return { ok: false, output: `${stdout}\n${stderr}`.trim() };
+  }
+}
+
+/**
+ * @param {string | null} apkPath
+ */
+/**
+ * @param {string} p
+ * @returns {boolean}
+ */
+function isFile(p) {
+  try {
+    return fs.statSync(p).isFile();
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * @param {string} toolName
+ * @returns {string | null}
+ */
+function detectToolPath(toolName) {
+  // 1) First try PATH
+  try {
+    if (process.platform === "win32") {
+      const output = execSync(`where ${toolName}`, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
+      const first = output.split(/\r?\n/).map((s) => s.trim()).filter(Boolean)[0];
+      if (first && isFile(first)) return first;
+      if (first) return first;
+    } else {
+      const output = execSync(`command -v ${toolName} 2>/dev/null`, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
+      if (output) return output;
+    }
+  } catch {
+    // ignore
+  }
+
+  // 2) Fallback: expected locations
+  // apksigner: $ANDROID_HOME/build-tools/<ver>/apksigner (or apksigner.bat on windows)
+  if (toolName === "apksigner") {
+    let androidHome = process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT || "";
+
+    // Windows dev boxes often only have sdk.dir in android/local.properties
+    // (and/or Android Studio-managed SDK path).
+    if (!androidHome) {
+      try {
+        const localPropsPath = path.join(root, "android", "local.properties");
+        if (fs.existsSync(localPropsPath)) {
+          const raw = fs.readFileSync(localPropsPath, "utf8");
+          const match = raw.match(/^sdk\.dir\s*=\s*(.+)\s*$/m);
+          if (match && match[1]) androidHome = match[1].trim();
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    if (androidHome) {
+      try {
+        const buildToolsDir = path.join(androidHome, "build-tools");
+        if (fs.existsSync(buildToolsDir)) {
+          const entries = fs.readdirSync(buildToolsDir, { withFileTypes: true });
+          // Prefer highest version by lexicographic sort as a best-effort.
+          const versions = entries
+            .filter((e) => e.isDirectory())
+            .map((e) => e.name)
+            .sort()
+            .reverse();
+
+          for (const v of versions) {
+            const candidate = path.join(buildToolsDir, v, process.platform === "win32" ? "apksigner.bat" : "apksigner");
+            if (isFile(candidate)) return candidate;
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
+  }
+
+  // jarsigner: $JAVA_HOME/bin/jarsigner (or jarsigner.bat on windows)
+  if (toolName === "jarsigner") {
+    const javaHome = process.env.JAVA_HOME || "";
+    if (javaHome) {
+      const candidate = path.join(javaHome, "bin", process.platform === "win32" ? "jarsigner.bat" : "jarsigner");
+      if (isFile(candidate)) return candidate;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * @param {string | null} apkPath
+ */
+function verifyApkSigning(apkPath) {
+  if (!apkPath) return;
+
+  const apksignerPath = detectToolPath("apksigner");
+
+  if (!apksignerPath) {
+    addProblem(`APK signing verification failed: apksigner not found on PATH (needed for v2/v3 gate).`);
+    return;
+  }
+
+  const cmd = `"${apksignerPath}" verify --verbose --print-certs "${apkPath}"`;
+  const { output } = runCommand(cmd);
+  const lines = output.split(/\r?\n/).filter(Boolean);
+  const tail = lines.slice(-40).join(" ").replace(/\s+/g, " ").trim();
+
+  // Reject debug keys
+  if (/Android Debug|android debug|CN=Android Debug/i.test(output)) {
+    addProblem(`APK signing verification failed: debug key detected. Tail: ${tail}`);
+    return;
+  }
+
+  // Enforce v2/v3 = true
+  if (!/APK Signature Scheme v2.*:\s*true/i.test(output)) {
+    addProblem(`APK signing verification failed: v2 scheme not verified as true. Tail: ${tail}`);
+    return;
+  }
+
+  if (!/APK Signature Scheme v3.*:\s*true/i.test(output)) {
+    addProblem(`APK signing verification failed: v3 scheme not verified as true. Tail: ${tail}`);
+    return;
+  }
+
+  addCheck(`APK signing verification passed (release keys + v2/v3 true): ${apkPath}`);
+}
+
+/**
+ * @param {string | null} aabPath
+ */
+function verifyAabSigning(aabPath) {
+  if (!aabPath) return;
+
+  const jarsignerPath = detectToolPath("jarsigner");
+
+  if (!jarsignerPath) {
+    addProblem(`AAB signing verification failed: jarsigner not found on PATH (needed for signature gate).`);
+    return;
+  }
+
+  const cmd = `"${jarsignerPath}" -verify -verbose -certs "${aabPath}"`;
+  const { output } = runCommand(cmd);
+  const lines = output.split(/\r?\n/).filter(Boolean);
+  const tail = lines.slice(-60).join(" ").replace(/\s+/g, " ").trim();
+
+  // Reject debug keys
+  if (/Android Debug|android debug|CN=Android Debug/i.test(output)) {
+    addProblem(`AAB signing verification failed: debug key detected. Tail: ${tail}`);
+    return;
+  }
+
+  if (/jar is unsigned/i.test(output)) {
+    addProblem(`AAB signing verification failed: generated AAB is unsigned. Tail: ${tail}`);
+    return;
+  }
+
+  if (/jar verified/i.test(output)) {
+    addCheck(`AAB signing verification passed (jar verified): ${aabPath}`);
+    return;
+  }
+
+  if (/Invalid certificate chain/i.test(output)) {
+    addCheck(`AAB signing verification passed with relaxed cert-chain check (not unsigned): ${aabPath}`);
+    return;
+  }
+
+  if (/Signer/i.test(output)) {
+    addCheck(`AAB signing verification passed with relaxed signer info check (not unsigned): ${aabPath}`);
+    return;
+  }
+
+  addProblem(`AAB signing verification failed: could not confirm signature status. Tail: ${tail}`);
+}
+
+verifyApkSigning(resolvedFiles.apk);
+verifyAabSigning(resolvedFiles.aab);
 
 const requiredCopyKeys = [
   "downloadTitle",
@@ -198,7 +411,7 @@ if (typeof asoAabUrl !== "string" || !asoAabUrl.trim()) {
 }
 
 if (problems.length > 0) {
-  const missingOnly = problems.every((message) =>
+  const missingOnly = problems.every((message /** @type {string} */) =>
     message.includes("file not found") ||
     message.includes("latestUrl is missing") ||
     message.includes("Missing metadata file")

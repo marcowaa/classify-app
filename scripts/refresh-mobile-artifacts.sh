@@ -112,14 +112,13 @@ ARCHIVE_DIR="$APPS_DIR/archive"
 [[ -d "$ARCHIVE_DIR" ]] || die "Missing archive dir: $ARCHIVE_DIR"
 
 log "Removing old mobile artifacts (latest + archive)..."
-# Binaries
+# Binaries only (keep metadata json so strict validation has latest-release.json)
 rm -f "$APPS_DIR"/*.apk "$APPS_DIR"/*.aab 2>/dev/null || true
 rm -f "$ARCHIVE_DIR"/*.apk "$ARCHIVE_DIR"/*.aab 2>/dev/null || true
 
-# Metadata/tracking files (keep screenshots intact)
-rm -f "$APPS_DIR/latest-release.json" "$APPS_DIR/release-content.json" 2>/dev/null || true
-rm -f "$APPS_DIR/latest-provenance.json" "$APPS_DIR/checksums-latest.txt" 2>/dev/null || true
-rm -f "$ARCHIVE_DIR"/release-*.json "$ARCHIVE_DIR"/provenance-*.json "$ARCHIVE_DIR"/checksums-*.txt 2>/dev/null || true
+# Note: we intentionally do NOT delete metadata here.
+# latest-release.json + archive release-*.json are expected to be present after git pull,
+# and are required by check-mobile-release-assets.cjs --strict.
 
 log "Pulling Git LFS mobile artifacts..."
 git lfs install --local >/dev/null 2>&1 || true
