@@ -124,10 +124,84 @@ log "Pulling Git LFS mobile artifacts..."
 git lfs install --local >/dev/null 2>&1 || true
 git lfs pull --include="client/public/apps/*.apk,client/public/apps/*.aab,client/public/apps/archive/*.apk,client/public/apps/archive/*.aab"
 
+# Prune archive: keep only the latest archived APK/AAB for current releaseTag.
+# (We still keep latest fixed-name files as well.)
+release_tag="$(
+  node -e "const m=require(process.argv[1]); console.log(m.releaseTag||'')" "$APPS_DIR/latest-release.json" 2>/dev/null || true
+)"
+
+if [[ -n "$release_tag" ]]; then
+  keep_apk="classify-app-${release_tag}.apk"
+  keep_aab="classify-googleplay-${release_tag}.aab"
+
+  log "Pruning archive binaries (keeping: $keep_apk and $keep_aab)..."
+
+  for f in "$ARCHIVE_DIR"/classify-app-*.apk; do
+    [[ -e "$f" ]] || continue
+    if [[ "$(basename "$f")" != "$keep_apk" ]]; then rm -f "$f" 2>/dev/null || true; fi
+  done
+
+  for f in "$ARCHIVE_DIR"/classify-googleplay-*.aab; do
+    [[ -e "$f" ]] || continue
+    if [[ "$(basename "$f")" != "$keep_aab" ]]; then rm -f "$f" 2>/dev/null || true; fi
+  done
+else
+  warn "Could not resolve releaseTag from $APPS_DIR/latest-release.json; skipping archive pruning."
+fi
+
 log "Validating mobile release assets..."
 node ./scripts/check-mobile-release-assets.cjs --strict
 
 log "Validation passed."
+
+sync_mobile_artifacts_to_container() {
+  local container_id
+  container_id="$(docker compose -p "$COMPOSE_PROJECT_NAME" ps -q app 2>/dev/null || true)"
+  if [[ -z "$container_id" ]]; then
+    # Fallback: match app container by name pattern
+    container_id="$(docker ps --filter "name=${COMPOSE_PROJECT_NAME}.*-app" --format "{{.ID}}" | head -n 1 || true)"
+  fi
+
+  if [[ -z "$container_id" ]]; then
+    die "Could not find running app container to sync static /apps/* files."
+  fi
+
+  # Determine current releaseTag for archive naming (optional, but useful for checks).
+  local release_tag
+  release_tag="$(
+    node -e "const m=require(process.argv[1]); process.stdout.write(String(m.releaseTag||''))" "$APPS_DIR/latest-release.json" 2>/dev/null || true
+  )"
+
+  local dst_base="/app/dist/public/apps"
+  local dst_archive="${dst_base}/archive"
+
+  log "Syncing mobile artifacts into container ($container_id): ${dst_base} (releaseTag=${release_tag:-unknown})"
+  docker exec "$container_id" sh -lc "mkdir -p '$dst_base' '$dst_archive' >/dev/null 2>&1 || true"
+
+  # Copy metadata + latest binaries + (pruned) archive binaries + checksums into dist/public.
+  # Pruning already ensured we only keep latest + current release archive.
+  docker cp "${APPS_DIR}/." "$container_id:$dst_base/"
+
+  # Verification from inside container
+  docker exec "$container_id" sh -lc "
+    set -euo pipefail;
+    curl -fsS -o /dev/null -w 'APK_STATUS=%{http_code}\n' http://localhost:5000/apps/classify-app-latest.apk;
+    curl -fsS -o /dev/null -w 'AAB_STATUS=%{http_code}\n' http://localhost:5000/apps/classify-googleplay-latest.aab;
+  " >/dev/null 2>&1 || {
+    # If curl -fsS fails, do a more verbose check
+    docker exec "$container_id" sh -lc "
+      echo '--- container static diagnostics ---';
+      ls -la '${dst_base}' '${dst_archive}' 2>/dev/null || true;
+      echo 'APK:'; curl -i -m 10 http://localhost:5000/apps/classify-app-latest.apk | tail -n 5 || true;
+      echo 'AAB:'; curl -i -m 10 http://localhost:5000/apps/classify-googleplay-latest.aab | tail -n 5 || true;
+    " || true
+    die "Static sync verification failed: /apps/* not returning 200 inside container."
+  }
+
+  log "Container sync OK: /apps/* latest files are reachable."
+}
+
+sync_mobile_artifacts_to_container
 
 if [[ "$SKIP_REBUILD" == "true" ]]; then
   log "Skipping rebuild (--skip-rebuild)."
