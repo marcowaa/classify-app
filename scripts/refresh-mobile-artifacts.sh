@@ -62,8 +62,9 @@ require_cmd() {
 }
 
 require_cmd git
-require_cmd node
 require_cmd bash
+NODE_AVAILABLE="false"
+if command -v node >/dev/null 2>&1; then NODE_AVAILABLE="true"; fi
 
 EFFECTIVE_PROJECT_DIR="$PROJECT_DIR"
 
@@ -140,9 +141,12 @@ fi
 
 # Prune archive: keep only the latest archived APK/AAB for current releaseTag.
 # (We still keep latest fixed-name files as well.)
-release_tag="$(
-  node -e "const m=require(process.argv[1]); console.log(m.releaseTag||'')" "$APPS_DIR/latest-release.json" 2>/dev/null || true
-)"
+release_tag=""
+if [[ "$NODE_AVAILABLE" == "true" && -f "$APPS_DIR/latest-release.json" ]]; then
+  release_tag="$(
+    node -e "const m=require(process.argv[1]); console.log(m.releaseTag||'')" "$APPS_DIR/latest-release.json" 2>/dev/null || true
+  )"
+fi
 
 if [[ "$APK_ONLY" == "true" ]]; then
   log "Removing archive artifacts for APK-only releases..."
@@ -168,14 +172,17 @@ else
   fi
 fi
 
-log "Validating mobile release assets..."
-if [[ "$APK_ONLY" == "true" ]]; then
-  node ./scripts/check-mobile-release-assets.cjs --strict --apk-only
+if [[ "$NODE_AVAILABLE" == "true" ]]; then
+  log "Validating mobile release assets..."
+  if [[ "$APK_ONLY" == "true" ]]; then
+    node ./scripts/check-mobile-release-assets.cjs --strict --apk-only
+  else
+    node ./scripts/check-mobile-release-assets.cjs --strict
+  fi
+  log "Validation passed."
 else
-  node ./scripts/check-mobile-release-assets.cjs --strict
+  warn "Skipping validation (node is not installed on host). Will still sync APKs into container."
 fi
-
-log "Validation passed."
 
 sync_mobile_artifacts_to_container() {
   local container_id
@@ -191,9 +198,12 @@ sync_mobile_artifacts_to_container() {
 
   # Determine current releaseTag for archive naming (optional, but useful for checks).
   local release_tag
-  release_tag="$(
-    node -e "const m=require(process.argv[1]); process.stdout.write(String(m.releaseTag||''))" "$APPS_DIR/latest-release.json" 2>/dev/null || true
-  )"
+  release_tag=""
+  if [[ "$NODE_AVAILABLE" == "true" && -f "$APPS_DIR/latest-release.json" ]]; then
+    release_tag="$(
+      node -e "const m=require(process.argv[1]); process.stdout.write(String(m.releaseTag||''))" "$APPS_DIR/latest-release.json" 2>/dev/null || true
+    )"
+  fi
 
   local dst_base="/app/dist/public/apps"
   local dst_archive="${dst_base}/archive"
