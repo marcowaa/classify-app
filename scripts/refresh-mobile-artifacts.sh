@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail+
+set -euo pipefail
 
 # ============================================================
 # Classify - Refresh Mobile Artifacts (APK/AAB) on Server
