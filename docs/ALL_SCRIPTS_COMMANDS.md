@@ -168,6 +168,17 @@ node ./scripts/check-mobile-release-assets.cjs --strict
 
 > إذا فشل التحقق لأن `apksigner`/`jarsigner` غير موجودين على PATH، لازم تثبيت أدوات التوقيع على بيئة السيرفر/الدخول لهم داخل الـ PATH أو جعلها متاحة للمستخدم اللي يشغّل السكربت.
 
+### E) ملاحظات “Git push / LFS DNS” (لو ظهرت نفس أخطاء اللقطة)
+
+لو واجهت أخطاء مثل:
+- `fatal: unable to access ... Could not resolve host: github.com`
+- `lookup lfs.github.com: no such host`
+
+فده غالبًا مشكلة DNS/Proxy على جهازك (حتى لو كان `lfs.github.com` يشتغل عندك أحيانًا). جرّب:
+- تأكد من DNS/VPN أو proxy لو عندك
+- أعد تشغيل الشبكة/المحول
+- إذا تستخدم proxy: اضبط `HTTP_PROXY` و `HTTPS_PROXY` (وأحيانًا `NO_PROXY`) ثم أعد المحاولة
+
 ### F) PowerShell scripts
 
 - Windows only: `powershell -ExecutionPolicy Bypass -File ./scripts/publish-android-release.ps1`
