@@ -367,19 +367,19 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik-gemj_default"
-
+      
       # Middlewares (P0)
       - "traefik.http.middlewares.kuma-auth.basicauth.users=${KUMA_BASIC_AUTH_USERS:?KUMA_BASIC_AUTH_USERS is required}"
       - "traefik.http.middlewares.kuma-rate-limit.ratelimit.average=10"
-      - "traefik.http.middlewares.kuma-rate-limit.burst=20"
-
+      - "traefik.http.middlewares.kuma-rate-limit.ratelimit.burst=20"
+      
       # Secure router
       - "traefik.http.routers.classify-kuma.rule=Host(`kuma.classi-fy.com`)"
       - "traefik.http.routers.classify-kuma.entrypoints=websecure"
       - "traefik.http.routers.classify-kuma.tls.certresolver=letsencrypt"
       - "traefik.http.services.classify-kuma.loadbalancer.server.port=3001"
       - "traefik.http.routers.classify-kuma.middlewares=classify-security-headers,kuma-auth,kuma-rate-limit"
-
+      
       # HTTP → HTTPS redirect
       - "traefik.http.routers.classify-kuma-http.rule=Host(`kuma.classi-fy.com`)"
       - "traefik.http.routers.classify-kuma-http.entrypoints=web"
@@ -408,10 +408,9 @@ services:
           memory: 256M
         reservations:
           memory: 128M
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+    cap_add:
+      - SETGID
+    security_opt: []
 
   dozzle:
     image: amir20/dozzle:latest
