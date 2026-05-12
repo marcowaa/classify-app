@@ -107,6 +107,7 @@ npm run <script-name>
 
 - `bash ./scripts/deploy-fast.sh`
 - `bash ./scripts/docker-entrypoint.sh`
+- `bash ./scripts/hostinger-first-run.sh`
 - `bash ./scripts/hostinger-apply-runtime-hardening.sh`
 - `bash ./scripts/publish-android-release.sh`
 - `bash ./scripts/setup.sh`
@@ -182,6 +183,15 @@ node ./scripts/check-mobile-release-assets.cjs --strict
 - `bash ./deploy.sh`
 
 ## 4) أسرع أوامر عملية (Production)
+
+- أول تشغيل كامل (ينشئ الأسرار و`.env` ويشغّل Docker ويبني ويشغل الحاويات):
+
+```bash
+bash ./scripts/hostinger-first-run.sh \
+  --project-dir /opt/classify \
+  --branch main \
+  --compose-project-name classify_main
+```
 
 - إعداد `.env` بشكل تفاعلي كامل:
 

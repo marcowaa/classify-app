@@ -93,6 +93,22 @@ Expected:
 
 ## 🚀 Quick Start (First Deployment)
 
+### 0. Automated First Run (Recommended)
+
+From the repo directory on the VPS:
+
+```bash
+bash ./scripts/hostinger-first-run.sh \
+   --project-dir /opt/classify \
+   --repo-url https://github.com/your-org/your-repo.git \
+   --branch main \
+   --compose-project-name classify_main
+```
+
+Notes:
+- Adjust `--repo-url` and `--branch` for your repo.
+- The script creates `.env`, generates missing secrets, removes duplicate env keys, builds containers, runs migrations, and verifies health.
+
 ### 1. VPS Prerequisites
 
 ```bash
