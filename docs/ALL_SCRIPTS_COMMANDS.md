@@ -151,7 +151,8 @@ bash ./scripts/hostinger-refresh-mobile-apps.sh \
   --project-dir /opt/classify \
   --branch main \
   --compose-project-name classify_main \
-  --skip-admin-setup
+  --skip-admin-setup \
+  --apk-only
 ```
 
 #### 3) تحقق يدوي قبل/بعد التشغيل (مستحسن)

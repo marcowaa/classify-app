@@ -37,6 +37,7 @@ COMPOSE_PROJECT_NAME="classify_main"
 REPO_URL=""
 SKIP_REBUILD="false"
 SKIP_ADMIN_SETUP="false"
+APK_ONLY="false"
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -46,6 +47,7 @@ while [ $# -gt 0 ]; do
     --repo-url) REPO_URL="$2"; shift 2 ;;
     --skip-rebuild) SKIP_REBUILD="true"; shift ;;
     --skip-admin-setup) SKIP_ADMIN_SETUP="true"; shift ;;
+    --apk-only) APK_ONLY="true"; shift ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown arg: $1" >&2; usage; exit 1 ;;
   esac
@@ -113,8 +115,16 @@ ARCHIVE_DIR="$APPS_DIR/archive"
 
 log "Removing old mobile artifacts (latest + archive)..."
 # Binaries only (keep metadata json so strict validation has latest-release.json)
-rm -f "$APPS_DIR"/*.apk "$APPS_DIR"/*.aab 2>/dev/null || true
-rm -f "$ARCHIVE_DIR"/*.apk "$ARCHIVE_DIR"/*.aab 2>/dev/null || true
+if [[ "$APK_ONLY" == "true" ]]; then
+  # APK-only mode: remove APKs + AABs so we don't accidentally copy old AABs into dist/public.
+  rm -f "$APPS_DIR"/*.apk 2>/dev/null || true
+  rm -f "$APPS_DIR"/*.aab 2>/dev/null || true
+  rm -f "$ARCHIVE_DIR"/*.apk 2>/dev/null || true
+  rm -f "$ARCHIVE_DIR"/*.aab 2>/dev/null || true
+else
+  rm -f "$APPS_DIR"/*.apk "$APPS_DIR"/*.aab 2>/dev/null || true
+  rm -f "$ARCHIVE_DIR"/*.apk "$ARCHIVE_DIR"/*.aab 2>/dev/null || true
+fi
 
 # Note: we intentionally do NOT delete metadata here.
 # latest-release.json + archive release-*.json are expected to be present after git pull,
@@ -122,7 +132,11 @@ rm -f "$ARCHIVE_DIR"/*.apk "$ARCHIVE_DIR"/*.aab 2>/dev/null || true
 
 log "Pulling Git LFS mobile artifacts..."
 git lfs install --local >/dev/null 2>&1 || true
-git lfs pull --include="client/public/apps/*.apk,client/public/apps/*.aab,client/public/apps/archive/*.apk,client/public/apps/archive/*.aab"
+if [[ "$APK_ONLY" == "true" ]]; then
+  git lfs pull --include="client/public/apps/*.apk,client/public/apps/archive/*.apk"
+else
+  git lfs pull --include="client/public/apps/*.apk,client/public/apps/*.aab,client/public/apps/archive/*.apk,client/public/apps/archive/*.aab"
+fi
 
 # Prune archive: keep only the latest archived APK/AAB for current releaseTag.
 # (We still keep latest fixed-name files as well.)
@@ -134,23 +148,33 @@ if [[ -n "$release_tag" ]]; then
   keep_apk="classify-app-${release_tag}.apk"
   keep_aab="classify-googleplay-${release_tag}.aab"
 
-  log "Pruning archive binaries (keeping: $keep_apk and $keep_aab)..."
+  if [[ "$APK_ONLY" == "true" ]]; then
+    log "Pruning archive APK binaries only (keeping: $keep_apk)..."
+  else
+    log "Pruning archive binaries (keeping: $keep_apk and $keep_aab)..."
+  fi
 
   for f in "$ARCHIVE_DIR"/classify-app-*.apk; do
     [[ -e "$f" ]] || continue
     if [[ "$(basename "$f")" != "$keep_apk" ]]; then rm -f "$f" 2>/dev/null || true; fi
   done
 
-  for f in "$ARCHIVE_DIR"/classify-googleplay-*.aab; do
-    [[ -e "$f" ]] || continue
-    if [[ "$(basename "$f")" != "$keep_aab" ]]; then rm -f "$f" 2>/dev/null || true; fi
-  done
+  if [[ "$APK_ONLY" != "true" ]]; then
+    for f in "$ARCHIVE_DIR"/classify-googleplay-*.aab; do
+      [[ -e "$f" ]] || continue
+      if [[ "$(basename "$f")" != "$keep_aab" ]]; then rm -f "$f" 2>/dev/null || true; fi
+    done
+  fi
 else
   warn "Could not resolve releaseTag from $APPS_DIR/latest-release.json; skipping archive pruning."
 fi
 
 log "Validating mobile release assets..."
-node ./scripts/check-mobile-release-assets.cjs --strict
+if [[ "$APK_ONLY" == "true" ]]; then
+  node ./scripts/check-mobile-release-assets.cjs --strict --apk-only
+else
+  node ./scripts/check-mobile-release-assets.cjs --strict
+fi
 
 log "Validation passed."
 
@@ -183,20 +207,34 @@ sync_mobile_artifacts_to_container() {
   docker cp "${APPS_DIR}/." "$container_id:$dst_base/"
 
   # Verification from inside container
-  docker exec "$container_id" sh -lc "
-    set -euo pipefail;
-    curl -fsS -o /dev/null -w 'APK_STATUS=%{http_code}\n' http://localhost:5000/apps/classify-app-latest.apk;
-    curl -fsS -o /dev/null -w 'AAB_STATUS=%{http_code}\n' http://localhost:5000/apps/classify-googleplay-latest.aab;
-  " >/dev/null 2>&1 || {
-    # If curl -fsS fails, do a more verbose check
+  if [[ "$APK_ONLY" == "true" ]]; then
     docker exec "$container_id" sh -lc "
-      echo '--- container static diagnostics ---';
-      ls -la '${dst_base}' '${dst_archive}' 2>/dev/null || true;
-      echo 'APK:'; curl -i -m 10 http://localhost:5000/apps/classify-app-latest.apk | tail -n 5 || true;
-      echo 'AAB:'; curl -i -m 10 http://localhost:5000/apps/classify-googleplay-latest.aab | tail -n 5 || true;
-    " || true
-    die "Static sync verification failed: /apps/* not returning 200 inside container."
-  }
+      set -euo pipefail;
+      curl -fsS -o /dev/null -w 'APK_STATUS=%{http_code}\n' http://localhost:5000/apps/classify-app-latest.apk;
+    " >/dev/null 2>&1 || {
+      docker exec "$container_id" sh -lc "
+        echo '--- container static diagnostics ---';
+        ls -la '${dst_base}' '${dst_archive}' 2>/dev/null || true;
+        echo 'APK:'; curl -i -m 10 http://localhost:5000/apps/classify-app-latest.apk | tail -n 5 || true;
+      " || true
+      die \"Static sync verification failed: APK not returning 200 inside container.\"
+    }
+  else
+    docker exec "$container_id" sh -lc "
+      set -euo pipefail;
+      curl -fsS -o /dev/null -w 'APK_STATUS=%{http_code}\n' http://localhost:5000/apps/classify-app-latest.apk;
+      curl -fsS -o /dev/null -w 'AAB_STATUS=%{http_code}\n' http://localhost:5000/apps/classify-googleplay-latest.aab;
+    " >/dev/null 2>&1 || {
+      # If curl -fsS fails, do a more verbose check
+      docker exec "$container_id" sh -lc "
+        echo '--- container static diagnostics ---';
+        ls -la '${dst_base}' '${dst_archive}' 2>/dev/null || true;
+        echo 'APK:'; curl -i -m 10 http://localhost:5000/apps/classify-app-latest.apk | tail -n 5 || true;
+        echo 'AAB:'; curl -i -m 10 http://localhost:5000/apps/classify-googleplay-latest.aab | tail -n 5 || true;
+      " || true
+      die \"Static sync verification failed: /apps/* not returning 200 inside container.\"
+    }
+  fi
 
   log "Container sync OK: /apps/* latest files are reachable."
 }

@@ -5,6 +5,7 @@ const path = require("path");
 
 const args = new Set(process.argv.slice(2));
 const strict = args.has("--strict");
+const apkOnly = args.has("--apk-only");
 const allowMissing = args.has("--allow-missing") || String(process.env.ALLOW_MISSING_MOBILE_RELEASE_ASSETS || "").toLowerCase() === "true";
 
 const root = process.cwd();
@@ -92,10 +93,12 @@ if (fs.existsSync(metadataPath)) {
   }
 }
 
-const expectedArtifacts = [
-  { key: "apk", label: "APK", url: metadata?.files?.apk?.latestUrl },
-  { key: "aab", label: "AAB", url: metadata?.files?.aab?.latestUrl },
-];
+const expectedArtifacts = apkOnly
+  ? [{ key: "apk", label: "APK", url: metadata?.files?.apk?.latestUrl }]
+  : [
+    { key: "apk", label: "APK", url: metadata?.files?.apk?.latestUrl },
+    { key: "aab", label: "AAB", url: metadata?.files?.aab?.latestUrl },
+  ];
 
 const resolvedFiles = /** @type {{apk: string | null, aab: string | null}} */ ({
   apk: null,
@@ -344,16 +347,13 @@ function verifyAabSigning(aabPath) {
 }
 
 verifyApkSigning(resolvedFiles.apk);
-verifyAabSigning(resolvedFiles.aab);
+if (!apkOnly) {
+  verifyAabSigning(resolvedFiles.aab);
+}
 
-const requiredCopyKeys = [
-  "downloadTitle",
-  "downloadDescription",
-  "screenshotsTitle",
-  "apkCta",
-  "aabAriaLabel",
-  "pwaAriaLabel",
-];
+const requiredCopyKeys = apkOnly
+  ? ["downloadTitle", "downloadDescription", "screenshotsTitle", "apkCta", "pwaAriaLabel"]
+  : ["downloadTitle", "downloadDescription", "screenshotsTitle", "apkCta", "aabAriaLabel", "pwaAriaLabel"];
 
 for (const key of requiredCopyKeys) {
   const value = metadata?.aso?.copyKeys?.[key];
@@ -404,10 +404,14 @@ if (typeof asoApkUrl !== "string" || !asoApkUrl.trim()) {
   addProblem(`ASO APK latestUrl mismatch (files.apk.latestUrl=${metadataApkUrl}, aso.channels.apk.latestUrl=${asoApkUrl})`);
 }
 
-if (typeof asoAabUrl !== "string" || !asoAabUrl.trim()) {
-  addProblem("ASO channels.aab.latestUrl is missing in metadata");
-} else if (typeof metadataAabUrl === "string" && metadataAabUrl.trim() && metadataAabUrl !== asoAabUrl) {
-  addProblem(`ASO AAB latestUrl mismatch (files.aab.latestUrl=${metadataAabUrl}, aso.channels.aab.latestUrl=${asoAabUrl})`);
+if (!apkOnly) {
+  if (typeof asoAabUrl !== "string" || !asoAabUrl.trim()) {
+    addProblem("ASO channels.aab.latestUrl is missing in metadata");
+  } else if (typeof metadataAabUrl === "string" && metadataAabUrl.trim() && metadataAabUrl !== asoAabUrl) {
+    addProblem(
+      `ASO AAB latestUrl mismatch (files.aab.latestUrl=${metadataAabUrl}, aso.channels.aab.latestUrl=${asoAabUrl})`
+    );
+  }
 }
 
 if (problems.length > 0) {

@@ -23,6 +23,7 @@ BRANCH="${BRANCH:-main}"
 COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-classify_main}"
 COMPOSE_PROJECT_NAME_SET="false"
 SKIP_ADMIN_SETUP="${SKIP_ADMIN_SETUP:-true}"
+APK_ONLY="${APK_ONLY:-false}"
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -31,6 +32,7 @@ while [ $# -gt 0 ]; do
     --compose-project-name) COMPOSE_PROJECT_NAME="$2"; COMPOSE_PROJECT_NAME_SET="true"; shift 2 ;;
     --skip-admin-setup) SKIP_ADMIN_SETUP="true"; shift 1 ;;
     --no-skip-admin-setup) SKIP_ADMIN_SETUP="false"; shift 1 ;;
+    --apk-only) APK_ONLY="true"; shift 1 ;;
     -h|--help)
       echo "Usage:"
       echo "  PROJECT_DIR=/opt/classify BRANCH=main COMPOSE_PROJECT_NAME=classify_main bash scripts/hostinger-refresh-mobile-apps.sh"
@@ -72,6 +74,10 @@ args=(
   "--branch" "$BRANCH"
   "--compose-project-name" "$COMPOSE_PROJECT_NAME"
 )
+
+if [[ "$APK_ONLY" == "true" ]]; then
+  args+=("--apk-only")
+fi
 
 if [[ "$SKIP_ADMIN_SETUP" == "true" ]]; then
   args+=("--skip-admin-setup")
