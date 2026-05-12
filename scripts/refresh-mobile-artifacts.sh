@@ -96,10 +96,13 @@ if [[ -z "$REPO_URL" ]]; then
   warn "Repo URL not resolved; will use current git remotes."
 fi
 
-# Ensure lfs exists
+# Ensure lfs exists (optional)
 require_cmd git
-if ! git lfs version >/dev/null 2>&1; then
-  die "git-lfs is not installed (git lfs version failed). Install git-lfs first."
+LFS_AVAILABLE="false"
+if git lfs version >/dev/null 2>&1; then
+  LFS_AVAILABLE="true"
+else
+  warn "git-lfs is not installed. Will skip git lfs pull and use existing files under client/public/apps."
 fi
 
 log "Switching to branch: $BRANCH"
