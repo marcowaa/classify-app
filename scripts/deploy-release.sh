@@ -226,7 +226,7 @@ sync_mobile_artifacts_to_container() {
   local versioned_aab_name="classi-fy-googleplay-${release_tag}.aab"
 
   # Ensure destination paths exist.
-  docker exec "$container_id" sh -lc "mkdir -p /app/dist/public/apps/archive" >/dev/null 2>&1 || true
+  docker exec "$container_id" sh -lc "mkdir -p /app/dist/public/apps /app/dist/public/apps/archive" >/dev/null 2>&1 || true
 
   # Retention requirement: keep ONLY the latest release artifacts on disk.
   # Remove all previous versioned archives before copying the new ones.
@@ -238,7 +238,17 @@ sync_mobile_artifacts_to_container() {
   docker cp "$apk_src" "$container_id:/app/dist/public/apps/archive/${versioned_apk_name}"
   docker cp "$aab_src" "$container_id:/app/dist/public/apps/archive/${versioned_aab_name}"
 
-  log "Mobile artifact sync complete: /apps/${latest_apk_name} and /apps/${latest_aab_name}"
+  # Verify inside container: fail deploy if expected static files are missing.
+  docker exec "$container_id" sh -lc "
+    set -e;
+    test -s /app/dist/public/apps/${latest_apk_name};
+    test -s /app/dist/public/apps/${latest_aab_name};
+    test -s /app/dist/public/apps/archive/${versioned_apk_name};
+    test -s /app/dist/public/apps/archive/${versioned_aab_name};
+    ls -lh /app/dist/public/apps/${latest_apk_name} /app/dist/public/apps/${latest_aab_name} /app/dist/public/apps/archive/${versioned_apk_name} /app/dist/public/apps/archive/${versioned_aab_name};
+  " >/dev/null
+
+  log "Mobile artifact sync complete (verified): /apps/${latest_apk_name} and /apps/${latest_aab_name}"
 }
 
 activate_release() {

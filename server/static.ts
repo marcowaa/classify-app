@@ -67,6 +67,52 @@ export function serveStatic(app: Express) {
     console.error(`Warning: Could not list files:`, err);
   }
 
+  // Serve mobile distribution artifacts from dist/public by default,
+  // but fall back to client/public when the dist "apps" folder is missing.
+  // This prevents hard 404s for `/apps/*` when artifacts are copied into source public assets.
+  const distAppsDir = path.join(distPath, "apps");
+  const clientAppsDir = path.resolve(process.cwd(), "client", "public", "apps");
+
+  app.use((req, res, next) => {
+    if (!req.path.startsWith("/apps/")) return next();
+
+    // Prevent path traversal.
+    const relPath = req.path.replace(/^\/apps\//, "");
+    if (!relPath || relPath.includes("..") || relPath.includes("\\") || relPath.includes("/..")) {
+      return next();
+    }
+
+    const basename = path.basename(relPath);
+    const tryBases = [distAppsDir, clientAppsDir];
+
+    for (const base of tryBases) {
+      const filePath = path.join(base, relPath);
+      try {
+        if (!fs.existsSync(filePath)) continue;
+        const stat = fs.statSync(filePath);
+        if (!stat.isFile()) continue;
+
+        // Android artifacts — force download
+        if (basename.endsWith(".apk") || basename.endsWith(".aab")) {
+          res.setHeader(
+            "Content-Type",
+            basename.endsWith(".apk")
+              ? "application/vnd.android.package-archive"
+              : "application/octet-stream",
+          );
+          res.setHeader("Content-Disposition", `attachment; filename="${basename}"`);
+          res.setHeader("Cache-Control", "no-cache");
+        }
+
+        return res.sendFile(filePath);
+      } catch {
+        // Continue trying other base dirs
+      }
+    }
+
+    return next();
+  });
+
   app.use(express.static(distPath, {
     etag: !TEMP_DISABLE_CLIENT_CACHE,
     index: false,
