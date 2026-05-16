@@ -671,10 +671,15 @@ function readGoogleWebClientId(): string {
 }
 
 function readGoogleAnyClientId(): string {
+  // Prefer Android OAuth client id for native Google sign-in.
+  // Falling back to the web client id can cause idToken audience mismatches.
+  const androidClientId = readProviderEnvValue("GOOGLE", ["ANDROID_CLIENT_ID", "CLIENT_ID_ANDROID"]);
+  if (androidClientId) return androidClientId;
+
   const webClientId = readGoogleWebClientId();
   if (webClientId) return webClientId;
 
-  return readProviderEnvValue("GOOGLE", ["ANDROID_CLIENT_ID", "CLIENT_ID_ANDROID"]);
+  return "";
 }
 
 function readGoogleAllowedAudiences(): string[] {
