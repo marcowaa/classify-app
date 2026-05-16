@@ -94,18 +94,22 @@ function getRedisClient(): Redis | null {
 
   redisInitAttempted = true;
   redisClient = new Redis(redisUrl, {
-    lazyConnect: true,
+    // Avoid a race where OAuth start writes fall back to in-memory
+    // before the Redis connection is ready (especially with cluster workers).
+    lazyConnect: false,
     connectTimeout: 3000,
     maxRetriesPerRequest: 2,
     enableReadyCheck: true,
-    enableOfflineQueue: false,
+    // If commands are issued before the connection becomes ready,
+    // queue them instead of failing immediately and falling back to memory.
+    enableOfflineQueue: true,
     retryStrategy(times) {
       return Math.min(times * 200, 2000);
     },
   });
 
   redisClient.connect().catch(() => {
-    // Memory fallback remains active when Redis is unavailable.
+    // Keep memory fallback active if Redis is genuinely unavailable.
   });
 
   return redisClient;
