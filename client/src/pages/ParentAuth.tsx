@@ -782,7 +782,13 @@ export const ParentAuth = (): JSX.Element => {
         window.location.href = callbackPath;
         return;
       } catch (error) {
+        const message = error instanceof Error ? error.message : String(error || "Native Google sign-in failed");
         console.error("Native Google sign-in failed. NOT falling back to web OAuth.", error);
+
+        // Important: ParentAuth owns the native click path (SocialLoginButtons onProviderClick returns early),
+        // so we must show a user-visible error here too.
+        sessionStorage.removeItem(OAUTH_REDIRECT_LOCK_KEY);
+        setError(message);
         setIsSocialRedirecting(false);
         return;
       }
