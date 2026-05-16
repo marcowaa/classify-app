@@ -404,8 +404,8 @@ DB_POOL_MAX=50
 	- `client/public/llms.txt`
 - Google Play and web distribution artifacts are available from public download flow:
 	- Android APK
-	- Google Play AAB (`/apps/classify-googleplay-latest.aab`)
-	- PWA ZIP (`/apps/classify-pwa-latest.zip`)
+- Google Play AAB (`/apps/classi-fy-googleplay-latest.aab`)
+- PWA ZIP (`/apps/classi-fy-pwa-latest.zip`)
 - `GET /api/auth/otp-providers` — Active OTP providers
 
 ### Authentication

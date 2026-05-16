@@ -98,10 +98,10 @@ try {
 
   Step "Verifying output artifacts"
   $expected = @(
-    "client/public/apps/classify-app-latest.apk",
-    "client/public/apps/classify-googleplay-latest.aab",
-    "dist/public/apps/classify-app-latest.apk",
-    "dist/public/apps/classify-googleplay-latest.aab"
+    "client/public/apps/classi-fy-app-latest.apk",
+    "client/public/apps/classi-fy-googleplay-latest.aab",
+    "dist/public/apps/classi-fy-app-latest.apk",
+    "dist/public/apps/classi-fy-googleplay-latest.aab"
   )
 
   $missing = @()

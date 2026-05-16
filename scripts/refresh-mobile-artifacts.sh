@@ -156,17 +156,17 @@ if [[ "$APK_ONLY" == "true" ]]; then
   rm -f "$ARCHIVE_DIR"/* 2>/dev/null || true
 else
   if [[ -n "$release_tag" ]]; then
-    keep_apk="classify-app-${release_tag}.apk"
-    keep_aab="classify-googleplay-${release_tag}.aab"
+    keep_apk="classi-fy-app-${release_tag}.apk"
+    keep_aab="classi-fy-googleplay-${release_tag}.aab"
 
     log "Pruning archive binaries (keeping: $keep_apk and $keep_aab)..."
 
-    for f in "$ARCHIVE_DIR"/classify-app-*.apk; do
+    for f in "$ARCHIVE_DIR"/classi-fy-app-*.apk; do
       [[ -e "$f" ]] || continue
       if [[ "$(basename "$f")" != "$keep_apk" ]]; then rm -f "$f" 2>/dev/null || true; fi
     done
 
-    for f in "$ARCHIVE_DIR"/classify-googleplay-*.aab; do
+    for f in "$ARCHIVE_DIR"/classi-fy-googleplay-*.aab; do
       [[ -e "$f" ]] || continue
       if [[ "$(basename "$f")" != "$keep_aab" ]]; then rm -f "$f" 2>/dev/null || true; fi
     done
@@ -222,27 +222,27 @@ sync_mobile_artifacts_to_container() {
   if [[ "$APK_ONLY" == "true" ]]; then
     docker exec "$container_id" sh -lc "
       set -euo pipefail;
-      curl -fsS -o /dev/null -w 'APK_STATUS=%{http_code}\n' http://localhost:5000/apps/classify-app-latest.apk;
+      curl -fsS -o /dev/null -w 'APK_STATUS=%{http_code}\n' http://localhost:5000/apps/classi-fy-app-latest.apk;
     " >/dev/null 2>&1 || {
       docker exec "$container_id" sh -lc "
         echo '--- container static diagnostics ---';
         ls -la '${dst_base}' '${dst_archive}' 2>/dev/null || true;
-        echo 'APK:'; curl -i -m 10 http://localhost:5000/apps/classify-app-latest.apk | tail -n 5 || true;
+        echo 'APK:'; curl -i -m 10 http://localhost:5000/apps/classi-fy-app-latest.apk | tail -n 5 || true;
       " || true
       die \"Static sync verification failed: APK not returning 200 inside container.\"
     }
   else
     docker exec "$container_id" sh -lc "
       set -euo pipefail;
-      curl -fsS -o /dev/null -w 'APK_STATUS=%{http_code}\n' http://localhost:5000/apps/classify-app-latest.apk;
-      curl -fsS -o /dev/null -w 'AAB_STATUS=%{http_code}\n' http://localhost:5000/apps/classify-googleplay-latest.aab;
+      curl -fsS -o /dev/null -w 'APK_STATUS=%{http_code}\n' http://localhost:5000/apps/classi-fy-app-latest.apk;
+      curl -fsS -o /dev/null -w 'AAB_STATUS=%{http_code}\n' http://localhost:5000/apps/classi-fy-googleplay-latest.aab;
     " >/dev/null 2>&1 || {
       # If curl -fsS fails, do a more verbose check
       docker exec "$container_id" sh -lc "
         echo '--- container static diagnostics ---';
         ls -la '${dst_base}' '${dst_archive}' 2>/dev/null || true;
-        echo 'APK:'; curl -i -m 10 http://localhost:5000/apps/classify-app-latest.apk | tail -n 5 || true;
-        echo 'AAB:'; curl -i -m 10 http://localhost:5000/apps/classify-googleplay-latest.aab | tail -n 5 || true;
+        echo 'APK:'; curl -i -m 10 http://localhost:5000/apps/classi-fy-app-latest.apk | tail -n 5 || true;
+        echo 'AAB:'; curl -i -m 10 http://localhost:5000/apps/classi-fy-googleplay-latest.aab | tail -n 5 || true;
       " || true
       die \"Static sync verification failed: /apps/* not returning 200 inside container.\"
     }

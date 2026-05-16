@@ -536,10 +536,10 @@ if (-not $ApkOnly) {
   Assert-AabSigned -aabPath $aabSource
 }
 
-$latestApkName = "classify-app-latest.apk"
-$latestAabName = "classify-googleplay-latest.aab"
-$versionedApkName = "classify-app-$releaseTag.apk"
-$versionedAabName = "classify-googleplay-$releaseTag.aab"
+$latestApkName = "classi-fy-app-latest.apk"
+$latestAabName = "classi-fy-googleplay-latest.aab"
+$versionedApkName = "classi-fy-app-$releaseTag.apk"
+$versionedAabName = "classi-fy-googleplay-$releaseTag.aab"
 
 Step "Publishing artifacts to apps/ and apps/archive"
 foreach ($appsDir in $appsDirs) {
@@ -601,9 +601,9 @@ $releaseContent = [ordered]@{
       label     = "APK"
       latestUrl = "/apps/$latestApkName"
     }
-    pwa = [ordered]@{
+      pwa = [ordered]@{
       label     = "PWA"
-      latestUrl = "/apps/classify-pwa-latest.zip"
+      latestUrl = "/apps/classi-fy-pwa-latest.zip"
     }
   }
 }

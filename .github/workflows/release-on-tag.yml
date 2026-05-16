@@ -249,10 +249,10 @@ jobs:
 
           mkdir -p client/public/apps/archive
 
-          LATEST_APK_PATH="client/public/apps/classify-app-latest.apk"
-          LATEST_AAB_PATH="client/public/apps/classify-googleplay-latest.aab"
-          ARCHIVE_APK_PATH="client/public/apps/archive/classify-app-${RELEASE_TAG_FULL}.apk"
-          ARCHIVE_AAB_PATH="client/public/apps/archive/classify-googleplay-${RELEASE_TAG_FULL}.aab"
+          LATEST_APK_PATH="client/public/apps/classi-fy-app-latest.apk"
+          LATEST_AAB_PATH="client/public/apps/classi-fy-googleplay-latest.aab"
+          ARCHIVE_APK_PATH="client/public/apps/archive/classi-fy-app-${RELEASE_TAG_FULL}.apk"
+          ARCHIVE_AAB_PATH="client/public/apps/archive/classi-fy-googleplay-${RELEASE_TAG_FULL}.aab"
 
           # Retention rule: keep ONLY newest archive artifacts on disk (overwrite older ones)
           rm -f client/public/apps/archive/*.apk client/public/apps/archive/*.aab || true
@@ -279,10 +279,10 @@ jobs:
 
           git add \
             client/public/apps/latest-release.json \
-            client/public/apps/classify-app-latest.apk \
-            client/public/apps/classify-googleplay-latest.aab \
-            client/public/apps/archive/classify-app-${RELEASE_TAG_FULL}.apk \
-            client/public/apps/archive/classify-googleplay-${RELEASE_TAG_FULL}.aab \
+            client/public/apps/classi-fy-app-latest.apk \
+            client/public/apps/classi-fy-googleplay-latest.aab \
+            client/public/apps/archive/classi-fy-app-${RELEASE_TAG_FULL}.apk \
+            client/public/apps/archive/classi-fy-googleplay-${RELEASE_TAG_FULL}.aab \
             client/public/apps/archive/release-$RELEASE_TAG_FULL.json
 
           if git diff --cached --quiet; then

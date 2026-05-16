@@ -1762,7 +1762,7 @@ export async function registerAdminRoutes(app: Express) {
         return res.status(400).json(errorResponse(ErrorCode.BAD_REQUEST, "fileUrl must start with /apps/ or /uploads/apps/apk/"));
       }
 
-      const effectiveFileName = fileName || fileUrl.split("/").filter(Boolean).pop() || "classify-app-latest.apk";
+      const effectiveFileName = fileName || fileUrl.split("/").filter(Boolean).pop() || "classi-fy-app-latest.apk";
       if (!effectiveFileName.toLowerCase().endsWith(".apk")) {
         return res.status(400).json(errorResponse(ErrorCode.BAD_REQUEST, "Only APK links are allowed"));
       }

@@ -105,7 +105,7 @@ function buildAsoJson(param) {
     channels: {
       apk: { label: "APK", latestUrl: `/apps/${latestApkName}` },
       aab: { label: "AAB", latestUrl: `/apps/${latestAabName}` },
-      pwa: { label: "PWA", latestUrl: "/apps/classify-pwa-latest.zip" },
+      pwa: { label: "PWA", latestUrl: "/apps/classi-fy-pwa-latest.zip" },
     },
   };
 
@@ -177,10 +177,10 @@ function main() {
   if (!fs.existsSync(absApk)) throw new Error(`APK missing: ${absApk}`);
   if (!fs.existsSync(absAab)) throw new Error(`AAB missing: ${absAab}`);
 
-  const latestApkName = "classify-app-latest.apk";
-  const latestAabName = "classify-googleplay-latest.aab";
-  const versionedApkName = `classify-app-${releaseTag}.apk`;
-  const versionedAabName = `classify-googleplay-${releaseTag}.aab`;
+  const latestApkName = "classi-fy-app-latest.apk";
+  const latestAabName = "classi-fy-googleplay-latest.aab";
+  const versionedApkName = `classi-fy-app-${releaseTag}.apk`;
+  const versionedAabName = `classi-fy-googleplay-${releaseTag}.aab`;
 
   const appsRoot = path.resolve("client/public/apps");
   const releaseContentPath = path.join(appsRoot, "release-content.json");

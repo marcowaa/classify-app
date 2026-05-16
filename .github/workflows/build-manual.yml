@@ -158,14 +158,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test -f client/public/apps/classify-app-latest.apk
-          test -f client/public/apps/classify-googleplay-latest.aab
+          test -f client/public/apps/classi-fy-app-latest.apk
+          test -f client/public/apps/classi-fy-googleplay-latest.aab
 
       - name: Verify APK signature v2/v3 and reject debug keys
         shell: bash
         run: |
           set -euo pipefail
-          APK="client/public/apps/classify-app-latest.apk"
+          APK="client/public/apps/classi-fy-app-latest.apk"
 
           if command -v apksigner >/dev/null 2>&1; then
             APKSIGNER="$(command -v apksigner)"
@@ -205,7 +205,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          AAB="client/public/apps/classify-googleplay-latest.aab"
+          AAB="client/public/apps/classi-fy-googleplay-latest.aab"
 
           if ! command -v jarsigner >/dev/null 2>&1; then
             echo "jarsigner not found; cannot verify AAB signatures." >&2
@@ -232,14 +232,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: android-apk-latest
-          path: client/public/apps/classify-app-latest.apk
+          path: client/public/apps/classi-fy-app-latest.apk
 
       - name: Upload AAB artifact
         if: ${{ inputs.build_aab }}
         uses: actions/upload-artifact@v4
         with:
           name: android-aab-latest
-          path: client/public/apps/classify-googleplay-latest.aab
+          path: client/public/apps/classi-fy-googleplay-latest.aab
 
       - name: Upload versioned APK/AAB (archives)
         uses: actions/upload-artifact@v4

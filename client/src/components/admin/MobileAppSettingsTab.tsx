@@ -143,7 +143,7 @@ const DEFAULT_CONFIG: AppConfig = {
   appIconUrl: "/icons/icon-512.png",
 
   apkEnabled: true,
-  apkUrl: "/apps/classify-app-latest.apk",
+  apkUrl: "/apps/classi-fy-app-latest.apk",
   apkSize: "2.6 MB",
   minAndroidVersion: "6.0",
   showHomeApkButton: true,
@@ -1021,7 +1021,7 @@ export function MobileAppSettingsTab({ token }: { token: string }) {
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
                         <Label className="text-xs">{isRTL ? "رابط APK" : "APK URL"}</Label>
-                        <Input value={config.apkUrl} onChange={(e) => handleChange("apkUrl", e.target.value)} placeholder="/apps/classify-app-latest.apk" dir="ltr" />
+                        <Input value={config.apkUrl} onChange={(e) => handleChange("apkUrl", e.target.value)} placeholder="/apps/classi-fy-app-latest.apk" dir="ltr" />
                       </div>
                       <div className="space-y-1">
                         <Label className="text-xs">{isRTL ? "حجم الملف" : "File Size"}</Label>

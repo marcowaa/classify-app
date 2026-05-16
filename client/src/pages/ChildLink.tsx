@@ -577,7 +577,7 @@ export const ChildLink = (): JSX.Element => {
     localStorage.setItem("savedChildren", JSON.stringify(updatedChildren));
   };
 
-  const downloadUrl = "/apps/classify-app-latest.apk";
+  const downloadUrl = "/apps/classi-fy-app-latest.apk";
   const shareUrl = `${window.location.origin}/download`;
 
   const handleShareDownload = async () => {

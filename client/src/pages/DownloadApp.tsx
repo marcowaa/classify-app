@@ -211,7 +211,7 @@ export default function DownloadApp() {
       ? latestApkUrl
       : typeof appSettings.apkUrl === "string" && appSettings.apkUrl.trim()
         ? appSettings.apkUrl
-        : "/apps/classify-app-latest.apk";
+        : "/apps/classi-fy-app-latest.apk";
   const hasAabRelease = latestAabUrl.length > 0;
   const showApkButton = apkEnabled && showHomeApkButton;
   const showAabButton = showHomeAabButton && hasAabRelease;
@@ -238,11 +238,11 @@ export default function DownloadApp() {
     ? `v${releaseVersionLabel} (${releaseBuildLabel})`
     : `v${releaseVersionLabel}`;
   const apkDownloadName = latestReleaseTag
-    ? `classify-app-${latestReleaseTag}.apk`
-    : `classify-app-v${releaseVersionLabel}.apk`;
+    ? `classi-fy-app-${latestReleaseTag}.apk`
+    : `classi-fy-app-v${releaseVersionLabel}.apk`;
   const aabDownloadName = latestReleaseTag
-    ? `classify-googleplay-${latestReleaseTag}.aab`
-    : `classify-googleplay-v${releaseVersionLabel}.aab`;
+    ? `classi-fy-googleplay-${latestReleaseTag}.aab`
+    : `classi-fy-googleplay-v${releaseVersionLabel}.aab`;
   const minAndroidLabel = typeof appSettings.minAndroidVersion === "string" && appSettings.minAndroidVersion.trim()
     ? appSettings.minAndroidVersion
     : "6+";
@@ -391,8 +391,8 @@ export default function DownloadApp() {
 
                 {showHomePwaButton && (
                   <a
-                    href="/apps/classify-pwa-latest.zip"
-                    download="classify-pwa-latest.zip"
+                    href="/apps/classi-fy-pwa-latest.zip"
+                    download="classi-fy-pwa-latest.zip"
                     aria-label={t(pwaAriaLabelKey)}
                     title={t("downloadAppPage.pwaZipTitle")}
                     className="h-16 w-16 rounded-full bg-gradient-to-br from-cyan-500 to-sky-600 text-white shadow-[0_12px_28px_rgba(14,165,233,0.38),inset_0_1px_0_rgba(255,255,255,0.32)] hover:brightness-110 hover:scale-[1.04] transition-all inline-flex items-center justify-center focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-cyan-200/80"

@@ -220,17 +220,17 @@ sync_mobile_artifacts_to_container() {
   fi
 
   # Names expected by the frontend / links generator.
-  local latest_apk_name="classify-app-latest.apk"
-  local latest_aab_name="classify-googleplay-latest.aab"
-  local versioned_apk_name="classify-app-${release_tag}.apk"
-  local versioned_aab_name="classify-googleplay-${release_tag}.aab"
+  local latest_apk_name="classi-fy-app-latest.apk"
+  local latest_aab_name="classi-fy-googleplay-latest.aab"
+  local versioned_apk_name="classi-fy-app-${release_tag}.apk"
+  local versioned_aab_name="classi-fy-googleplay-${release_tag}.aab"
 
   # Ensure destination paths exist.
   docker exec "$container_id" sh -lc "mkdir -p /app/dist/public/apps/archive" >/dev/null 2>&1 || true
 
   # Retention requirement: keep ONLY the latest release artifacts on disk.
   # Remove all previous versioned archives before copying the new ones.
-  docker exec "$container_id" sh -lc "rm -f /app/dist/public/apps/archive/classify-app-*.apk /app/dist/public/apps/archive/classify-googleplay-*.aab || true" >/dev/null 2>&1 || true
+  docker exec "$container_id" sh -lc "rm -f /app/dist/public/apps/archive/classi-fy-app-*.apk /app/dist/public/apps/archive/classi-fy-googleplay-*.aab || true" >/dev/null 2>&1 || true
 
   # Copy latest + archived artifacts into the running container static folder.
   docker cp "$apk_src" "$container_id:/app/dist/public/apps/${latest_apk_name}"

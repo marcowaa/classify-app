@@ -19,7 +19,7 @@ Allow: /trial-games
 Allow: /delete-account
 Allow: /parent-auth
 Allow: /apps/classify-googleplay-latest.aab
-Allow: /apps/classify-pwa-latest.zip
+Allow: /apps/classi-fy-pwa-latest.zip
 Allow: /apps/classify-app-latest.apk
 Allow: /icons/
 Allow: /screenshots/

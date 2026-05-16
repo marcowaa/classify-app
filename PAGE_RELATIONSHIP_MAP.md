@@ -493,7 +493,7 @@ ChildNotifications → (click link) → /child-tasks OR /child-gifts OR /child-r
 
 - ***روابط تنزيل***:
   - `/apps/classify-googleplay-latest.aab`
-  - `/apps/classify-pwa-latest.zip`
+  - `/apps/classi-fy-pwa-latest.zip`
 
 #### من `ParentAuth`
 - روابط سريعة (Footer links):

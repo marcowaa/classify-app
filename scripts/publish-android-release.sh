@@ -275,7 +275,7 @@ const defaults = {
   ],
   channels: {
     apk: { label: "APK", latestUrl: `/apps/${latestApkName}` },
-    pwa: { label: "PWA", latestUrl: "/apps/classify-pwa-latest.zip" }
+    pwa: { label: "PWA", latestUrl: "/apps/classi-fy-pwa-latest.zip" }
   }
 };
 
@@ -807,10 +807,10 @@ if [ "$APK_ONLY" != "true" ]; then
   verify_aab_signed "$AAB_SOURCE"
 fi
 
-LATEST_APK_NAME="classify-app-latest.apk"
-LATEST_AAB_NAME="classify-googleplay-latest.aab"
-VERSIONED_APK_NAME="classify-app-${RELEASE_TAG}.apk"
-VERSIONED_AAB_NAME="classify-googleplay-${RELEASE_TAG}.aab"
+LATEST_APK_NAME="classi-fy-app-latest.apk"
+LATEST_AAB_NAME="classi-fy-googleplay-latest.aab"
+VERSIONED_APK_NAME="classi-fy-app-${RELEASE_TAG}.apk"
+VERSIONED_AAB_NAME="classi-fy-googleplay-${RELEASE_TAG}.aab"
 
 step "Publishing artifacts to apps/ and apps/archive"
 

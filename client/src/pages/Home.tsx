@@ -72,7 +72,7 @@ export const Home = (): JSX.Element => {
     const latestApkUrl =
         typeof latestRelease?.files?.apk?.latestUrl === "string" && latestRelease.files.apk.latestUrl.trim()
             ? latestRelease.files.apk.latestUrl
-            : "/apps/classify-app-latest.apk";
+            : "/apps/classi-fy-app-latest.apk";
 
     const latestReleaseTag =
         typeof latestRelease?.releaseTag === "string" && latestRelease.releaseTag.trim()
@@ -85,10 +85,10 @@ export const Home = (): JSX.Element => {
             : "";
 
     const apkDownloadName = latestReleaseTag
-        ? `classify-app-${latestReleaseTag}.apk`
+        ? `classi-fy-app-${latestReleaseTag}.apk`
         : latestReleaseVersion
-            ? `classify-app-v${latestReleaseVersion}.apk`
-            : "classify-app-latest.apk";
+            ? `classi-fy-app-v${latestReleaseVersion}.apk`
+            : "classi-fy-app-latest.apk";
 
     const metadataDownloadTitleKey = latestRelease?.aso?.copyKeys?.downloadTitle;
     const downloadTitleKey =

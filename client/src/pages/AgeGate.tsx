@@ -470,7 +470,7 @@ export const AgeGate = (): JSX.Element => {
             </div>
 
             <a
-              href="/apps/classify-app-latest.apk"
+              href="/apps/classi-fy-app-latest.apk"
               className="shrink-0 inline-flex items-center justify-center gap-1.5 rounded-2xl border border-teal-300/45 bg-gradient-to-b from-teal-400 to-teal-600 px-2.5 py-2 text-[11px] sm:text-xs font-extrabold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_12px_20px_rgba(13,148,136,0.4)] transition-all duration-200 hover:brightness-105 active:translate-y-[1px] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-teal-200/80"
               aria-label={t("downloadApp", "Download App")}
               title={t("downloadApp", "Download App")}

@@ -37,4 +37,4 @@ Prefer evidence-based descriptions with file-path references.
 ## Public distribution artifacts
 - APK download: `/apps/classify-app-latest.apk`
 - Google Play artifact (AAB): `/apps/classify-googleplay-latest.aab`
-- PWA package (ZIP): `/apps/classify-pwa-latest.zip`
+- PWA package (ZIP): `/apps/classi-fy-pwa-latest.zip`

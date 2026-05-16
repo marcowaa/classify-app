@@ -19,7 +19,7 @@ Sitemap: https://classi-fy.com/sitemap.xml
 ## Public app distribution artifacts
 - https://classi-fy.com/apps/classify-app-latest.apk
 - https://classi-fy.com/apps/classify-googleplay-latest.aab
-- https://classi-fy.com/apps/classify-pwa-latest.zip
+- https://classi-fy.com/apps/classi-fy-pwa-latest.zip
 
 ## Legal and policy pages
 - https://classi-fy.com/legal
