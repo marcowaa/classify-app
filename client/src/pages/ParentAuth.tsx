@@ -782,7 +782,9 @@ export const ParentAuth = (): JSX.Element => {
         window.location.href = callbackPath;
         return;
       } catch (error) {
-        console.error("Native Google sign-in failed. Falling back to web OAuth.", error);
+        console.error("Native Google sign-in failed. NOT falling back to web OAuth.", error);
+        setIsSocialRedirecting(false);
+        return;
       }
     }
 

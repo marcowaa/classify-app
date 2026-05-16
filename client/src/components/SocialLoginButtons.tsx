@@ -267,6 +267,8 @@ export function SocialLoginButtons({
       .filter(Boolean),
   );
 
+  const [nativeGoogleError, setNativeGoogleError] = useState<string>("");
+
   const isNativeRuntime = isNativeGoogleSignInAvailable();
   const visibleProviders = providers.filter((provider) => {
     const providerKey = normalizeProviderKey(provider.provider);
@@ -330,7 +332,10 @@ export function SocialLoginButtons({
         window.location.href = callbackPath;
         return;
       } catch (error) {
-        console.error("Native Google sign-in failed. Falling back to web OAuth.", error);
+        console.error("Native Google sign-in failed. NOT falling back to web OAuth.", error);
+        setIsRedirecting(false);
+        if (typeof window !== "undefined") window.sessionStorage.removeItem(OAUTH_REDIRECT_LOCK_KEY);
+        return;
       }
     }
 
