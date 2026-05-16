@@ -37,6 +37,7 @@ import { createNotification, notifyAllAdmins } from "../notifications";
 import {
   acquireOAuthStartLock,
   checkOAuthStartRateLimit,
+  peekOAuthLifecycleState,
   consumeOAuthLifecycleState,
   getOAuthCallbackResult,
   releaseOAuthStartLock,
@@ -5161,7 +5162,7 @@ export async function registerAuthRoutes(app: Express) {
         console.error(`OAuth ${provider} error:`, oauthError);
 
         if (signedState) {
-          const lifecycleFromError = await consumeOAuthLifecycleState<OAuthLifecycleState>(provider, signedState.nonce);
+          const lifecycleFromError = await peekOAuthLifecycleState<OAuthLifecycleState>(provider, signedState.nonce);
           if (lifecycleFromError?.startLockKey) {
             lockKeyToRelease = lifecycleFromError.startLockKey;
           }

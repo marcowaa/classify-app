@@ -321,6 +321,49 @@ export async function saveOAuthLifecycleState(
   if (OAUTH_DEBUG_ENABLED) console.log(`[OAUTH_DEBUG_SAVE] storedInMemory=true key=${key}`);
 }
 
+export async function peekOAuthLifecycleState<T>(provider: string, nonce: string): Promise<T | null> {
+  const key = buildStateKey(provider, nonce);
+
+  if (OAUTH_DEBUG_ENABLED) {
+    console.log(`[OAUTH_DEBUG_PEEK] provider=${provider} nonce=${nonce} key=${key}`);
+  }
+
+  const redisResult = await redisGet(key);
+  if (redisResult.attempted) {
+    if (redisResult.value) {
+      try {
+        const parsed = JSON.parse(redisResult.value) as T;
+        if (OAUTH_DEBUG_ENABLED) console.log(`[OAUTH_DEBUG_PEEK] redisResult.attempted=true valueFound key=${key}`);
+        return parsed;
+      } catch {
+        if (OAUTH_DEBUG_ENABLED) console.log(`[OAUTH_DEBUG_PEEK] redisResult.attempted=true parseFailed key=${key}`);
+        return null;
+      }
+    }
+
+    // Redis "missing" doesn't necessarily mean in-memory is missing:
+    // state might have been stored in memory when Redis was unavailable or fell back.
+    if (OAUTH_DEBUG_ENABLED) console.log(`[OAUTH_DEBUG_PEEK] redisResult.attempted=true valueMissing key=${key} (falling back to memoryStore)`);
+  }
+
+  pruneMemoryStore();
+  const entry = memoryStore.get(key);
+  if (!entry || entry.expiresAt <= Date.now()) {
+    memoryStore.delete(key);
+    if (OAUTH_DEBUG_ENABLED) console.log(`[OAUTH_DEBUG_PEEK] memoryMissingOrExpired key=${key}`);
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(entry.value) as T;
+    if (OAUTH_DEBUG_ENABLED) console.log(`[OAUTH_DEBUG_PEEK] memoryFound key=${key}`);
+    return parsed;
+  } catch {
+    if (OAUTH_DEBUG_ENABLED) console.log(`[OAUTH_DEBUG_PEEK] memoryFound parseFailed key=${key}`);
+    return null;
+  }
+}
+
 export async function consumeOAuthLifecycleState<T>(provider: string, nonce: string): Promise<T | null> {
   const key = buildStateKey(provider, nonce);
 
@@ -330,18 +373,20 @@ export async function consumeOAuthLifecycleState<T>(provider: string, nonce: str
 
   const redisResult = await redisGetDel(key);
   if (redisResult.attempted) {
-    if (!redisResult.value) {
-      if (OAUTH_DEBUG_ENABLED) console.log(`[OAUTH_DEBUG_CONSUME] redisResult.attempted=true valueMissing key=${key}`);
-      return null;
+    if (redisResult.value) {
+      try {
+        const parsed = JSON.parse(redisResult.value) as T;
+        if (OAUTH_DEBUG_ENABLED) console.log(`[OAUTH_DEBUG_CONSUME] redisResult.attempted=true valueFound key=${key}`);
+        return parsed;
+      } catch {
+        if (OAUTH_DEBUG_ENABLED) console.log(`[OAUTH_DEBUG_CONSUME] redisResult.attempted=true parseFailed key=${key}`);
+        return null;
+      }
     }
-    try {
-      const parsed = JSON.parse(redisResult.value) as T;
-      if (OAUTH_DEBUG_ENABLED) console.log(`[OAUTH_DEBUG_CONSUME] redisResult.attempted=true valueFound key=${key}`);
-      return parsed;
-    } catch {
-      if (OAUTH_DEBUG_ENABLED) console.log(`[OAUTH_DEBUG_CONSUME] redisResult.attempted=true parseFailed key=${key}`);
-      return null;
-    }
+
+    // Redis "missing" doesn't necessarily mean in-memory is missing:
+    // consume should still work if the value was stored in memory as a fallback.
+    if (OAUTH_DEBUG_ENABLED) console.log(`[OAUTH_DEBUG_CONSUME] redisResult.attempted=true valueMissing key=${key} (falling back to memoryStore)`);
   }
 
   pruneMemoryStore();
