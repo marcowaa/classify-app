@@ -1,0 +1,47 @@
+{
+    "project_info": {
+        "project_number": "277976106301",
+        "project_id": "classify-eb6a1",
+        "storage_bucket": "classify-eb6a1.firebasestorage.app"
+    },
+    "client": [
+        {
+            "client_info": {
+                "mobilesdk_app_id": "1:277976106301:android:a9422ffb01cc4f8cbcf154",
+                "android_client_info": {
+                    "package_name": "com.classi_fy.twa"
+                }
+            },
+            "oauth_client": [
+                {
+                    "client_id": "277976106301-nf8suuhm601fs9cm3rshi48k555uqqqd.apps.googleusercontent.com",
+                    "client_type": 1,
+                    "android_info": {
+                        "package_name": "com.classi_fy.twa",
+                        "certificate_hash": "53f1139195a1c517c625ac803ac41ef9ec51bb97"
+                    }
+                },
+                {
+                    "client_id": "277976106301-9qctlaa15pvcs0h1tgniup4m4bco7qas.apps.googleusercontent.com",
+                    "client_type": 3
+                }
+            ],
+            "api_key": [
+                {
+                    "current_key": "AIzaSyBhVzrhe8ZdRAYoYl9_Ga1zIZPeylddgw0"
+                }
+            ],
+            "services": {
+                "appinvite_service": {
+                    "other_platform_oauth_client": [
+                        {
+                            "client_id": "277976106301-9qctlaa15pvcs0h1tgniup4m4bco7qas.apps.googleusercontent.com",
+                            "client_type": 3
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "configuration_version": "1"
+}
