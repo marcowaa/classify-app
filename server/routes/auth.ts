@@ -872,6 +872,7 @@ type OAuthCallbackResult = {
   fingerprint: string;
   clientSeed: string;
   completedAt: number;
+  startLockKey?: string;
 };
 
 type OAuthProfile = {
@@ -5182,6 +5183,10 @@ export async function registerAuthRoutes(app: Express) {
       if (!lifecycleState) {
         const existingResult = await getOAuthCallbackResult<OAuthCallbackResult>(provider, signedState.nonce);
         if (existingResult?.redirectUrl) {
+          if (existingResult.startLockKey) {
+            lockKeyToRelease = existingResult.startLockKey;
+          }
+
           const safeReplayRedirect = normalizeInternalReturnToPath(
             existingResult.redirectUrl,
             `/parent-auth?error=oauth_invalid_state&provider=${provider}`,
@@ -5319,6 +5324,7 @@ export async function registerAuthRoutes(app: Express) {
         redirectUrl: successRedirect,
         fingerprint: lifecycleState.fingerprint,
         clientSeed: lifecycleState.clientSeed,
+        startLockKey: lockKeyToRelease || undefined,
         completedAt: Date.now(),
       }, OAUTH_CALLBACK_RESULT_TTL_SECONDS);
 
