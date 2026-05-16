@@ -36,7 +36,7 @@ type NativeGooglePlugin = {
   signIn: () => Promise<NativeGoogleUser>;
 };
 
-let nativeGoogleInitialized = false;
+let nativeGoogleInitializedClientId: string | null = null;
 
 function getNativeGooglePlugin(): NativeGooglePlugin | null {
   const capacitor = (window as any)?.Capacitor;
@@ -94,13 +94,13 @@ export async function getNativeGoogleOAuthCallbackPath(input: {
   }
 
   const clientId = await getNativeGoogleClientId();
-  if (!nativeGoogleInitialized && typeof plugin.initialize === "function") {
+  if (typeof plugin.initialize === "function" && nativeGoogleInitializedClientId !== clientId) {
     await plugin.initialize({
       clientId,
       scopes: ["profile", "email"],
       grantOfflineAccess: true,
     });
-    nativeGoogleInitialized = true;
+    nativeGoogleInitializedClientId = clientId;
   }
 
   const user = await plugin.signIn();
