@@ -127,7 +127,12 @@ export async function getNativeGoogleOAuthCallbackPath(input: {
   const returnTo = String(json?.data?.returnTo || input.returnTo || "/parent-dashboard").trim();
 
   if (!res.ok || !token) {
-    throw new Error(json?.message || json?.error || "Native Google authentication failed");
+    const backendMessage =
+      String((json as any)?.message || (json as any)?.error || "").trim()
+      || res.statusText
+      || "Native Google authentication failed";
+
+    throw new Error(`Native Google authentication failed (${res.status}): ${backendMessage}`);
   }
 
   return buildOAuthCallbackPath({

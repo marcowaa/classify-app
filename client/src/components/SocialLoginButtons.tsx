@@ -321,6 +321,7 @@ export function SocialLoginButtons({
       }
       window.sessionStorage.setItem(OAUTH_REDIRECT_LOCK_KEY, String(Date.now()));
     }
+    setNativeGoogleError("");
     setIsRedirecting(true);
 
     if (providerKey === "google" && isNativeGoogleSignInAvailable() && nativeEnabled) {
@@ -332,7 +333,9 @@ export function SocialLoginButtons({
         window.location.href = callbackPath;
         return;
       } catch (error) {
+        const message = error instanceof Error ? error.message : String(error || "Native Google sign-in failed");
         console.error("Native Google sign-in failed. NOT falling back to web OAuth.", error);
+        setNativeGoogleError(message);
         setIsRedirecting(false);
         if (typeof window !== "undefined") window.sessionStorage.removeItem(OAUTH_REDIRECT_LOCK_KEY);
         return;
@@ -355,6 +358,11 @@ export function SocialLoginButtons({
 
   return (
     <div className={`space-y-4 ${className}`}>
+      {nativeGoogleError ? (
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          {nativeGoogleError}
+        </div>
+      ) : null}
       {!isCompact && (
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
