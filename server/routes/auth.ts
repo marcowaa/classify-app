@@ -1086,7 +1086,21 @@ const OAUTH_PROVIDERS: Record<string, OAuthProvider> = {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: tokenBody,
       });
-      const tokenData = await tokenRes.json();
+      const tokenText = await tokenRes.text();
+      let tokenData: any = null;
+      try {
+        tokenData = JSON.parse(tokenText);
+      } catch {
+        const preview = tokenText.slice(0, 200);
+        throw new Error(`Google token exchange failed: non-JSON response (first200=${preview})`);
+      }
+
+      if (!tokenRes.ok) {
+        const detail = String(tokenData?.error_description || tokenData?.error || "unknown");
+        const preview = tokenText.slice(0, 200);
+        throw new Error(`Google token exchange failed: ${detail} (first200=${preview})`);
+      }
+
       const userRes = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
         headers: { Authorization: `Bearer ${tokenData.access_token}` },
       });
@@ -5181,7 +5195,19 @@ export async function registerAuthRoutes(app: Express) {
 
       const lifecycleState = await consumeOAuthLifecycleState<OAuthLifecycleState>(provider, signedState.nonce);
       if (!lifecycleState) {
-        const existingResult = await getOAuthCallbackResult<OAuthCallbackResult>(provider, signedState.nonce);
+        // Replay/race handling:
+        // Another callback request may have already consumed lifecycle state but not yet persisted callback result.
+        // Wait briefly (<=2s) for callback result to appear, then redirect based on it.
+        const nonce = signedState.nonce;
+        const waitStart = Date.now();
+        let existingResult: OAuthCallbackResult | null = null;
+
+        while (Date.now() - waitStart < 2000) {
+          existingResult = await getOAuthCallbackResult<OAuthCallbackResult>(provider, nonce);
+          if (existingResult?.redirectUrl) break;
+          await new Promise((r) => setTimeout(r, 100));
+        }
+
         if (existingResult?.redirectUrl) {
           if (existingResult.startLockKey) {
             lockKeyToRelease = existingResult.startLockKey;
@@ -5200,6 +5226,7 @@ export async function registerAuthRoutes(app: Express) {
 
           return res.redirect(safeReplayRedirect);
         }
+
         trackOAuthMetric("oauth_invalid_state_total", { provider, reason: "state_not_found_or_replayed" });
         return res.redirect(`/parent-auth?error=oauth_invalid_state&provider=${provider}`);
       }
@@ -5345,7 +5372,11 @@ export async function registerAuthRoutes(app: Express) {
       res.redirect(`/parent-auth?error=oauth_failed&provider=${provider}`);
     } finally {
       const fallbackLockKey = buildOAuthStartLockKey(provider, requestFingerprint);
-      await releaseOAuthStartLock(lockKeyToRelease || fallbackLockKey);
+      // Replay/race safety: only release when we have a known real lock key.
+      // If lifecycleState was missing, we MUST NOT unlock using fallback guesses.
+      if (lockKeyToRelease) {
+        await releaseOAuthStartLock(lockKeyToRelease);
+      }
     }
   };
 
