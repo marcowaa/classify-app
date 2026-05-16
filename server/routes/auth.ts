@@ -5186,17 +5186,14 @@ export async function registerAuthRoutes(app: Express) {
             existingResult.redirectUrl,
             `/parent-auth?error=oauth_invalid_state&provider=${provider}`,
           );
-          if (!existingResult.fingerprint) {
-            return res.redirect(safeReplayRedirect);
+          if (existingResult.fingerprint) {
+            const replayFingerprint = buildOAuthClientFingerprint(req, existingResult.clientSeed);
+            if (existingResult.fingerprint !== replayFingerprint) {
+              trackOAuthMetric("oauth_invalid_state_total", { provider, reason: "replay_fingerprint_mismatch_but_replay_allowed" });
+            }
           }
 
-          const replayFingerprint = buildOAuthClientFingerprint(req, existingResult.clientSeed);
-          if (existingResult.fingerprint === replayFingerprint) {
-            return res.redirect(safeReplayRedirect);
-          }
-
-          trackOAuthMetric("oauth_invalid_state_total", { provider, reason: "replay_fingerprint_mismatch" });
-          return res.redirect(`/parent-auth?error=oauth_invalid_state&provider=${provider}`);
+          return res.redirect(safeReplayRedirect);
         }
         trackOAuthMetric("oauth_invalid_state_total", { provider, reason: "state_not_found_or_replayed" });
         return res.redirect(`/parent-auth?error=oauth_invalid_state&provider=${provider}`);
@@ -5206,16 +5203,24 @@ export async function registerAuthRoutes(app: Express) {
 
       lockKeyToRelease = lifecycleState.startLockKey || buildOAuthStartLockKey(provider, expectedFingerprint);
 
-      if (
+      const otherMismatch =
         lifecycleState.provider !== provider
         || lifecycleState.nonce !== signedState.nonce
         || lifecycleState.mode !== signedState.mode
-        || lifecycleState.returnTo !== signedState.returnTo
-        || lifecycleState.fingerprint !== expectedFingerprint
-      ) {
+        || lifecycleState.returnTo !== signedState.returnTo;
+
+      const fingerprintMismatch = lifecycleState.fingerprint !== expectedFingerprint;
+
+      if (otherMismatch) {
         trackOAuthMetric("oauth_invalid_state_total", { provider, reason: "state_mismatch" });
         clearOAuthCookies(res, oauthCookieDomain);
         return res.redirect(`/parent-auth?error=oauth_invalid_state&provider=${provider}`);
+      }
+
+      if (fingerprintMismatch) {
+        // Fingerprint is derived from UA + IP segment; popup→browser redirects can legitimately change it.
+        // The signed OAuth state nonce is the real replay/CSRF boundary.
+        trackOAuthMetric("oauth_invalid_state_total", { provider, reason: "state_fingerprint_mismatch_but_nonce_valid" });
       }
 
       if (Date.now() - lifecycleState.createdAt > OAUTH_STATE_EXPIRY_MS) {

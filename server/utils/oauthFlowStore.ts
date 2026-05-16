@@ -433,12 +433,17 @@ export async function getOAuthCallbackResult<T>(provider: string, nonce: string)
 
   const redisResult = await redisGet(key);
   if (redisResult.attempted) {
-    if (!redisResult.value) return null;
-    try {
-      return JSON.parse(redisResult.value) as T;
-    } catch {
-      return null;
+    if (redisResult.value) {
+      try {
+        return JSON.parse(redisResult.value) as T;
+      } catch {
+        return null;
+      }
     }
+
+    // Redis "missing" doesn't necessarily mean the result isn't in memory:
+    // saveOAuthCallbackResult may have fallen back to memoryStore when Redis wasn't reachable.
+    if (OAUTH_DEBUG_ENABLED) console.log(`[OAUTH_DEBUG_CALLBACK_RESULT] redisMissing key=${key} (falling back to memoryStore)`);
   }
 
   pruneMemoryStore();
