@@ -288,6 +288,8 @@ export async function checkOAuthStartRateLimit(
   return { allowed: true, retryAfterSeconds: 0 };
 }
 
+const OAUTH_DEBUG_ENABLED = String(process.env["OAUTH_DEBUG"] || "").trim().toLowerCase() === "true";
+
 export async function saveOAuthLifecycleState(
   provider: string,
   nonce: string,
@@ -298,25 +300,46 @@ export async function saveOAuthLifecycleState(
   const key = buildStateKey(provider, nonce);
   const serialized = JSON.stringify(payload);
 
+  if (OAUTH_DEBUG_ENABLED) {
+    console.log(`[OAUTH_DEBUG_SAVE] provider=${provider} nonce=${nonce} key=${key} ttlSeconds=${ttlSeconds} ttl=${ttl}`);
+  }
+
   const storedInRedis = await redisSetWithTtl(key, serialized, ttl);
-  if (storedInRedis) return;
+  if (storedInRedis) {
+    if (OAUTH_DEBUG_ENABLED) console.log(`[OAUTH_DEBUG_SAVE] storedInRedis=true key=${key}`);
+    return;
+  }
+
+  if (OAUTH_DEBUG_ENABLED) console.log(`[OAUTH_DEBUG_SAVE] storedInRedis=false key=${key} (falling back to memoryStore)`);
 
   pruneMemoryStore();
   memoryStore.set(key, {
     value: serialized,
     expiresAt: Date.now() + ttl * 1000,
   });
+
+  if (OAUTH_DEBUG_ENABLED) console.log(`[OAUTH_DEBUG_SAVE] storedInMemory=true key=${key}`);
 }
 
 export async function consumeOAuthLifecycleState<T>(provider: string, nonce: string): Promise<T | null> {
   const key = buildStateKey(provider, nonce);
 
+  if (OAUTH_DEBUG_ENABLED) {
+    console.log(`[OAUTH_DEBUG_CONSUME] provider=${provider} nonce=${nonce} key=${key}`);
+  }
+
   const redisResult = await redisGetDel(key);
   if (redisResult.attempted) {
-    if (!redisResult.value) return null;
+    if (!redisResult.value) {
+      if (OAUTH_DEBUG_ENABLED) console.log(`[OAUTH_DEBUG_CONSUME] redisResult.attempted=true valueMissing key=${key}`);
+      return null;
+    }
     try {
-      return JSON.parse(redisResult.value) as T;
+      const parsed = JSON.parse(redisResult.value) as T;
+      if (OAUTH_DEBUG_ENABLED) console.log(`[OAUTH_DEBUG_CONSUME] redisResult.attempted=true valueFound key=${key}`);
+      return parsed;
     } catch {
+      if (OAUTH_DEBUG_ENABLED) console.log(`[OAUTH_DEBUG_CONSUME] redisResult.attempted=true parseFailed key=${key}`);
       return null;
     }
   }
@@ -325,13 +348,17 @@ export async function consumeOAuthLifecycleState<T>(provider: string, nonce: str
   const entry = memoryStore.get(key);
   if (!entry || entry.expiresAt <= Date.now()) {
     memoryStore.delete(key);
+    if (OAUTH_DEBUG_ENABLED) console.log(`[OAUTH_DEBUG_CONSUME] memoryMissingOrExpired key=${key}`);
     return null;
   }
 
   memoryStore.delete(key);
   try {
-    return JSON.parse(entry.value) as T;
+    const parsed = JSON.parse(entry.value) as T;
+    if (OAUTH_DEBUG_ENABLED) console.log(`[OAUTH_DEBUG_CONSUME] memoryFound key=${key}`);
+    return parsed;
   } catch {
+    if (OAUTH_DEBUG_ENABLED) console.log(`[OAUTH_DEBUG_CONSUME] memoryFound parseFailed key=${key}`);
     return null;
   }
 }
