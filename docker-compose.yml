@@ -122,6 +122,9 @@ services:
       - GOOGLE_ENABLED=${GOOGLE_ENABLED:-true}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      # Native Android audience validation (Capacitor GoogleAuth)
+      - GOOGLE_ANDROID_CLIENT_ID=${GOOGLE_ANDROID_CLIENT_ID:-}
+      - GOOGLE_CLIENT_ID_ANDROID=${GOOGLE_CLIENT_ID_ANDROID:-}
       - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:-https://classi-fy.com/api/auth/oauth/google/callback}
       - PRERENDER_ENABLED=${PRERENDER_ENABLED:-auto}
       - PRERENDER_TOKEN=${PRERENDER_TOKEN:-}
