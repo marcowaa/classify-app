@@ -162,6 +162,13 @@ clone_or_pull() {
     git remote get-url origin >/dev/null 2>&1 || git remote add origin "$url" || true
     git fetch --all --prune
     git checkout "$branch" 2>/dev/null || git checkout -b "$branch" "origin/$branch" 2>/dev/null || true
+
+    # Compatibility/untracked APKs can block `git pull` with:
+    # "untracked working tree files would be overwritten by merge"
+    rm -f "client/public/apps/classify-app.apk" \
+          "client/public/apps/classify-app-latest.apk" \
+          "client/public/apps/archive/classify-app-*.apk" 2>/dev/null || true
+
     git pull --ff-only origin "$branch" || git pull origin "$branch" || true
   else
     die "Project dir exists but is not a git repo: $dir"
