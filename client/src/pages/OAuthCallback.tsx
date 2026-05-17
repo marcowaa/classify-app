@@ -182,7 +182,14 @@ export function OAuthCallback() {
               }
             }
 
-            navigate(target);
+            requestAnimationFrame(() => {
+              try {
+                const safeTarget = typeof target === "string" && target.startsWith("/") ? target : "/parent-dashboard";
+                window.location.replace(safeTarget);
+              } catch {
+                window.location.replace(returnTo || "/parent-dashboard");
+              }
+            });
           } else {
             persistOAuthLastResult({
               status: "failed",

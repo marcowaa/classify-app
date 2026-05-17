@@ -5198,7 +5198,42 @@ export async function registerAuthRoutes(app: Express) {
         return res.redirect(`/parent-auth?error=oauth_invalid_state&provider=${provider}`);
       }
 
-      const lifecycleState = await consumeOAuthLifecycleState<OAuthLifecycleState>(provider, signedState.nonce);
+      const callbackNonce = signedState.nonce;
+
+      // Idempotency for duplicate callback redirects (browser prefetch/preload/navigation)
+      // Lock per (provider, nonce). If we didn't acquire the lock, poll for the
+      // already-saved callback result and redirect to the same final URL.
+      const idempotencyRawKey = `oauth_cb_lock:${provider}|${callbackNonce}`;
+      let acquiredCallbackLock = false;
+
+      try {
+        acquiredCallbackLock = await acquireOAuthStartLock(idempotencyRawKey, 30);
+      } catch {
+        acquiredCallbackLock = false;
+      }
+
+      if (!acquiredCallbackLock) {
+        const waitStart = Date.now();
+        let existingResult: OAuthCallbackResult | null = null;
+
+        while (Date.now() - waitStart < 5000) {
+          existingResult = await getOAuthCallbackResult<OAuthCallbackResult>(provider, callbackNonce);
+          if (existingResult?.redirectUrl) break;
+          await new Promise((r) => setTimeout(r, 100));
+        }
+
+        if (existingResult?.redirectUrl) {
+          const safeReplayRedirect = normalizeInternalReturnToPath(
+            existingResult.redirectUrl,
+            `/parent-auth?error=oauth_failed&provider=${provider}`,
+          );
+          return res.redirect(safeReplayRedirect);
+        }
+
+        return res.redirect(`/parent-auth?error=duplicate_callback&provider=${provider}`);
+      }
+
+      const lifecycleState = await consumeOAuthLifecycleState<OAuthLifecycleState>(provider, callbackNonce);
       if (!lifecycleState) {
         // Replay/race handling:
         // Another callback request may have already consumed lifecycle state but not yet persisted callback result.
