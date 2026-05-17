@@ -194,6 +194,13 @@ main() {
       git lfs install --local >/dev/null 2>&1 || true
       git lfs pull --include="client/public/apps/*.apk,client/public/apps/*.aab,client/public/apps/archive/*.apk,client/public/apps/archive/*.aab" >/dev/null 2>&1 || true
 
+      # Ensure naming compatibility after git lfs pull.
+      # On some VPS states only `classi-fy-app-release.apk` exists (no `classi-fy-app-latest.apk`).
+      if [ ! -f "client/public/apps/classi-fy-app-latest.apk" ] && [ -f "client/public/apps/classi-fy-app-release.apk" ]; then
+        log "Creating compatibility alias: classi-fy-app-latest.apk from classi-fy-app-release.apk"
+        cp -f "client/public/apps/classi-fy-app-release.apk" "client/public/apps/classi-fy-app-latest.apk"
+      fi
+
       # Hard guardrails: fail fast if required APKs are missing before docker build.
       for f in \
         "client/public/apps/classify-app.apk" \
