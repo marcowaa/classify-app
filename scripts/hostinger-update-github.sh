@@ -86,6 +86,25 @@ generate_base64_key() {
   fi
 }
 
+# Generate APR1 ($apr1$...) basic auth hash and escape '$' for docker-compose interpolation.
+# docker-compose treats '$' as variable interpolation, so we convert '$' -> '$$'.
+generate_apr1_basic_auth_users() {
+  # $1 username, $2 password
+  local username="$1"
+  local password="$2"
+
+  require_cmd openssl
+
+  local salt hash esc
+  salt="$(openssl rand -hex 6)"
+  hash="$(openssl passwd -apr1 -salt "$salt" "$password")"
+
+  # Escape '$' => '$$' to avoid docker-compose variable interpolation issues
+  esc="$(printf '%s' "$hash" | sed -e 's/\$/$$/g')"
+
+  printf '%s:%s' "$username" "$esc"
+}
+
 is_placeholder_value() {
   case "$1" in
     ''|replace_*|change_me_*|YOUR_*|your_*|admin123|admin1234|undefined|null) return 0 ;;
@@ -254,7 +273,33 @@ main() {
   set_env_kv_if_missing_or_placeholder "SESSION_SECRET" "$(generate_base64_key)" ".env"
   set_env_kv_unless_present "ADMIN_EMAIL" "admin@classify.app" ".env"
   set_env_kv_if_missing_or_placeholder "ADMIN_PASSWORD" "$(generate_base64_key)" ".env"
-  set_env_kv_if_missing_or_placeholder "ADMIN_CREATION_SECRET" "$(generate_hex)" ".env"
+  set_env_kv_unless_present "ADMIN_CREATION_SECRET" "$(generate_hex)" ".env"
+
+  # Ensure basic-auth users required by docker-compose labels exist.
+  # If missing, `docker compose` fails during env interpolation.
+  #
+  # docker-compose.yml expects:
+  # - MINIO_CONSOLE_BASIC_AUTH_USERS
+  # - KUMA_BASIC_AUTH_USERS
+  # - DOZZLE_BASIC_AUTH_USERS
+  #
+  # We generate them from MINIO_SECRET_KEY using APR1 (apprise-style / apache-md5).
+  set_env_kv_if_missing_or_placeholder "MINIO_ACCESS_KEY" "$(generate_base64_key)" ".env"
+  set_env_kv_if_missing_or_placeholder "MINIO_SECRET_KEY" "$(generate_base64_key)" ".env"
+
+  local_minio_secret=""
+  local_minio_secret="$(grep -E '^MINIO_SECRET_KEY=' .env 2>/dev/null | head -n1 | cut -d= -f2- || true)"
+
+  if [ -z "$local_minio_secret" ] || is_placeholder_value "$local_minio_secret"; then
+    local_minio_secret="$(generate_base64_key)"
+    set_env_kv_if_missing_or_placeholder "MINIO_SECRET_KEY" "$local_minio_secret" ".env"
+  fi
+
+  basic_users="$(generate_apr1_basic_auth_users "admin" "$local_minio_secret")"
+
+  set_env_kv_unless_present "MINIO_CONSOLE_BASIC_AUTH_USERS" "$basic_users" ".env"
+  set_env_kv_unless_present "KUMA_BASIC_AUTH_USERS" "$basic_users" ".env"
+  set_env_kv_unless_present "DOZZLE_BASIC_AUTH_USERS" "$basic_users" ".env"
 
   # Resolve host port if in conflict (best effort)
   local chosen_port="$POSTGRES_HOST_PORT_PREF"
