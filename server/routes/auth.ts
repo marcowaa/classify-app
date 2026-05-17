@@ -6,6 +6,8 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { OAuth2Client } from "google-auth-library";
 // Type declarations for `qrcode` are not present in the repo; silence TypeScript here
+import { createRedisClient, getRedisClient } from "../src/config/redis";
+// Type declarations for `qrcode` are not present in the repo; silence TypeScript here
 // @ts-ignore
 import QRCode from "qrcode";
 import { JWT_SECRET, authMiddleware } from "./middleware";
@@ -4929,14 +4931,24 @@ export async function registerAuthRoutes(app: Express) {
         : await upsertParentFromOAuthProfile(profile);
       const token = signParentAccessToken(parent.parentId);
 
-      return res.json(successResponse({
+      const redeemNonce = crypto.randomBytes(16).toString("hex");
+      const oauthRedeemKey = `oauth_redeem:${redeemNonce}`;
+      const oauthRedeemPayload = JSON.stringify({
         token,
+        returnTo,
         provider: "google",
         mode,
+      });
+
+      const redisClient = getRedisClient() || createRedisClient();
+      if (!redisClient) {
+        return res.status(503).json(errorResponse(ErrorCode.INTERNAL_SERVER_ERROR, "Redis unavailable"));
+      }
+      await redisClient.set(oauthRedeemKey, oauthRedeemPayload, "EX", 60);
+
+      return res.json(successResponse({
+        nonce: redeemNonce,
         returnTo,
-        parentId: parent.parentId,
-        email: profile.email,
-        name: parent.parentName,
       }, "Native Google sign-in successful"));
     } catch (error: any) {
       console.error("Native Google sign-in error:", error);
@@ -5385,8 +5397,23 @@ export async function registerAuthRoutes(app: Express) {
       // Generate JWT token
       const token = signParentAccessToken(parent.parentId);
 
-      // Redirect to frontend with token
-      const successRedirect = `/auth/oauth-callback?token=${token}&provider=${provider}&mode=${oauthMode}&returnTo=${encodeURIComponent(oauthReturnTo)}`;
+      // Redirect to frontend without token; token is redeemed via one-time nonce
+      const redeemNonce = crypto.randomBytes(16).toString("hex");
+      const oauthRedeemKey = `oauth_redeem:${redeemNonce}`;
+      const oauthRedeemPayload = JSON.stringify({
+        token,
+        returnTo: oauthReturnTo,
+        provider,
+        mode: oauthMode,
+      });
+
+      const redisClient = getRedisClient() || createRedisClient();
+      if (!redisClient) {
+        throw new Error("OAUTH_REDIS_UNAVAILABLE");
+      }
+      await redisClient.set(oauthRedeemKey, oauthRedeemPayload, "EX", 60);
+
+      const successRedirect = `/auth/oauth-callback?nonce=${redeemNonce}&provider=${provider}&mode=${oauthMode}`;
       await saveOAuthCallbackResult(provider, signedState.nonce, {
         redirectUrl: successRedirect,
         fingerprint: lifecycleState.fingerprint,
@@ -5422,6 +5449,33 @@ export async function registerAuthRoutes(app: Express) {
 
   app.get("/api/auth/oauth/:provider/callback", oauthCallbackHandler);
   app.post("/api/auth/oauth/:provider/callback", oauthCallbackHandler);
+
+  app.post("/api/auth/oauth/redeem-nonce", async (req, res) => {
+    try {
+      const nonce = String(req.body?.nonce || "").trim();
+      if (!nonce) {
+        return res.status(400).json({ message: "nonce required" });
+      }
+
+      const key = `oauth_redeem:${nonce}`;
+      const redisClient = getRedisClient() || createRedisClient();
+      if (!redisClient) {
+        return res.status(404).json({ message: "nonce expired or invalid" });
+      }
+
+      const raw = await redisClient.get(key);
+      if (!raw) {
+        return res.status(404).json({ message: "nonce expired or invalid" });
+      }
+
+      await redisClient.del(key);
+
+      const data = JSON.parse(raw) as { token?: string; returnTo?: string };
+      return res.json({ token: data.token, returnTo: data.returnTo });
+    } catch {
+      return res.status(404).json({ message: "nonce expired or invalid" });
+    }
+  });
 
   app.post("/api/auth/oauth/:provider/cancel", async (req, res) => {
     try {

@@ -1,0 +1,17 @@
+
+> rest-express@2.0.2 test:critical-flow
+> node --experimental-vm-modules ./node_modules/jest/bin/jest.js --runInBand tests/services/onboardingRouteContract.test.ts tests/services/onboardingCriticalScenarios.test.ts tests/services/routeGovernanceContract.test.ts tests/services/decisionChannels.test.ts tests/services/sessionPriorityContract.test.ts
+
+(node:17272) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS tests/services/decisionChannels.test.ts
+PASS tests/services/onboardingCriticalScenarios.test.ts
+PASS tests/services/sessionPriorityContract.test.ts
+PASS tests/services/routeGovernanceContract.test.ts
+PASS tests/services/onboardingRouteContract.test.ts
+
+Test Suites: 5 passed, 5 total
+Tests:       18 passed, 18 total
+Snapshots:   0 total
+Time:        5.048 s, estimated 6 s
+Ran all test suites matching tests/services/onboardingRouteContract.test.ts|tests/services/onboardingCriticalScenarios.test.ts|tests/services/routeGovernanceContract.test.ts|tests/services/decisionChannels.test.ts|tests/services/sessionPriorityContract.test.ts.

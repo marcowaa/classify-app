@@ -11,9 +11,7 @@ type NativeGoogleConfigResponse = {
 type NativeGoogleAuthResponse = {
   success?: boolean;
   data?: {
-    token?: string;
-    provider?: string;
-    mode?: NativeGoogleMode;
+    nonce?: string;
     returnTo?: string;
   };
   message?: string;
@@ -69,13 +67,13 @@ async function getNativeGoogleClientId(): Promise<string> {
 }
 
 function buildOAuthCallbackPath(payload: {
-  token: string;
+  nonce: string;
   provider: string;
   mode: NativeGoogleMode;
   returnTo: string;
 }) {
   const params = new URLSearchParams({
-    token: payload.token,
+    nonce: payload.nonce,
     provider: payload.provider,
     mode: payload.mode,
     returnTo: payload.returnTo,
@@ -121,12 +119,12 @@ export async function getNativeGoogleOAuthCallbackPath(input: {
   });
 
   const json = (await res.json().catch(() => null)) as NativeGoogleAuthResponse | null;
-  const token = String(json?.data?.token || "").trim();
-  const provider = String(json?.data?.provider || "google").trim().toLowerCase() || "google";
-  const mode = (String(json?.data?.mode || input.mode).trim().toLowerCase() === "link" ? "link" : "login") as NativeGoogleMode;
+  const nonce = String(json?.data?.nonce || "").trim();
+  const provider = "google";
+  const mode = input.mode;
   const returnTo = String(json?.data?.returnTo || input.returnTo || "/parent-dashboard").trim();
 
-  if (!res.ok || !token) {
+  if (!res.ok || !nonce) {
     const backendMessage =
       String((json as any)?.message || (json as any)?.error || "").trim()
       || res.statusText
@@ -136,7 +134,7 @@ export async function getNativeGoogleOAuthCallbackPath(input: {
   }
 
   return buildOAuthCallbackPath({
-    token,
+    nonce,
     provider,
     mode,
     returnTo: returnTo.startsWith("/") ? returnTo : "/parent-dashboard",

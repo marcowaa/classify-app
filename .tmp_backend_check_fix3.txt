@@ -1,0 +1,5 @@
+
+> rest-express@2.0.2 check
+> tsc
+
+server/routes/auth.ts(4944,13): error TS18047: 'redisClient' is possibly 'null'.

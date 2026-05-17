@@ -77,131 +77,50 @@ export function OAuthCallback() {
       try {
         await withTimeout((async () => {
           const params = new URLSearchParams(window.location.search);
-          const token = params.get("token");
+          const nonce = params.get("nonce");
           const error = params.get("error");
-          const provider = params.get("provider");
+          const provider = params.get("provider") || "google";
           const mode = params.get("mode") || "login";
-          const returnToParam = params.get("returnTo") || "/parent-dashboard";
-          const returnTo = returnToParam.startsWith("/") ? returnToParam : "/parent-dashboard";
 
+          // حالة الخطأ
           if (error) {
-            persistOAuthLastResult({
-              status: "failed",
-              stage: "provider-callback",
-              provider: provider || "unknown",
-              mode,
-              returnTo,
-              reason: error,
-              at: Date.now(),
-            });
-            navigate(`/parent-auth?error=${error}&provider=${provider || ""}`);
+            sessionStorage.setItem(
+              "classify-oauth-last-result",
+              JSON.stringify({ status: "failed", error }),
+            );
+            window.location.replace(`/parent-auth?error=${error}&provider=${provider}`);
             return;
           }
 
-          if (token) {
-            localStorage.removeItem("childToken");
-            localStorage.removeItem("childId");
-            localStorage.removeItem("childAccountClassification");
-            localStorage.setItem("token", token);
-            localStorage.setItem("parentAccountClassification", "FULL");
-
-            const tokenStored = localStorage.getItem("token") === token;
-            const childCacheCleared =
-              !localStorage.getItem("childToken")
-              && !localStorage.getItem("childId")
-              && !localStorage.getItem("childAccountClassification");
-
-            if (!tokenStored) {
-              persistOAuthLastResult({
-                status: "failed",
-                stage: "token-cache",
-                provider: provider || "unknown",
-                mode,
-                returnTo,
-                reason: "oauth_token_cache_failed",
-                tokenStored: false,
-                childCacheCleared,
-                at: Date.now(),
+          // حالة النجاح — استرجاع token عبر nonce
+          if (nonce) {
+            fetch("/api/auth/oauth/redeem-nonce", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ nonce }),
+            })
+              .then((res) => {
+                if (!res.ok) throw new Error("nonce_invalid");
+                return res.json();
+              })
+              .then(({ token, returnTo }) => {
+                if (!token) throw new Error("no_token");
+                localStorage.setItem("token", token);
+                localStorage.setItem("classify-auth-token", token);
+                requestAnimationFrame(() => {
+                  window.location.replace(returnTo || "/parent");
+                });
+              })
+              .catch((err) => {
+                window.location.replace(
+                  `/parent-auth?error=${err.message}&provider=${provider}`,
+                );
               });
-              navigate(`/parent-auth?error=oauth_token_cache_failed&provider=${provider || ""}`);
-              return;
-            }
-
-            cacheAdultAccountSession({
-              role: "parent",
-              token,
-              displayName: provider || undefined,
-            });
-
-            persistOAuthLastResult({
-              status: "success",
-              stage: "provider-callback",
-              provider: provider || "unknown",
-              mode,
-              returnTo,
-              tokenStored,
-              childCacheCleared,
-              at: Date.now(),
-            });
-
-            if (mode === "link") {
-              sessionStorage.setItem("classify-social-link-status", JSON.stringify({
-                provider: provider || "",
-                success: true,
-                at: Date.now(),
-              }));
-            }
-
-            let target = returnTo;
-            const trialFlowState = getTrialPurchaseFlowState();
-            const trialChildToken = readTrialChildLinkData()?.trialChildToken?.trim() || "";
-            const isTrialCheckoutFlow = trialFlowState === "captured"
-              || trialFlowState === "linking"
-              || trialFlowState === "linked"
-              || trialFlowState === "hydrated";
-
-            if (trialChildToken && isTrialCheckoutFlow) {
-              if (trialFlowState === "captured" || trialFlowState === "linking") {
-                setTrialPurchaseFlowState("linking");
-              }
-
-              const linked = await linkTrialChildToParent(token, trialChildToken);
-              if (linked) {
-                setTrialPurchaseFlowState("linked");
-                clearTrialChildLinkData();
-                trackTrialFunnelEvent("TRIAL_LINK_SUCCESS");
-              } else {
-                if (getTrialPurchaseFlowState() === "linking") {
-                  setTrialPurchaseFlowState("captured");
-                }
-                trackTrialFunnelEvent("TRIAL_LINK_FAILED", { reason: "AUTO_LINK_FAILED" });
-              }
-
-              if (shouldRedirectToTrialInvoice({ trialLinkSucceeded: linked })) {
-                target = "/parent-store?trialIntent=1";
-              }
-            }
-
-            requestAnimationFrame(() => {
-              try {
-                const safeTarget = typeof target === "string" && target.startsWith("/") ? target : "/parent-dashboard";
-                window.location.replace(safeTarget);
-              } catch {
-                window.location.replace(returnTo || "/parent-dashboard");
-              }
-            });
-          } else {
-            persistOAuthLastResult({
-              status: "failed",
-              stage: "provider-callback",
-              provider: provider || "unknown",
-              mode,
-              returnTo,
-              reason: "oauth_no_token",
-              at: Date.now(),
-            });
-            navigate("/parent-auth?error=oauth_no_token");
+            return;
           }
+
+          // لا nonce ولا error
+          window.location.replace("/parent-auth?error=oauth_missing_nonce");
         })(), TIMEOUT_MS);
       } catch (e) {
         const message = e instanceof Error ? e.message : String(e || "");

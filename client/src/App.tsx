@@ -919,6 +919,17 @@ function useNativeAppUrlOpen(navigate: (path: string, options?: { replace?: bool
         const parsed = new URL(rawUrl);
         const pathWithQuery = `${parsed.pathname}${parsed.search}${parsed.hash}`;
 
+        // Dedupe for duplicate appUrlOpen callbacks / getLaunchUrl replay (same URL)
+        const dedupeKey = "_last_oauth_url";
+        const existing = sessionStorage.getItem(dedupeKey);
+        if (existing === pathWithQuery) return;
+        sessionStorage.setItem(dedupeKey, pathWithQuery);
+        setTimeout(() => {
+          if (sessionStorage.getItem(dedupeKey) === pathWithQuery) {
+            sessionStorage.removeItem(dedupeKey);
+          }
+        }, 10000);
+
         // If provider callback is delivered directly to /api/auth/oauth/:provider/callback,
         // let backend finish token exchange then redirect to /auth/oauth-callback.
         if (pathWithQuery.startsWith("/api/auth/oauth/")) {

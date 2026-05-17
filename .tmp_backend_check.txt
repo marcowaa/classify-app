@@ -1,0 +1,5 @@
+
+> rest-express@2.0.2 check
+> tsc
+
+server/routes/auth.ts(80,33): error TS2304: Cannot find name 'OAuth2Client'.
