@@ -1,0 +1,8 @@
+{
+    "scriptPath":  "scripts/publish-android-release.ps1",
+    "gitCommit":  "b429de5b68e34083d6f3c44287cbe419c4ac3e00",
+    "gitBranch":  "main",
+    "signedAabVerified":  true,
+    "versionReuseBypass":  false,
+    "generatedAt":  "2026-05-17T02:12:22.2913810Z"
+}

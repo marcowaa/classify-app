@@ -1,0 +1,2 @@
+97061d03a7802b2f18e0f9396707fc014a993251c99f74521f5c8228cea36cdb  classi-fy-app-latest.apk
+2bd632d0a223376000d1f6649e6eb9b53c8e1bf529bb4e30df7136a945bac707  classi-fy-googleplay-latest.aab

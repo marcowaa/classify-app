@@ -120,11 +120,16 @@ function Assert-ReleaseVersionLock(
   }
 
   if ($previousRelease -and $previousRelease.Data) {
-    $previousVersion = [string]($previousRelease.Data.version ?? "")
-    $previousBuildNumber = [string]($previousRelease.Data.buildNumber ?? "")
+    $previousVersion = [string]($previousRelease.Data.version)
+    if ([string]::IsNullOrWhiteSpace($previousVersion)) { $previousVersion = "" }
+
+    $previousBuildNumber = [string]($previousRelease.Data.buildNumber)
+    if ([string]::IsNullOrWhiteSpace($previousBuildNumber)) { $previousBuildNumber = "" }
 
     $previousVersionCode = 0
-    $hasPreviousVersionCode = [int]::TryParse([string]($previousRelease.Data.versionCode ?? ""), [ref]$previousVersionCode)
+    $previousVersionCodeRaw = [string]($previousRelease.Data.versionCode)
+    if ([string]::IsNullOrWhiteSpace($previousVersionCodeRaw)) { $previousVersionCodeRaw = "" }
+    $hasPreviousVersionCode = [int]::TryParse($previousVersionCodeRaw, [ref]$previousVersionCode)
 
     if ($hasPreviousVersionCode -and $previousVersionCode -eq $versionCode) {
       throw "Release version lock violation: versionCode $versionCode already exists in $($previousRelease.Path). Pass -AllowVersionReuse only for explicit rollback/rebuild workflows."
@@ -306,6 +311,18 @@ function Ensure-WindowsGradleJavaCompatibility() {
   if ($major -and $major -lt 25) {
     Step "Using Java runtime version $major for Gradle"
     return
+  }
+
+  if ($env:JAVA_HOME) {
+    $javaExeCandidate = Join-Path $env:JAVA_HOME "bin\java.exe"
+    if (Test-Path -LiteralPath $javaExeCandidate) {
+      Step "Using existing JAVA_HOME for Gradle: $env:JAVA_HOME"
+      $javaBin = Join-Path $env:JAVA_HOME "bin"
+      if ($env:Path -notlike "$javaBin*") {
+        $env:Path = "$javaBin;$env:Path"
+      }
+      return
+    }
   }
 
   $candidates = @(

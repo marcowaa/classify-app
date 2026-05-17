@@ -1,0 +1,70 @@
+{
+    "releaseTag":  "v2026.05.17-b1778983866",
+    "version":  "2026.05.17",
+    "buildNumber":  "1778983866",
+    "versionCode":  1778983866,
+    "generatedAt":  "2026-05-17T02:12:22.3097957Z",
+    "apiBase":  "https://classi-fy.com",
+    "provenance":  {
+                       "scriptPath":  "scripts/publish-android-release.ps1",
+                       "gitCommit":  "b429de5b68e34083d6f3c44287cbe419c4ac3e00",
+                       "gitBranch":  "main",
+                       "signedAabVerified":  true,
+                       "versionReuseBypass":  false,
+                       "generatedAt":  "2026-05-17T02:12:22.2913810Z"
+                   },
+    "aso":  {
+                "copyKeys":  {
+                                 "downloadTitle":  "downloadApp",
+                                 "downloadDescription":  "downloadAppDesc",
+                                 "screenshotsTitle":  "downloadAppPage.screenshotsTitle",
+                                 "apkCta":  "downloadAppPage.downloadApkCta",
+                                 "pwaAriaLabel":  "downloadAppPage.pwaZipAriaLabel",
+                                 "aabAriaLabel":  "downloadAppPage.aabAriaLabel"
+                             },
+                "listing":  {
+                                "storeShortDesc":  "Safe kids learning app with family guidance",
+                                "storeFullDesc":  "Classify helps families build healthy learning habits through interactive educational activities, rewards, and family guidance tools.",
+                                "playPromoText":  "New seasonal activities and improved child progress insights."
+                            },
+                "screenshots":  [
+                                    "/screenshots/classify/classify-1.jpeg",
+                                    "/screenshots/classify/classify-2.jpeg",
+                                    "/screenshots/classify/classify-3.jpeg",
+                                    "/screenshots/classify/classify-4.jpeg",
+                                    "/screenshots/classify/classify-5.jpeg"
+                                ],
+                "channels":  {
+                                 "apk":  {
+                                             "label":  "APK",
+                                             "latestUrl":  "/apps/classi-fy-app-latest.apk"
+                                         },
+                                 "pwa":  {
+                                             "label":  "PWA",
+                                             "latestUrl":  "/apps/classi-fy-pwa-latest.zip"
+                                         },
+                                 "aab":  {
+                                             "label":  "AAB",
+                                             "latestUrl":  "/apps/classi-fy-googleplay-latest.aab"
+                                         }
+                             }
+            },
+    "files":  {
+                  "apk":  {
+                              "latestUrl":  "/apps/classi-fy-app-latest.apk",
+                              "bytes":  11205825,
+                              "size":  "10.7 MB",
+                              "sha256":  "97061d03a7802b2f18e0f9396707fc014a993251c99f74521f5c8228cea36cdb",
+                              "name":  "classi-fy-app-latest.apk",
+                              "archiveUrl":  "/apps/archive/classi-fy-app-v2026.05.17-b1778983866.apk"
+                          },
+                  "aab":  {
+                              "name":  "classi-fy-googleplay-latest.aab",
+                              "bytes":  11824165,
+                              "sha256":  "2bd632d0a223376000d1f6649e6eb9b53c8e1bf529bb4e30df7136a945bac707",
+                              "latestUrl":  "/apps/classi-fy-googleplay-latest.aab",
+                              "archiveUrl":  "/apps/archive/classi-fy-googleplay-v2026.05.17-b1778983866.aab",
+                              "size":  "11.3 MB"
+                          }
+              }
+}
