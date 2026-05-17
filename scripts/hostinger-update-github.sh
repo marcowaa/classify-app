@@ -166,9 +166,8 @@ clone_or_pull() {
 
     # Compatibility/untracked APKs can block `git pull` with:
     # "untracked working tree files would be overwritten by merge"
-    rm -f "client/public/apps/classify-app.apk" \
-          "client/public/apps/classify-app-latest.apk" \
-          "client/public/apps/archive/classify-app-*.apk" 2>/dev/null || true
+    # Remove ALL local APKs under public apps (latest + archive) before pulling.
+    rm -f client/public/apps/*.apk client/public/apps/archive/*.apk 2>/dev/null || true
 
     git pull --ff-only origin "$branch" || git pull origin "$branch" || true
   else
