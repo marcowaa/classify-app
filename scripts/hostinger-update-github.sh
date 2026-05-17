@@ -1,5 +1,6 @@
-#!/usr/bin/env bash
-set -euo pipefail
+﻿#!/usr/bin/env bash
+set -eu
+set -o pipefail
 
 # ============================================================
 # Classify - Hostinger VPS GitHub Update (Docker + DB + Admin)
@@ -282,7 +283,7 @@ main() {
   log "Smoke test health endpoint inside container"
   docker compose -p "$COMPOSE_PROJECT_NAME" exec -T app sh -lc "curl -fsS http://localhost:5000/api/health >/dev/null"
 
-  log "✅ Update completed successfully."
+  log "âœ… Update completed successfully."
 }
 
 main "$@"
