@@ -193,6 +193,18 @@ main() {
     if git lfs version >/dev/null 2>&1; then
       git lfs install --local >/dev/null 2>&1 || true
       git lfs pull --include="client/public/apps/*.apk,client/public/apps/*.aab,client/public/apps/archive/*.apk,client/public/apps/archive/*.aab" >/dev/null 2>&1 || true
+
+      # Hard guardrails: fail fast if required APKs are missing before docker build.
+      for f in \
+        "client/public/apps/classify-app.apk" \
+        "client/public/apps/classify-app-latest.apk" \
+        "client/public/apps/classi-fy-app-latest.apk"
+      do
+        if [ ! -f "$f" ]; then
+          echo "[update-github] ERROR: Missing required APK after git lfs pull: $f" >&2
+          exit 1
+        fi
+      done
     fi
   fi
 
