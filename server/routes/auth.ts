@@ -678,7 +678,8 @@ function readProviderEnvValue(prefix: string, keys: string[]): string {
 }
 
 function readGoogleWebClientId(): string {
-  return readProviderEnvValue("GOOGLE", ["CLIENT_ID", "OAUTH_CLIENT_ID", "WEB_CLIENT_ID"]);
+  const envClientId = readProviderEnvValue("GOOGLE", ["WEB_CLIENT_ID", "CLIENT_ID", "OAUTH_CLIENT_ID"]);
+  return String(envClientId || GOOGLE_WEB_CLIENT_ID_FALLBACK).trim();
 }
 
 function readGoogleAnyClientId(): string {
