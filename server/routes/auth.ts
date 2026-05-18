@@ -1615,7 +1615,6 @@ async function verifyGoogleNativeIdToken(idToken: string, audiences: string[]): 
 
   const payload = ticket.getPayload();
   if (!payload?.email) return null;
-  if (payload.email_verified === false) return null;
 
   return {
     email: payload.email,
