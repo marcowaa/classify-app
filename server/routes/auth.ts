@@ -1602,10 +1602,20 @@ async function verifyGoogleNativeIdToken(idToken: string, audiences: string[]): 
   const normalizedToken = String(idToken || "").trim();
   if (!normalizedToken) return null;
 
+  const decoded = jwt.decode(normalizedToken) as any;
+  const tokenAudience = Array.isArray(decoded?.aud) ? decoded?.aud[0] : decoded?.aud;
+  const audienceForVerify = tokenAudience ? String(tokenAudience).trim() : "";
+
+  // If we couldn't determine the token audience, we can't safely validate it.
+  if (audiences.length > 0 && !audienceForVerify) return null;
+
   const ticket = await googleIdTokenClient.verifyIdToken({
     idToken: normalizedToken,
-    audience: audiences.length > 0 ? audiences : undefined,
+    audience: audienceForVerify || undefined,
   });
+
+  // Extra safety: token must match one of the allowed audiences.
+  if (audiences.length > 0 && audienceForVerify && !audiences.includes(audienceForVerify)) return null;
 
   const payload = ticket.getPayload();
   if (!payload?.email) return null;
