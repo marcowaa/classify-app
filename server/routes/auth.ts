@@ -1607,14 +1607,24 @@ async function verifyGoogleNativeIdToken(idToken: string, audiences: string[]): 
   const audienceForVerify = tokenAudience ? String(tokenAudience).trim() : "";
 
 
-  const ticket = await googleIdTokenClient.verifyIdToken({
-    idToken: normalizedToken,
-    audience: audienceForVerify || undefined,
-  });
+  let ticket;
+  try {
+    ticket = await googleIdTokenClient.verifyIdToken({
+      idToken: normalizedToken,
+      audience: audienceForVerify || undefined,
+    });
+  } catch (error: any) {
+    console.error("Native Google verifyIdToken debug:", {
+      tokenAudClaim: decoded?.aud,
+      audienceForVerify,
+      allowedAudiences: audiences,
+    });
+    console.error("Native Google verifyIdToken error:", error);
+    throw error;
+  }
 
 
   const payload = ticket.getPayload();
-  if (!payload?.email) return null;
 
   return {
     email: payload.email,
