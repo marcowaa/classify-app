@@ -1612,8 +1612,6 @@ async function verifyGoogleNativeIdToken(idToken: string, audiences: string[]): 
     audience: audienceForVerify || undefined,
   });
 
-  // Extra safety: token must match one of the allowed audiences.
-  if (audiences.length > 0 && audienceForVerify && !audiences.includes(audienceForVerify)) return null;
 
   const payload = ticket.getPayload();
   if (!payload?.email) return null;
