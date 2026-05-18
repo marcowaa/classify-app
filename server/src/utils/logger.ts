@@ -1,20 +1,34 @@
+
 import pino from "pino";
 import { v4 as uuidv4 } from "uuid";
+import { createRequire } from "node:module";
 
 const isProduction = process.env.NODE_ENV === "production";
+const require = createRequire(import.meta.url);
+
+const hasPinoPretty = (() => {
+  try {
+    require.resolve("pino-pretty");
+    return true;
+  } catch {
+    return false;
+  }
+})();
 
 export const logger = pino({
   level: process.env.LOG_LEVEL || (isProduction ? "info" : "debug"),
   transport: isProduction
     ? undefined
-    : {
+    : hasPinoPretty
+      ? {
         target: "pino-pretty",
         options: {
           colorize: true,
           translateTime: "HH:MM:ss",
           ignore: "pid,hostname",
         },
-      },
+      }
+      : undefined,
   formatters: {
     level: (label) => ({ level: label }),
     bindings: () => ({}),
@@ -24,6 +38,12 @@ export const logger = pino({
     env: process.env.NODE_ENV,
   },
 });
+
+// Help diagnose dev logging issues without crashing the server.
+if (!isProduction && !hasPinoPretty) {
+  // eslint-disable-next-line no-console
+  console.warn("⚠️ pino-pretty is not installed; running without pretty transport.");
+}
 
 export function generateRequestId(): string {
   return uuidv4().substring(0, 8);

@@ -1,0 +1,39 @@
+  app.get("/api/child/events", authMiddleware, async (req: any, res) => {
+    try {
+      const childId = req.user.childId;
+
+      // الحصول على الأحداث غير المقرة
+      const events = await db
+        .select()
+        .from(childEvents)
+        .where(and(eq(childEvents.childId, childId), eq(childEvents.isAcknowledged, false)));
+
+      // الحصول على الهدايا المعلقة
+      const gifts = await db
+        .select()
+        .from(childGifts)
+        .where(and(eq(childGifts.childId, childId), eq(childGifts.status, "pending")));
+
+      // الحصول على إعدادات الإشعارات
+      const settings = await db
+        .select()
+        .from(childNotificationSettings)
+        .where(eq(childNotificationSettings.childId, childId));
+
+      res.json({
+        success: true,
+        data: {
+          events,
+          gifts,
+          settings: settings[0] || {
+            mode: "popup_soft",
+            repeatDelayMinutes: 5,
+            requireOverlayPermission: false,
+          },
+        },
+      });
+    } catch (error: any) {
+      console.error("Fetch events error:", error);
+      res.status(500).json({ message: "Failed to fetch events" });
+    }
+  });

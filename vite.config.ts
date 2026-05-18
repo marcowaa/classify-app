@@ -1,9 +1,8 @@
-import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 
 // Production-ready Vite config with performance optimization
-export default defineConfig({
+export default {
   root: path.resolve(process.cwd(), "client"),
   base: "/",
   plugins: [react()],
@@ -67,4 +66,4 @@ export default defineConfig({
     entries: ["index.html"],
     exclude: ["memory-modules"],
   },
-});
+};

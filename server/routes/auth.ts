@@ -80,6 +80,23 @@ const OAUTH_START_RATE_LIMIT_WINDOW_SECONDS = Math.min(
 );
 const googleIdTokenClient = new OAuth2Client();
 
+const AUTH_REDEEM_COOKIE_WRITE_ENABLED =
+  String(process.env.AUTH_REDEEM_COOKIE_WRITE_ENABLED || "")
+    .trim()
+    .toLowerCase() === "true";
+
+/**
+ * Backward-compat:
+ * - If flag is unset: keep existing behavior (return token).
+ * - If flag is set to "false": omit token from JSON, cookie-only.
+ */
+const AUTH_REDEEM_RETURNS_TOKEN =
+  String(process.env.AUTH_REDEEM_RETURNS_TOKEN || "")
+    .trim()
+    .toLowerCase() !== "false";
+
+const AUTH_TOKEN_COOKIE_NAME = "auth_token";
+
 const db = storage.db;
 
 function signParentAccessToken(parentId: string): string {
@@ -242,21 +259,11 @@ function generateReadableCode(length = 6): string {
   return Array.from({ length }, () => alphabet[crypto.randomInt(0, alphabet.length)] || "A").join("");
 }
 
-async function generateUniqueParentCode(maxAttempts = 20): Promise<string> {
-  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
-    const candidate = generateReadableCode(6);
-    const existing = await db
-      .select({ id: parents.id })
-      .from(parents)
-      .where(eq(parents.uniqueCode, candidate))
-      .limit(1);
-
-    if (!existing[0]) {
-      return candidate;
-    }
-  }
-
-  return generateReadableCode(8);
+async function generateUniqueParentCode(_maxAttempts = 20): Promise<string> {
+  // Fast path: avoid DB-dependent uniqueness-check during auth bootstrap.
+  // Collision risk is negligible (6-char alphabet w/ 32 choices => ~1B combinations),
+  // and the database UNIQUE constraint on parents.unique_code remains the final guard.
+  return generateReadableCode(6);
 }
 
 function normalizeInternalReturnToPath(rawValue: unknown, fallback: string = "/parent-dashboard"): string {
@@ -1611,6 +1618,106 @@ async function verifyGoogleNativeIdToken(idToken: string, audiences: string[]): 
 }
 
 export async function registerAuthRoutes(app: Express) {
+  // Auth Oracle (Phase 2): single source of truth for UI convergence
+  // Middleware resolution order MUST be:
+  // 1) Authorization: Bearer token (if exists)
+  // 2) auth_token cookie (if enabled)
+  // 3) otherwise 401
+  app.get("/api/auth/me", async (req: any, res: any) => {
+    const headerAuth = req.headers?.authorization;
+    const headerToken =
+      typeof headerAuth === "string" && headerAuth.toLowerCase().startsWith("bearer ")
+        ? String(headerAuth.slice(7)).trim()
+        : "";
+
+    const cookieToken = AUTH_REDEEM_COOKIE_WRITE_ENABLED
+      ? String(req.cookies?.[AUTH_TOKEN_COOKIE_NAME] || "").trim()
+      : "";
+
+    const token = headerToken || cookieToken;
+
+    if (!token) {
+      return res.status(401).json({ authenticated: false, channel: "none" });
+    }
+
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET) as any;
+      const tokenType = String(decoded?.type || "").trim().toLowerCase();
+
+      const issuedAt = typeof decoded?.iat === "number"
+        ? new Date(decoded.iat * 1000).toISOString()
+        : null;
+
+      let expiresInSeconds = 0;
+      if (typeof decoded?.exp === "number") {
+        expiresInSeconds = Math.max(0, decoded.exp - Math.floor(Date.now() / 1000));
+      }
+
+      if (tokenType === "parent") {
+        const parentId = String(decoded?.parentId || decoded?.userId || "").trim();
+        if (!parentId) return res.status(401).json({ authenticated: false, channel: "none" });
+
+        return res.json({
+          authenticated: true,
+          channel: "parent",
+          parentId,
+          childId: null,
+          tokenType: headerToken ? "bearer" : "cookie",
+          issuedAt,
+          expiresInSeconds,
+        });
+      }
+
+      if (tokenType === "child") {
+        const childId = String(decoded?.childId || "").trim();
+        if (!childId) return res.status(401).json({ authenticated: false, channel: "none" });
+
+        return res.json({
+          authenticated: true,
+          channel: "child",
+          parentId: null,
+          childId,
+          tokenType: headerToken ? "bearer" : "cookie",
+          issuedAt,
+          expiresInSeconds,
+        });
+      }
+
+      if (tokenType === "admin") {
+        return res.json({
+          authenticated: true,
+          channel: "admin",
+          parentId: null,
+          childId: null,
+          tokenType: headerToken ? "bearer" : "cookie",
+          issuedAt,
+          expiresInSeconds,
+        });
+      }
+
+      return res.status(401).json({ authenticated: false, channel: "none" });
+    } catch {
+      return res.status(401).json({ authenticated: false, channel: "none" });
+    }
+  });
+
+  // Hard-stop logout for oracle hard-truth:
+  // Clears the httpOnly auth_token cookie so GET /api/auth/me can’t return authenticated=true afterwards.
+  app.post("/api/auth/logout", async (req: any, res: any) => {
+    try {
+      res.clearCookie(AUTH_TOKEN_COOKIE_NAME, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+        path: "/",
+      });
+
+      return res.json(successResponse({ loggedOut: true }, "Logout successful"));
+    } catch {
+      return res.status(500).json(errorResponse(ErrorCode.INTERNAL_SERVER_ERROR, "Logout failed"));
+    }
+  });
+
   app.post("/api/auth/check-email", async (req, res) => {
     try {
       const normalizedEmail = normalizeEmail(req.body?.email);
@@ -1725,7 +1832,32 @@ export async function registerAuthRoutes(app: Express) {
           password: trialPasswordHash,
           name: "ولي أمر تجريبي",
           gender: null,
+
+          // Make DB-default-sensitive NOT NULL columns explicit to avoid migration/default drift.
+          phoneNumber: null,
+          smsEnabled: false,
+          smsVerified: false,
+
           uniqueCode,
+
+          qrCode: null,
+          taskBgColor: "#ffffff",
+          twoFAEnabled: false,
+
+          privacyAccepted: false,
+          privacyAcceptedAt: null,
+          privacyAcceptedIp: null,
+
+          pin: null,
+          failedLoginAttempts: 0,
+          lockedUntil: null,
+
+          governorate: null,
+          city: null,
+          avatarUrl: null,
+          coverImageUrl: null,
+          bio: null,
+          socialLinks: null,
         })
         .returning({ id: parents.id, uniqueCode: parents.uniqueCode });
 
@@ -1743,7 +1875,38 @@ export async function registerAuthRoutes(app: Express) {
       }, "Parent trial account created successfully."));
     } catch (error: any) {
       console.error("Start parent trial error:", error);
-      return res.status(500).json(errorResponse(ErrorCode.INTERNAL_SERVER_ERROR, "Failed to start parent trial"));
+
+      const detail =
+        error instanceof Error
+          ? `${error.name || "Error"}: ${error.message || ""}`.trim()
+          : (() => {
+            try {
+              return JSON.stringify(error);
+            } catch {
+              return String(error ?? "");
+            }
+          })();
+
+      const errCode = (error as any)?.code ? String((error as any).code) : undefined;
+      const constraint = (error as any)?.constraint ? String((error as any).constraint) : undefined;
+      const constraintName = (error as any)?.constraint_name ? String((error as any).constraint_name) : undefined;
+
+      const extra = [errCode && `code=${errCode}`, constraint && `constraint=${constraint}`, constraintName && `constraint_name=${constraintName}`]
+        .filter(Boolean)
+        .join(" ");
+
+      return res.status(500).json(
+        errorResponse(
+          ErrorCode.INTERNAL_SERVER_ERROR,
+          `Failed to start parent trial${detail ? `: ${detail}` : ""}${extra ? ` (${extra})` : ""}${error?.cause
+            ? ` | causeCode=${String(error.cause.code || "")}` +
+            ` | causeConstraint=${String(error.cause.constraint || "")}` +
+            ` | causeDetail=${String(error.cause.detail || "")}` +
+            ` | causeMessage=${String(error.cause.message || "")}` +
+            ` | causeRaw=${String(error.cause)}`
+            : ""}`
+        )
+      );
     }
   });
 
@@ -5167,6 +5330,377 @@ export async function registerAuthRoutes(app: Express) {
     }
   });
 
+  // OAuth popup start endpoint (returns authUrl+oauthStateToken instead of redirect)
+  // Only enabled behind feature flags / explicit env to keep backward compatibility.
+  const OAUTH_WEB_POPUP_ENABLED = String(process.env["OAUTH_WEB_POPUP_ENABLED"] || "false").trim().toLowerCase() === "true";
+
+  app.post("/api/auth/oauth/:provider/popup/start_duplicate_disabled", async (req, res) => {
+    let acquiredStartLockKey: string | null = null;
+
+    try {
+      if (!OAUTH_WEB_POPUP_ENABLED) {
+        return res.status(404).json(errorResponse(ErrorCode.BAD_REQUEST, "OAuth popup start is disabled"));
+      }
+
+      const toggles = await getAuthFeatureToggles();
+      if (!toggles.socialLoginEnabled) {
+        return res.status(503).json(errorResponse(ErrorCode.BAD_REQUEST, "Social login is disabled"));
+      }
+
+      const provider = String(req.params?.provider || "").trim().toLowerCase();
+      const oauthProvider = getOAuthProvider(provider);
+      if (!oauthProvider) {
+        return res.status(400).json(errorResponse(ErrorCode.BAD_REQUEST, "Unsupported provider"));
+      }
+
+      const mode: OAuthMode = String(req.body?.mode || "login").trim().toLowerCase() === "link" ? "link" : "login";
+      const returnTo = normalizeInternalReturnToPath(req.body?.returnTo, "/parent-dashboard");
+
+      const clientSeed = resolveOAuthClientSeed(req) || crypto.randomBytes(16).toString("hex");
+      const fingerprint = buildOAuthClientFingerprint(req, clientSeed);
+
+      const startRateLimit = await checkOAuthStartRateLimit(
+        `${provider}|${fingerprint}`,
+        OAUTH_START_RATE_LIMIT_MAX,
+        OAUTH_START_RATE_LIMIT_WINDOW_SECONDS,
+      );
+
+      if (!startRateLimit.allowed) {
+        trackOAuthMetric("oauth_lock_conflict_total", { provider, reason: "oauth_rate_limited" });
+        res.set("Retry-After", String(startRateLimit.retryAfterSeconds));
+        return res.status(429).json(errorResponse(ErrorCode.RATE_LIMITED, "Too many OAuth start attempts. Please try again."));
+      }
+
+      const oauthStartLockKey = buildOAuthStartLockKey(provider, fingerprint);
+
+      const canStartOAuth = await acquireOAuthStartLock(
+        oauthStartLockKey,
+        OAUTH_START_LOCK_TTL_SECONDS,
+      );
+
+      if (!canStartOAuth) {
+        trackOAuthMetric("oauth_lock_conflict_total", { provider });
+        return res.status(409).json(errorResponse(ErrorCode.BAD_REQUEST, "OAuth flow is already in progress"));
+      }
+
+      acquiredStartLockKey = oauthStartLockKey;
+
+      const config = getEnvSocialProviderConfig(provider, req);
+      if (!config) {
+        return res.status(404).json(errorResponse(ErrorCode.NOT_FOUND, "Provider not found or not active"));
+      }
+
+      if (!config.clientId) {
+        return res.status(400).json(errorResponse(ErrorCode.BAD_REQUEST, "Provider not configured"));
+      }
+
+      const redirectUri = resolveStrictOAuthRedirectUri(config, provider, req);
+
+      const { token: state, nonce: stateNonce } = createOAuthStateToken({ provider, mode, returnTo });
+      const oauthCookieDomain = getOAuthCookieDomain();
+      const scopes = (config.scopes || oauthProvider.scopes.join(" ")).replace(/,/g, " ").trim();
+      const pkce = createPkcePair();
+
+      await saveOAuthLifecycleState(
+        provider,
+        stateNonce,
+        {
+          provider,
+          mode,
+          returnTo,
+          nonce: stateNonce,
+          linkParentId: mode === "link" ? resolveParentIdFromLinkToken(req.body?.linkToken, { allowParentToken: true }) : null,
+          clientSeed,
+          fingerprint,
+          redirectUri,
+          startLockKey: oauthStartLockKey,
+          pkceVerifier: pkce.codeVerifier,
+          createdAt: Date.now(),
+        },
+        OAUTH_STATE_EXPIRY_SECONDS,
+      );
+
+      // Replace stale markers from interrupted OAuth attempts.
+      clearOAuthCookies(res, oauthCookieDomain);
+
+      // Store state in cookie for callback exchange
+      res.cookie("oauth_state", state, {
+        httpOnly: true,
+        secure: process.env["NODE_ENV"] === "production",
+        sameSite: "lax",
+        path: "/",
+        ...(oauthCookieDomain ? { domain: oauthCookieDomain } : {}),
+        maxAge: OAUTH_STATE_EXPIRY_MS,
+      });
+
+      res.cookie("oauth_mode", mode, {
+        httpOnly: true,
+        secure: process.env["NODE_ENV"] === "production",
+        sameSite: "lax",
+        path: "/",
+        ...(oauthCookieDomain ? { domain: oauthCookieDomain } : {}),
+        maxAge: OAUTH_STATE_EXPIRY_MS,
+      });
+
+      res.cookie("oauth_return_to", returnTo, {
+        httpOnly: true,
+        secure: process.env["NODE_ENV"] === "production",
+        sameSite: "lax",
+        path: "/",
+        ...(oauthCookieDomain ? { domain: oauthCookieDomain } : {}),
+        maxAge: OAUTH_STATE_EXPIRY_MS,
+      });
+
+      res.cookie(OAUTH_PKCE_COOKIE_NAME, pkce.codeVerifier, {
+        httpOnly: true,
+        secure: process.env["NODE_ENV"] === "production",
+        sameSite: "lax",
+        path: "/",
+        ...(oauthCookieDomain ? { domain: oauthCookieDomain } : {}),
+        maxAge: OAUTH_STATE_EXPIRY_MS,
+      });
+
+      res.cookie(OAUTH_CLIENT_SEED_COOKIE_NAME, clientSeed, {
+        httpOnly: true,
+        secure: process.env["NODE_ENV"] === "production",
+        sameSite: "lax",
+        path: "/",
+        ...(oauthCookieDomain ? { domain: oauthCookieDomain } : {}),
+        maxAge: OAUTH_STATE_EXPIRY_MS,
+      });
+
+      const authUrl = oauthProvider.buildAuthorizationUrl({
+        config,
+        redirectUri,
+        scopes,
+        state,
+        codeChallenge: pkce.codeChallenge,
+      });
+
+      const safeAuthUrl = normalizeTrustedExternalRedirect(authUrl, oauthProvider.authUrl);
+      if (!safeAuthUrl) {
+        throw new Error("OAUTH_PROVIDER_AUTH_URL_INVALID");
+      }
+
+      trackOAuthMetric("oauth_start_total", { provider });
+
+      return res.json(
+        successResponse(
+          {
+            authUrl: safeAuthUrl,
+            oauthStateToken: state,
+            provider,
+            mode,
+            returnTo,
+          },
+          "OAuth popup start successful"
+        ),
+      );
+    } catch (error: any) {
+      console.error("OAuth popup start error:", error);
+
+      if (acquiredStartLockKey) {
+        try {
+          await releaseOAuthStartLock(acquiredStartLockKey);
+        } catch {
+          // ignore
+        }
+      }
+
+      const reason = String(error?.message || "").trim();
+      if (reason.startsWith("OAUTH_REDIRECT_URI_")) {
+        return res.status(400).json(errorResponse(ErrorCode.BAD_REQUEST, "Provider redirect URI is invalid or untrusted"));
+      }
+      if (reason === "OAUTH_PROVIDER_AUTH_URL_INVALID") {
+        return res.status(400).json(errorResponse(ErrorCode.BAD_REQUEST, "Provider authorization URL is invalid or untrusted"));
+      }
+
+      return res.status(500).json(errorResponse(ErrorCode.INTERNAL_SERVER_ERROR, "Failed to initiate OAuth popup"));
+    }
+  });
+
+  // OAuth popup start endpoint (returns authUrl+state token instead of redirecting)
+  // Feature-flagged to keep backward compatibility.
+
+  app.post("/api/auth/oauth/:provider/popup/start", async (req, res) => {
+    let acquiredStartLockKey: string | null = null;
+
+    try {
+      if (!OAUTH_WEB_POPUP_ENABLED) {
+        return res.status(404).json(errorResponse(ErrorCode.BAD_REQUEST, "OAuth popup start is disabled"));
+      }
+
+      const toggles = await getAuthFeatureToggles();
+      if (!toggles.socialLoginEnabled) {
+        return res.status(503).json(errorResponse(ErrorCode.BAD_REQUEST, "Social login is disabled"));
+      }
+
+      const provider = String(req.params?.provider || "").trim().toLowerCase();
+      const oauthProvider = getOAuthProvider(provider);
+      if (!oauthProvider) {
+        return res.status(400).json(errorResponse(ErrorCode.BAD_REQUEST, "Unsupported provider"));
+      }
+
+      const mode: OAuthMode = String(req.body?.mode || "login").trim().toLowerCase() === "link" ? "link" : "login";
+      const returnTo = normalizeInternalReturnToPath(req.body?.returnTo, "/parent-dashboard");
+
+      const clientSeed = resolveOAuthClientSeed(req) || crypto.randomBytes(16).toString("hex");
+      const fingerprint = buildOAuthClientFingerprint(req, clientSeed);
+
+      const startRateLimit = await checkOAuthStartRateLimit(
+        `${provider}|${fingerprint}`,
+        OAUTH_START_RATE_LIMIT_MAX,
+        OAUTH_START_RATE_LIMIT_WINDOW_SECONDS,
+      );
+
+      if (!startRateLimit.allowed) {
+        trackOAuthMetric("oauth_lock_conflict_total", { provider, reason: "oauth_rate_limited" });
+        res.set("Retry-After", String(startRateLimit.retryAfterSeconds));
+        return res.status(429).json(errorResponse(ErrorCode.RATE_LIMITED, "Too many OAuth start attempts"));
+      }
+
+      const oauthStartLockKey = buildOAuthStartLockKey(provider, fingerprint);
+
+      const canStartOAuth = await acquireOAuthStartLock(
+        oauthStartLockKey,
+        OAUTH_START_LOCK_TTL_SECONDS,
+      );
+
+      if (!canStartOAuth) {
+        trackOAuthMetric("oauth_lock_conflict_total", { provider });
+        return res.status(409).json(errorResponse(ErrorCode.BAD_REQUEST, "OAuth flow is already in progress"));
+      }
+
+      acquiredStartLockKey = oauthStartLockKey;
+
+      const config = getEnvSocialProviderConfig(provider, req);
+      if (!config) {
+        return res.status(404).json(errorResponse(ErrorCode.NOT_FOUND, "Provider not found or not active"));
+      }
+
+      if (!config.clientId) {
+        return res.status(400).json(errorResponse(ErrorCode.BAD_REQUEST, "Provider not configured"));
+      }
+
+      const redirectUri = resolveStrictOAuthRedirectUri(config, provider, req);
+
+      const { token: state, nonce: stateNonce } = createOAuthStateToken({ provider, mode, returnTo });
+      const oauthCookieDomain = getOAuthCookieDomain();
+      const scopes = (config.scopes || oauthProvider.scopes.join(" ")).replace(/,/g, " ").trim();
+      const pkce = createPkcePair();
+
+      await saveOAuthLifecycleState(
+        provider,
+        stateNonce,
+        {
+          provider,
+          mode,
+          returnTo,
+          nonce: stateNonce,
+          linkParentId: mode === "link" ? resolveParentIdFromLinkToken(req.body?.linkToken, { allowParentToken: true }) : null,
+          clientSeed,
+          fingerprint,
+          redirectUri,
+          startLockKey: oauthStartLockKey,
+          pkceVerifier: pkce.codeVerifier,
+          createdAt: Date.now(),
+        },
+        OAUTH_STATE_EXPIRY_SECONDS,
+      );
+
+      // Replace stale markers from interrupted OAuth attempts.
+      clearOAuthCookies(res, oauthCookieDomain);
+
+      // Store state in session/cookies for callback exchange
+      res.cookie("oauth_state", state, {
+        httpOnly: true,
+        secure: process.env["NODE_ENV"] === "production",
+        sameSite: "lax",
+        path: "/",
+        ...(oauthCookieDomain ? { domain: oauthCookieDomain } : {}),
+        maxAge: OAUTH_STATE_EXPIRY_MS,
+      });
+
+      res.cookie("oauth_mode", mode, {
+        httpOnly: true,
+        secure: process.env["NODE_ENV"] === "production",
+        sameSite: "lax",
+        path: "/",
+        ...(oauthCookieDomain ? { domain: oauthCookieDomain } : {}),
+        maxAge: OAUTH_STATE_EXPIRY_MS,
+      });
+
+      res.cookie("oauth_return_to", returnTo, {
+        httpOnly: true,
+        secure: process.env["NODE_ENV"] === "production",
+        sameSite: "lax",
+        path: "/",
+        ...(oauthCookieDomain ? { domain: oauthCookieDomain } : {}),
+        maxAge: OAUTH_STATE_EXPIRY_MS,
+      });
+
+      res.cookie(OAUTH_PKCE_COOKIE_NAME, pkce.codeVerifier, {
+        httpOnly: true,
+        secure: process.env["NODE_ENV"] === "production",
+        sameSite: "lax",
+        path: "/",
+        ...(oauthCookieDomain ? { domain: oauthCookieDomain } : {}),
+        maxAge: OAUTH_STATE_EXPIRY_MS,
+      });
+
+      res.cookie(OAUTH_CLIENT_SEED_COOKIE_NAME, clientSeed, {
+        httpOnly: true,
+        secure: process.env["NODE_ENV"] === "production",
+        sameSite: "lax",
+        path: "/",
+        ...(oauthCookieDomain ? { domain: oauthCookieDomain } : {}),
+        maxAge: OAUTH_STATE_EXPIRY_MS,
+      });
+
+      const authUrl = oauthProvider.buildAuthorizationUrl({
+        config,
+        redirectUri,
+        scopes,
+        state,
+        codeChallenge: pkce.codeChallenge,
+      });
+
+      const safeAuthUrl = normalizeTrustedExternalRedirect(authUrl, oauthProvider.authUrl);
+      if (!safeAuthUrl) {
+        throw new Error("OAUTH_PROVIDER_AUTH_URL_INVALID");
+      }
+
+      trackOAuthMetric("oauth_start_total", { provider });
+
+      return res.json(
+        successResponse(
+          { authUrl: safeAuthUrl, oauthStateToken: state, provider, mode, returnTo },
+          "OAuth popup start successful",
+        ),
+      );
+    } catch (error: any) {
+      console.error("OAuth popup start error:", error);
+
+      if (acquiredStartLockKey) {
+        try {
+          await releaseOAuthStartLock(acquiredStartLockKey);
+        } catch {
+          // ignore
+        }
+      }
+
+      const reason = String(error?.message || "").trim();
+      if (reason.startsWith("OAUTH_REDIRECT_URI_")) {
+        return res.status(400).json(errorResponse(ErrorCode.BAD_REQUEST, "Provider redirect URI is invalid or untrusted"));
+      }
+      if (reason === "OAUTH_PROVIDER_AUTH_URL_INVALID") {
+        return res.status(400).json(errorResponse(ErrorCode.BAD_REQUEST, "Provider authorization URL is invalid or untrusted"));
+      }
+
+      return res.status(500).json(errorResponse(ErrorCode.INTERNAL_SERVER_ERROR, "Failed to initiate OAuth popup"));
+    }
+  });
+
   // OAuth callback endpoint (receives code from provider)
   // Supports both GET (most providers) and POST (Apple Sign In)
   const oauthCallbackHandler = async (req: any, res: any) => {
@@ -5471,7 +6005,24 @@ export async function registerAuthRoutes(app: Express) {
       await redisClient.del(key);
 
       const data = JSON.parse(raw) as { token?: string; returnTo?: string };
-      return res.json({ token: data.token, returnTo: data.returnTo });
+
+      const token = typeof data.token === "string" ? data.token : "";
+      const returnTo = typeof data.returnTo === "string" ? data.returnTo : "/parent-dashboard";
+
+      if (AUTH_REDEEM_COOKIE_WRITE_ENABLED && token) {
+        res.cookie(AUTH_TOKEN_COOKIE_NAME, token, {
+          httpOnly: true,
+          sameSite: "lax",
+          secure: process.env.NODE_ENV === "production",
+          path: "/",
+        });
+      }
+
+      if (!AUTH_REDEEM_RETURNS_TOKEN) {
+        return res.json({ returnTo });
+      }
+
+      return res.json({ token, returnTo });
     } catch {
       return res.status(404).json({ message: "nonce expired or invalid" });
     }

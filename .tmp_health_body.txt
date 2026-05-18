@@ -1,0 +1,1 @@
+{"status":"degraded","checks":{"database":"unhealthy"},"message":"Failed query: SELECT 1\nparams: "}

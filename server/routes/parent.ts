@@ -803,8 +803,27 @@ export async function registerParentRoutes(app: Express) {
 
   // SSE endpoint for real-time notifications
   app.get("/api/parent/events", async (req: any, res) => {
-    // SSE can't send auth headers, so accept token via query param
-    const token = (req.query.token as string) || req.headers.authorization?.split(" ")[1];
+    const AUTH_TOKEN_COOKIE_NAME = "auth_token";
+    const AUTH_REDEEM_COOKIE_WRITE_ENABLED =
+      String(process.env.AUTH_REDEEM_COOKIE_WRITE_ENABLED || "")
+        .trim()
+        .toLowerCase() === "true";
+
+    const headerAuth = req.headers?.authorization;
+    const headerToken =
+      typeof headerAuth === "string" && headerAuth.toLowerCase().startsWith("bearer ")
+        ? String(headerAuth.slice(7)).trim()
+        : "";
+
+    const cookieToken = AUTH_REDEEM_COOKIE_WRITE_ENABLED
+      ? String(req.cookies?.[AUTH_TOKEN_COOKIE_NAME] || "").trim()
+      : "";
+
+    const queryToken = typeof req.query?.token === "string" ? req.query.token.trim() : "";
+
+    // Order: Authorization header -> auth_token cookie (if enabled) -> legacy ?token fallback
+    const token = headerToken || cookieToken || queryToken;
+
     if (!token) {
       return res
         .status(401)

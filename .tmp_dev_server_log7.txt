@@ -1,0 +1,412 @@
+
+> rest-express@2.0.2 dev
+> dotenv -v NODE_ENV=development -- tsx server/index.ts
+
+⚠️ pino-pretty is not installed; running without pretty transport.
+ℹ️ SMS OTP Service: No SMS provider configured (SMS OTP disabled)
+
+╔════════════════════════════════════════════╗
+║  🚀 Classify Server Initialization        ║
+╚════════════════════════════════════════════╝
+
+📋 Environment Configuration:
+  NODE_ENV: development
+  PORT: 5000
+  DATABASE_URL: ✅ SET
+  JWT_SECRET: ✅ SET
+
+ACTIVE_DATABASE_URL: postgresql://postgres:***@db:5432/classify_db
+ℹ️ Prerender middleware disabled by PRERENDER_ENABLED
+⚠️ Could not seed default games: Failed query: select "id" from "flash_games" where "flash_games"."embed_url" = $1
+params: /games/math-challenge.html
+⚠️ Could not seed symbol categories: Failed query: select count(*)::int from "symbol_categories"
+params: 
+Stripe webhook not configured; skipping /api/payments/stripe/webhook route
+[NOTIFICATION_HANDLERS] Initializing gift event listeners...
+[NOTIFICATION_HANDLERS] ✅ All listeners initialized
+[task-notification-worker] started {
+  profile: 'low',
+  intervalMs: 12000,
+  batchSize: 12,
+  concurrency: 2,
+  autoscale: {
+    enabled: true,
+    backlogHigh: 36,
+    backlogCritical: 96,
+    maxBatchSize: 48,
+    maxConcurrency: 6
+  }
+}
+[MonthlySubscription] Worker started - checks hourly on 1st of month
+❌ vite.createServer missing/invalid { typeofCreateServer: 'undefined', viteKeys: [], defaultKeys: [] }
+vite default?.createServer: undefined
+⚠️ Vite dev middleware failed; continuing in API-only mode. { message: 'vite.createServer is not a function' }
+12:00:01 PM [express] ✓ Server running on http://0.0.0.0:5000
+task notification worker cycle error DrizzleQueryError: Failed query: SELECT pg_try_advisory_lock($1) as locked;
+params: 928372
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+    at async runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'SELECT pg_try_advisory_lock($1) as locked;',
+  params: [ 928372n ],
+  cause: Error: getaddrinfo ENOTFOUND db
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:149:14)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+      at async runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'db'
+  }
+}
+media cleanup error DrizzleQueryError: Failed query: SELECT pg_try_advisory_lock($1) as locked;
+params: 928371
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\mediaWorker.ts:16:18)
+    at async runCleanupCycle (C:\Users\cex\Downloads\classify-app-main\server\services\mediaWorker.ts:80:18)
+    at async runCleanupCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\mediaWorker.ts:95:5) {
+  query: 'SELECT pg_try_advisory_lock($1) as locked;',
+  params: [ 928371n ],
+  cause: Error: getaddrinfo ENOTFOUND db
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:149:14)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\mediaWorker.ts:16:18)
+      at async runCleanupCycle (C:\Users\cex\Downloads\classify-app-main\server\services\mediaWorker.ts:80:18)
+      at async runCleanupCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\mediaWorker.ts:95:5) {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'db'
+  }
+}
+[SCHEDULED_SESSION] Error in startup recovery: DrizzleQueryError: Failed query: select "id", "parent_id", "child_id", "title", "description", "interval_minutes", "activation_type", "scheduled_start_at", "actual_start_at", "paused_at", "total_tasks", "completed_tasks", "total_points_reward", "status", "created_at", "updated_at" from "scheduled_sessions" where "scheduled_sessions"."status" = $1
+params: active
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async recoverPendingSessionUnlocks (C:\Users\cex\Downloads\classify-app-main\server\services\scheduledSessionService.ts:415:28) {
+  query: 'select "id", "parent_id", "child_id", "title", "description", "interval_minutes", "activation_type", "scheduled_start_at", "actual_start_at", "paused_at", "total_tasks", "completed_tasks", "total_points_reward", "status", "created_at", "updated_at" from "scheduled_sessions" where "scheduled_sessions"."status" = $1',
+  params: [ 'active' ],
+  cause: Error: getaddrinfo ENOTFOUND db
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async recoverPendingSessionUnlocks (C:\Users\cex\Downloads\classify-app-main\server\services\scheduledSessionService.ts:415:28) {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'db'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: SELECT pg_try_advisory_lock($1) as locked;
+params: 928372
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'SELECT pg_try_advisory_lock($1) as locked;',
+  params: [ 928372n ],
+  cause: Error: getaddrinfo ENOTFOUND db
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:149:14)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'db'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: SELECT pg_try_advisory_lock($1) as locked;
+params: 928372
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'SELECT pg_try_advisory_lock($1) as locked;',
+  params: [ 928372n ],
+  cause: Error: getaddrinfo ENOTFOUND db
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:149:14)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'db'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: SELECT pg_try_advisory_lock($1) as locked;
+params: 928372
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'SELECT pg_try_advisory_lock($1) as locked;',
+  params: [ 928372n ],
+  cause: Error: getaddrinfo ENOTFOUND db
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:149:14)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'db'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: SELECT pg_try_advisory_lock($1) as locked;
+params: 928372
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'SELECT pg_try_advisory_lock($1) as locked;',
+  params: [ 928372n ],
+  cause: Error: getaddrinfo ENOTFOUND db
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:149:14)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'db'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: SELECT pg_try_advisory_lock($1) as locked;
+params: 928372
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'SELECT pg_try_advisory_lock($1) as locked;',
+  params: [ 928372n ],
+  cause: Error: getaddrinfo ENOTFOUND db
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:149:14)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'db'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: SELECT pg_try_advisory_lock($1) as locked;
+params: 928372
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'SELECT pg_try_advisory_lock($1) as locked;',
+  params: [ 928372n ],
+  cause: Error: getaddrinfo ENOTFOUND db
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:149:14)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'db'
+  }
+}
+12:01:22 PM [express] GET /api/health 503 in 2712ms
+task notification worker cycle error DrizzleQueryError: Failed query: SELECT pg_try_advisory_lock($1) as locked;
+params: 928372
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'SELECT pg_try_advisory_lock($1) as locked;',
+  params: [ 928372n ],
+  cause: Error: getaddrinfo ENOTFOUND db
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:149:14)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'db'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: SELECT pg_try_advisory_lock($1) as locked;
+params: 928372
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'SELECT pg_try_advisory_lock($1) as locked;',
+  params: [ 928372n ],
+  cause: Error: getaddrinfo ENOTFOUND db
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:149:14)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'db'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: SELECT pg_try_advisory_lock($1) as locked;
+params: 928372
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'SELECT pg_try_advisory_lock($1) as locked;',
+  params: [ 928372n ],
+  cause: Error: getaddrinfo ENOTFOUND db
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:149:14)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'db'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: SELECT pg_try_advisory_lock($1) as locked;
+params: 928372
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'SELECT pg_try_advisory_lock($1) as locked;',
+  params: [ 928372n ],
+  cause: Error: getaddrinfo ENOTFOUND db
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:149:14)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'db'
+  }
+}
+12:02:10 PM [express] GET /api/health 503 in 2717ms
+task notification worker cycle error DrizzleQueryError: Failed query: SELECT pg_try_advisory_lock($1) as locked;
+params: 928372
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'SELECT pg_try_advisory_lock($1) as locked;',
+  params: [ 928372n ],
+  cause: Error: getaddrinfo ENOTFOUND db
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:149:14)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'db'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: SELECT pg_try_advisory_lock($1) as locked;
+params: 928372
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'SELECT pg_try_advisory_lock($1) as locked;',
+  params: [ 928372n ],
+  cause: Error: getaddrinfo ENOTFOUND db
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:149:14)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'db'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: SELECT pg_try_advisory_lock($1) as locked;
+params: 928372
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'SELECT pg_try_advisory_lock($1) as locked;',
+  params: [ 928372n ],
+  cause: Error: getaddrinfo ENOTFOUND db
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:149:14)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async tryAcquireLock (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:166:18)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1266:18)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    errno: -3008,
+    code: 'ENOTFOUND',
+    syscall: 'getaddrinfo',
+    hostname: 'db'
+  }
+}

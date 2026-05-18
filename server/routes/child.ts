@@ -537,7 +537,27 @@ function parsePromoParamsFromLink(linkUrl: string | null | undefined): {
 export async function registerChildRoutes(app: Express) {
   // SSE endpoint for real-time child notifications
   app.get("/api/child/events", sseConnectLimiter, async (req: any, res) => {
-    const token = (req.query.token as string) || req.headers.authorization?.split(" ")[1];
+    const AUTH_TOKEN_COOKIE_NAME = "auth_token";
+    const AUTH_REDEEM_COOKIE_WRITE_ENABLED =
+      String(process.env.AUTH_REDEEM_COOKIE_WRITE_ENABLED || "")
+        .trim()
+        .toLowerCase() === "true";
+
+    const headerAuth = req.headers?.authorization;
+    const headerToken =
+      typeof headerAuth === "string" && headerAuth.toLowerCase().startsWith("bearer ")
+        ? String(headerAuth.slice(7)).trim()
+        : "";
+
+    const cookieToken = AUTH_REDEEM_COOKIE_WRITE_ENABLED
+      ? String(req.cookies?.[AUTH_TOKEN_COOKIE_NAME] || "").trim()
+      : "";
+
+    const queryToken = typeof req.query?.token === "string" ? req.query.token.trim() : "";
+
+    // Order: Authorization header -> auth_token cookie (if enabled) -> legacy ?token fallback
+    const token = headerToken || cookieToken || queryToken;
+
     if (!token) {
       return res
         .status(401)
@@ -1991,45 +2011,6 @@ export async function registerChildRoutes(app: Express) {
   });
 
   // الحصول على الأحداث والهدايا المعلقة للطفل
-  app.get("/api/child/events", authMiddleware, async (req: any, res) => {
-    try {
-      const childId = req.user.childId;
-
-      // الحصول على الأحداث غير المقرة
-      const events = await db
-        .select()
-        .from(childEvents)
-        .where(and(eq(childEvents.childId, childId), eq(childEvents.isAcknowledged, false)));
-
-      // الحصول على الهدايا المعلقة
-      const gifts = await db
-        .select()
-        .from(childGifts)
-        .where(and(eq(childGifts.childId, childId), eq(childGifts.status, "pending")));
-
-      // الحصول على إعدادات الإشعارات
-      const settings = await db
-        .select()
-        .from(childNotificationSettings)
-        .where(eq(childNotificationSettings.childId, childId));
-
-      res.json({
-        success: true,
-        data: {
-          events,
-          gifts,
-          settings: settings[0] || {
-            mode: "popup_soft",
-            repeatDelayMinutes: 5,
-            requireOverlayPermission: false,
-          },
-        },
-      });
-    } catch (error: any) {
-      console.error("Fetch events error:", error);
-      res.status(500).json({ message: "Failed to fetch events" });
-    }
-  });
 
   // Get Child Notifications (in-app)
   app.get("/api/child/notifications", authMiddleware, async (req: any, res) => {

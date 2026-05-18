@@ -1,0 +1,230 @@
+import type { Express } from "express";
+import { storage } from "../storage";
+import { successResponse, errorResponse, ErrorCode } from "../utils/apiResponse";
+import { validateBody } from "../validators";
+import {
+  childLinkSchema,
+  childLoginRequestSchema,
+  childRequestLoginByNameSchema,
+  childLogoutSchema,
+  childRefreshTokenSchema,
+  childUpdateProfileSchema,
+  childShowcaseSettingsSchema,
+  childSubmitTaskSchema,
+  childAnswerTaskSchema,
+  childCompleteGameSchema,
+  childTaskNotificationCompleteSchema,
+  childPurchaseRequestSchema,
+  childHelpRequestSchema,
+  childHelpChatMessageSchema,
+  childNotificationSettingsSchema,
+  childPushSubscriptionSchema,
+  childCreatePostSchema,
+  childCheckLikesSchema,
+  childCommentSchema,
+  childFriendRequestSchema,
+  childFriendActionSchema,
+  childFollowSchema,
+  childFollowCheckSchema,
+  childNotifyAchievementSchema,
+  childScreenTimeHeartbeatSchema,
+} from "../validators/childSchemas";
+import {
+  parents,
+  children,
+  parentChild,
+  tasks,
+  taskResults,
+  flashGames,
+  products,
+  orders,
+  storeOrders,
+  orderItems,
+  childPurchases,
+  childPurchaseRequests,
+  parentOwnedProducts,
+  childAssignedProducts,
+  subjects,
+  templateTasks,
+  notifications,
+  childGifts,
+  childEvents,
+  childNotificationSettings,
+  childPushSubscriptions,
+  gifts,
+  entitlements,
+  activityLog,
+  childTrustedDevices,
+  childGrowthTrees,
+  childGrowthEvents,
+  childLoginRequests,
+  growthTreeSettings,
+  childWateringLog,
+  libraryProducts,
+  libraries,
+  libraryReferrals,
+  libraryActivityLogs,
+  libraryReferralSettings,
+  childGameAssignments,
+  gamePlayHistory,
+  childFriendships,
+  childFriendNotifications,
+  childFollows,
+  childPosts,
+  childPostLikes,
+  childPostComments,
+  childTeacherAssignment,
+  teacherChildPermissions,
+  schools,
+  schoolTeachers,
+  schoolActivityLogs,
+  scheduledSessions,
+  scheduledSessionTasks,
+  taskHelpRequests,
+  taskHelpMessages,
+  taskHelpFeedback,
+  screenTimeSettings,
+  childDailyUsage,
+  appSettings,
+  ads,
+  childReferralVisits,
+} from "../../shared/schema";
+import bcrypt from "bcrypt";
+import crypto from "crypto";
+import { eq, and, or, desc, sql, count, ilike, ne, inArray } from "drizzle-orm";
+import jwt from "jsonwebtoken";
+// Type declarations for `qrcode` are not present in the repo; silence TypeScript here
+// @ts-ignore
+import QRCode from "qrcode";
+import { authMiddleware, JWT_SECRET } from "./middleware";
+import {
+  childLinkLimiter,
+  childLoginRequestLimiter,
+  childLoginStatusLimiter,
+  refreshTokenLimiter,
+  publicApiLimiter,
+  sseConnectLimiter,
+  gameCompletionLimiter,
+} from "../utils/rateLimiters";
+import { emitGiftEvent } from "../giftEvents";
+import { unlockEligibleGifts } from "../giftUnlock";
+import { createNotification } from "../notifications";
+import { applyPointsDelta } from "../services/pointsService";
+import { getVapidPublicKey } from "../services/webPushService";
+import { notificationBus } from "../services/notificationBus";
+import { NOTIFICATION_TYPES, NOTIFICATION_STYLES, NOTIFICATION_PRIORITIES } from "../../shared/notificationTypes";
+import { activateOnLoginSessions, resumePausedSessions, pauseActiveSessions, handleSessionTaskCompletion } from "../services/scheduledSessionService";
+import { sseManager } from "../utils/sseManager";
+import {
+  applyGardenEconomyDelta,
+  calculateGardenBeauty,
+  calculateGrowthPointsForTool,
+  calculateHarvestReward,
+  calculateSlotStageFromProgress,
+} from "../services/gardenEconomy";
+import { getGameIframePolicy, isGameUrlAllowed } from "../services/gameUrlPolicy";
+
+const db = storage.db;
+
+async function generateUniqueChildShareCode(): Promise<string> {
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  for (let attempt = 0; attempt < 12; attempt += 1) {
+    const candidate = Array.from({ length: 8 }, () => alphabet[crypto.randomInt(0, alphabet.length)] || "A").join("");
+    const existing = await db
+      .select({ id: children.id })
+      .from(children)
+      .where(eq(children.shareCode, candidate))
+      .limit(1);
+    if (!existing[0]) return candidate;
+  }
+  return `${Date.now().toString(36).toUpperCase().slice(-8)}`;
+}
+
+function decodeOptionalAuthUser(req: any): { parentId?: string; childId?: string } {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) return {};
+    const token = authHeader.split(" ")[1];
+    if (!token) return {};
+    const appSecret = process.env["APP_JWT_SECRET"] || process.env["JWT_SECRET"] || "classify-app-2025-secret";
+    const decoded = jwt.verify(token, appSecret) as any;
+    if (decoded.parentId || decoded.userId) {
+      return { parentId: decoded.parentId || decoded.userId };
+    }
+    if (decoded.childId) {
+      return { childId: decoded.childId };
+    }
+  } catch {
+    // anonymous viewer
+  }
+  return {};
+}
+
+function buildChildLoginRequestKey(requestId: string): string {
+  return crypto
+    .createHmac("sha256", JWT_SECRET)
+    .update(`child-login:${requestId}`)
+    .digest("hex");
+}
+
+function isValidRequestKey(requestId: string, providedKey: string): boolean {
+  const expected = buildChildLoginRequestKey(requestId);
+  if (!providedKey || providedKey.length !== expected.length) {
+    return false;
+  }
+  return crypto.timingSafeEqual(Buffer.from(providedKey), Buffer.from(expected));
+}
+
+// Helper function to normalize answers - ensures each answer has a DETERMINISTIC id
+// Uses hash of answer text + index to generate consistent IDs across calls
+function normalizeAnswers(answers: any, taskQuestion?: string): any[] {
+  if (!answers || !Array.isArray(answers)) return [];
+
+  // Generate a simple hash for deterministic ID
+  const hashText = (text: string, index: number): string => {
+    const combined = `${taskQuestion || ''}-${text}-${index}`;
+    let hash = 0;
+    for (let i = 0; i < combined.length; i++) {
+      const char = combined.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    return Math.abs(hash).toString(36);
+  };
+
+  return answers.map((answer: any, index: number) => {
+    // If answer is already an object with id, return as-is
+    if (typeof answer === 'object' && answer !== null && answer.id) {
+      return answer;
+    }
+    // If answer is a string, convert to object with generated deterministic id
+    if (typeof answer === 'string') {
+      return {
+        id: `answer-${index}-${hashText(answer, index)}`,
+        text: answer,
+        isCorrect: index === 0 // First answer is correct by default for legacy data
+      };
+    }
+    // If answer is an object without id, add one
+    if (typeof answer === 'object' && answer !== null) {
+      const text = answer.text || String(answer);
+      return {
+        ...answer,
+        id: answer.id || `answer-${index}-${hashText(text, index)}`
+      };
+    }
+    const text = String(answer);
+    return { id: `answer-${index}-${hashText(text, index)}`, text, isCorrect: false };
+  });
+}
+
+function normalizeSubjectLabel(value?: string | null): string {
+  return String(value || "").trim().toLowerCase();
+}
+
+function normalizeServedGameEmbedUrl(raw: unknown): string {
+  let value = String(raw || "").trim();
+  if (!value) return "";
+
+  // Repair common malformed internal paths seen in legacy/admin rows.
+  value = value.replace(/^:+/, "/");

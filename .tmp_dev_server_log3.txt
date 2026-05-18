@@ -1,0 +1,41 @@
+
+> rest-express@2.0.2 dev
+> dotenv -v NODE_ENV=development -- tsx server/index.ts
+
+⚠️ pino-pretty is not installed; running without pretty transport.
+ℹ️ SMS OTP Service: No SMS provider configured (SMS OTP disabled)
+
+╔════════════════════════════════════════════╗
+║  🚀 Classify Server Initialization        ║
+╚════════════════════════════════════════════╝
+
+📋 Environment Configuration:
+  NODE_ENV: development
+  PORT: 5000
+  DATABASE_URL: ✅ SET
+  JWT_SECRET: ✅ SET
+
+ACTIVE_DATABASE_URL: postgresql://postgres:***@db:5432/classify_db
+ℹ️ Prerender middleware disabled by PRERENDER_ENABLED
+⚠️ Could not seed default games: Failed query: select "id" from "flash_games" where "flash_games"."embed_url" = $1
+params: /games/math-challenge.html
+⚠️ Could not seed symbol categories: Failed query: select count(*)::int from "symbol_categories"
+params: 
+Stripe webhook not configured; skipping /api/payments/stripe/webhook route
+[NOTIFICATION_HANDLERS] Initializing gift event listeners...
+[NOTIFICATION_HANDLERS] ✅ All listeners initialized
+[task-notification-worker] started {
+  profile: 'low',
+  intervalMs: 12000,
+  batchSize: 12,
+  concurrency: 2,
+  autoscale: {
+    enabled: true,
+    backlogHigh: 36,
+    backlogCritical: 96,
+    maxBatchSize: 48,
+    maxConcurrency: 6
+  }
+}
+[MonthlySubscription] Worker started - checks hourly on 1st of month
+❌ Failed to start server: vite.createLogger is not a function

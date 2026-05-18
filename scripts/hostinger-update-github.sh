@@ -328,7 +328,9 @@ main() {
   fi
 
   log "Rebuilding and starting stack (project: $COMPOSE_PROJECT_NAME)"
-  docker compose -p "$COMPOSE_PROJECT_NAME" up -d --build
+  # Prevent container name conflicts when app container exists from previous runs.
+  docker compose -p "$COMPOSE_PROJECT_NAME" rm -f app >/dev/null 2>&1 || true
+  docker compose -p "$COMPOSE_PROJECT_NAME" up -d --build --force-recreate
 
   log "Waiting a bit for containers..."
   sleep 10

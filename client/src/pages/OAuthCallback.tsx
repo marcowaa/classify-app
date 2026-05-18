@@ -94,6 +94,36 @@ export function OAuthCallback() {
 
           // حالة النجاح — استرجاع token عبر nonce
           if (nonce) {
+            // Popup handoff: if we have an opener window, do NOT redeem in the popup.
+            // Instead, post the nonce back to the opener (main window) which will redeem.
+            const hasOpener = typeof window !== "undefined" && window.opener && !window.opener.closed;
+
+            if (hasOpener) {
+              try {
+                window.opener.postMessage(
+                  {
+                    type: "OAUTH_NONCE_READY",
+                    v: 1,
+                    traceId: "",
+                    nonce,
+                    provider,
+                  },
+                  window.location.origin,
+                );
+              } catch {
+                // Ignore and fall back to legacy redemption below.
+              }
+
+              // Best-effort close (may be blocked; still prevent redemption in popup).
+              try {
+                window.close();
+              } catch {
+                // ignore
+              }
+              return;
+            }
+
+            // Legacy: redeem in this window (non-popup)
             fetch("/api/auth/oauth/redeem-nonce", {
               method: "POST",
               headers: { "Content-Type": "application/json" },

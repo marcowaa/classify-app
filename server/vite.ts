@@ -41,7 +41,15 @@ export async function setupVite(app: Express, server: Server) {
   const viteConfigModule = await import("../vite.config.js");
   const { nanoid } = await import("nanoid");
 
-  const viteLogger = vite.createLogger();
+  const viteLogger =
+    typeof (vite as any).createLogger === "function"
+      ? (vite as any).createLogger()
+      : {
+        info: console.log.bind(console),
+        warn: console.warn.bind(console),
+        error: console.error.bind(console),
+        debug: console.debug ? console.debug.bind(console) : console.log.bind(console),
+      };
 
   const serverOptions = {
     middlewareMode: true,
@@ -49,8 +57,25 @@ export async function setupVite(app: Express, server: Server) {
     allowedHosts: true as const,
   };
 
-  const viteServer = await vite.createServer({
-    ...viteConfigModule.default,
+  // Vite exports in this project are named (no default.createServer)
+  const createServerFn = (vite as any).createServer;
+
+  if (typeof createServerFn !== "function") {
+    // eslint-disable-next-line no-console
+    console.error("❌ vite.createServer missing/invalid", {
+      typeofCreateServer: typeof (vite as any).createServer,
+      viteKeys: Object.keys(vite as any),
+      defaultKeys: Object.keys((vite as any).default || {}),
+    });
+
+    // eslint-disable-next-line no-console
+    console.error("vite default?.createServer:", typeof (vite as any).default?.createServer);
+
+    throw new Error("vite.createServer is not a function");
+  }
+
+  const viteServer = await createServerFn({
+    ...(viteConfigModule.default as any),
     configFile: false,
     customLogger: {
       ...viteLogger,

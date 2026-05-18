@@ -1,0 +1,3145 @@
+
+> rest-express@2.0.2 dev
+> dotenv -v NODE_ENV=development -- tsx server/index.ts
+
+⚠️ pino-pretty is not installed; running without pretty transport.
+ℹ️ SMS OTP Service: No SMS provider configured (SMS OTP disabled)
+
+╔════════════════════════════════════════════╗
+║  🚀 Classify Server Initialization        ║
+╚════════════════════════════════════════════╝
+
+📋 Environment Configuration:
+  NODE_ENV: development
+  PORT: 5000
+  DATABASE_URL: ✅ SET
+  JWT_SECRET: ✅ SET
+
+ACTIVE_DATABASE_URL: postgresql://postgres:***@localhost:5434/classify_db
+ℹ️ Prerender middleware disabled by PRERENDER_ENABLED
+⚠️ Could not seed default games: Failed query: select "id" from "flash_games" where "flash_games"."embed_url" = $1
+params: /games/math-challenge.html
+⚠️ Could not seed symbol categories: Failed query: select count(*)::int from "symbol_categories"
+params: 
+Stripe webhook not configured; skipping /api/payments/stripe/webhook route
+[NOTIFICATION_HANDLERS] Initializing gift event listeners...
+[NOTIFICATION_HANDLERS] ✅ All listeners initialized
+[task-notification-worker] started {
+  profile: 'low',
+  intervalMs: 12000,
+  batchSize: 12,
+  concurrency: 2,
+  autoscale: {
+    enabled: true,
+    backlogHigh: 36,
+    backlogCritical: 96,
+    maxBatchSize: 48,
+    maxConcurrency: 6
+  }
+}
+[MonthlySubscription] Worker started - checks hourly on 1st of month
+❌ vite.createServer missing/invalid { typeofCreateServer: 'undefined', viteKeys: [], defaultKeys: [] }
+vite default?.createServer: undefined
+⚠️ Vite dev middleware failed; continuing in API-only mode. { message: 'vite.createServer is not a function' }
+12:03:11 PM [express] ✓ Server running on http://0.0.0.0:5000
+[SCHEDULED_SESSION] Error in startup recovery: DrizzleQueryError: Failed query: select "id", "parent_id", "child_id", "title", "description", "interval_minutes", "activation_type", "scheduled_start_at", "actual_start_at", "paused_at", "total_tasks", "completed_tasks", "total_points_reward", "status", "created_at", "updated_at" from "scheduled_sessions" where "scheduled_sessions"."status" = $1
+params: active
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async recoverPendingSessionUnlocks (C:\Users\cex\Downloads\classify-app-main\server\services\scheduledSessionService.ts:415:28) {
+  query: 'select "id", "parent_id", "child_id", "title", "description", "interval_minutes", "activation_type", "scheduled_start_at", "actual_start_at", "paused_at", "total_tasks", "completed_tasks", "total_points_reward", "status", "created_at", "updated_at" from "scheduled_sessions" where "scheduled_sessions"."status" = $1',
+  params: [ 'active' ],
+  cause: error: relation "scheduled_sessions" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async recoverPendingSessionUnlocks (C:\Users\cex\Downloads\classify-app-main\server\services\scheduledSessionService.ts:415:28) {
+    length: 118,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '255',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+media cleanup error DrizzleQueryError: Failed query: 
+    SELECT id, object_key
+    FROM media m
+    WHERE m.deleted_at IS NULL
+      AND m.created_at < (NOW() - INTERVAL '24 hours')
+      AND NOT EXISTS (
+        SELECT 1 FROM media_references r
+        WHERE r.media_id = m.id AND r.deleted_at IS NULL
+      )
+  
+params: 
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async findOrphans (C:\Users\cex\Downloads\classify-app-main\server\services\mediaWorker.ts:29:15)
+    at async runCleanupCycle (C:\Users\cex\Downloads\classify-app-main\server\services\mediaWorker.ts:83:34)
+    at async runCleanupCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\mediaWorker.ts:95:5) {
+  query: '\n' +
+    '    SELECT id, object_key\n' +
+    '    FROM media m\n' +
+    '    WHERE m.deleted_at IS NULL\n' +
+    "      AND m.created_at < (NOW() - INTERVAL '24 hours')\n" +
+    '      AND NOT EXISTS (\n' +
+    '        SELECT 1 FROM media_references r\n' +
+    '        WHERE r.media_id = m.id AND r.deleted_at IS NULL\n' +
+    '      )\n' +
+    '  ',
+  params: [],
+  cause: error: relation "media" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:149:14)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async findOrphans (C:\Users\cex\Downloads\classify-app-main\server\services\mediaWorker.ts:29:15)
+      at async runCleanupCycle (C:\Users\cex\Downloads\classify-app-main\server\services\mediaWorker.ts:83:34)
+      at async runCleanupCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\mediaWorker.ts:95:5) {
+    length: 104,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '37',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:03:11.879Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:03:11.879Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:03:23.505Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:03:23.505Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:03:35.518Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:03:35.518Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:03:47.522Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:03:47.522Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+12:03:50 PM [express] GET /api/health 200 in 4ms
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:03:59.530Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:03:59.530Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:04:11.530Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:04:11.530Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:04:23.532Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:04:23.532Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:04:35.538Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:04:35.538Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:04:47.545Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:04:47.545Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:04:59.560Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:04:59.560Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:05:11.561Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:05:11.561Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:05:23.569Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:05:23.569Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:05:35.583Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:05:35.583Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+12:05:46 PM [express] GET /api/health 200 in 2ms
+12:05:46 PM [express] GET /api/auth/me 401 in 1ms
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:05:47.591Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:05:47.591Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:05:59.601Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:05:59.601Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:06:11.611Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:06:11.611Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:06:23.621Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:06:23.621Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+Start parent trial error: DrizzleQueryError: Failed query: select "id" from "parents" where "parents"."unique_code" = $1 limit $2
+params: P388DD,1
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async generateUniqueParentCode (C:\Users\cex\Downloads\classify-app-main\server\routes\auth.ts:265:22)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\server\routes\auth.ts:1833:26) {
+  query: 'select "id" from "parents" where "parents"."unique_code" = $1 limit $2',
+  params: [ 'P388DD', 1 ],
+  cause: error: relation "parents" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async generateUniqueParentCode (C:\Users\cex\Downloads\classify-app-main\server\routes\auth.ts:265:22)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\server\routes\auth.ts:1833:26) {
+    length: 106,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '18',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+12:06:25 PM [express] POST /api/auth/start-parent-trial 500 in 21ms
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:06:35.634Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:06:35.634Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:06:47.637Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:06:47.637Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:06:59.649Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:06:59.649Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:07:11.660Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:07:11.660Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:07:23.673Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:07:23.673Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:07:35.677Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:07:35.677Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:07:47.690Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:07:47.690Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:07:59.697Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:07:59.697Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:08:11.705Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:08:11.705Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:08:23.705Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:08:23.705Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:08:35.709Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:08:35.709Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:08:47.714Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:08:47.714Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:08:59.714Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:08:59.714Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:09:11.715Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:09:11.715Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:09:23.725Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:09:23.725Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:09:35.735Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:09:35.735Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:09:47.747Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:09:47.747Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:09:59.757Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:09:59.757Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:10:11.771Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:10:11.771Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:10:23.781Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:10:23.781Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:10:35.780Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:10:35.780Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:10:47.783Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:10:47.783Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:10:59.797Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:10:59.797Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:11:11.799Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:11:11.799Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:11:23.841Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:11:23.841Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:11:35.831Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:11:35.831Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:11:47.845Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:11:47.845Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+Start parent trial error: DrizzleQueryError: Failed query: select "id" from "parents" where "parents"."unique_code" = $1 limit $2
+params: FMXU8D,1
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async generateUniqueParentCode (C:\Users\cex\Downloads\classify-app-main\server\routes\auth.ts:265:22)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\server\routes\auth.ts:1833:26) {
+  query: 'select "id" from "parents" where "parents"."unique_code" = $1 limit $2',
+  params: [ 'FMXU8D', 1 ],
+  cause: error: relation "parents" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async generateUniqueParentCode (C:\Users\cex\Downloads\classify-app-main\server\routes\auth.ts:265:22)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\server\routes\auth.ts:1833:26) {
+    length: 106,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '18',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+12:11:52 PM [express] POST /api/auth/start-parent-trial 500 in 10ms
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:11:59.865Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:11:59.865Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:12:11.862Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:12:11.862Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:12:23.878Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:12:23.878Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:12:35.883Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:12:35.883Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:12:47.886Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:12:47.886Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:12:59.901Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:12:59.901Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:13:11.916Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:13:11.916Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:13:23.920Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:13:23.920Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:13:35.919Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:13:35.919Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:13:47.931Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:13:47.931Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:13:59.932Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:13:59.932Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:14:11.935Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:14:11.935Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:14:23.941Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:14:23.941Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:14:35.942Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:14:35.942Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:14:47.950Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:14:47.950Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:14:59.957Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:14:59.957Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:15:11.964Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:15:11.964Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:15:23.979Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:15:23.979Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+Start parent trial error: DrizzleQueryError: Failed query: select "id" from "parents" where "parents"."unique_code" = $1 limit $2
+params: 38T6SR,1
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async generateUniqueParentCode (C:\Users\cex\Downloads\classify-app-main\server\routes\auth.ts:265:22)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\server\routes\auth.ts:1833:26) {
+  query: 'select "id" from "parents" where "parents"."unique_code" = $1 limit $2',
+  params: [ '38T6SR', 1 ],
+  cause: error: relation "parents" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async generateUniqueParentCode (C:\Users\cex\Downloads\classify-app-main\server\routes\auth.ts:265:22)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\server\routes\auth.ts:1833:26) {
+    length: 106,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '18',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+12:15:25 PM [express] POST /api/auth/start-parent-trial 500 in 13ms
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:15:35.995Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:15:35.995Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:15:48.003Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:15:48.003Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:16:00.012Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:16:00.012Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:16:12.025Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:16:12.025Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:16:24.032Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:16:24.032Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:16:36.040Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:16:36.040Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:16:48.043Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:16:48.043Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:17:00.046Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:17:00.046Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+Start parent trial error: DrizzleQueryError: Failed query: select "id" from "parents" where "parents"."unique_code" = $1 limit $2
+params: FTGH53,1
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async generateUniqueParentCode (C:\Users\cex\Downloads\classify-app-main\server\routes\auth.ts:265:22)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\server\routes\auth.ts:1833:26) {
+  query: 'select "id" from "parents" where "parents"."unique_code" = $1 limit $2',
+  params: [ 'FTGH53', 1 ],
+  cause: error: relation "parents" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async generateUniqueParentCode (C:\Users\cex\Downloads\classify-app-main\server\routes\auth.ts:265:22)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\server\routes\auth.ts:1833:26) {
+    length: 106,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '18',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+12:17:02 PM [express] POST /api/auth/start-parent-trial 500 in 12ms
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:17:12.069Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:17:12.069Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:17:24.064Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:17:24.064Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:17:36.069Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:17:36.069Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:17:48.077Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:17:48.077Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:18:00.077Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:18:00.077Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+media cleanup error DrizzleQueryError: Failed query: 
+    SELECT id, object_key
+    FROM media m
+    WHERE m.deleted_at IS NULL
+      AND m.created_at < (NOW() - INTERVAL '24 hours')
+      AND NOT EXISTS (
+        SELECT 1 FROM media_references r
+        WHERE r.media_id = m.id AND r.deleted_at IS NULL
+      )
+  
+params: 
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async findOrphans (C:\Users\cex\Downloads\classify-app-main\server\services\mediaWorker.ts:29:15)
+    at async runCleanupCycle (C:\Users\cex\Downloads\classify-app-main\server\services\mediaWorker.ts:83:34)
+    at async Timeout.runCleanupCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\mediaWorker.ts:95:5) {
+  query: '\n' +
+    '    SELECT id, object_key\n' +
+    '    FROM media m\n' +
+    '    WHERE m.deleted_at IS NULL\n' +
+    "      AND m.created_at < (NOW() - INTERVAL '24 hours')\n" +
+    '      AND NOT EXISTS (\n' +
+    '        SELECT 1 FROM media_references r\n' +
+    '        WHERE r.media_id = m.id AND r.deleted_at IS NULL\n' +
+    '      )\n' +
+    '  ',
+  params: [],
+  cause: error: relation "media" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:149:14)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async findOrphans (C:\Users\cex\Downloads\classify-app-main\server\services\mediaWorker.ts:29:15)
+      at async runCleanupCycle (C:\Users\cex\Downloads\classify-app-main\server\services\mediaWorker.ts:83:34)
+      at async Timeout.runCleanupCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\mediaWorker.ts:95:5) {
+    length: 104,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '37',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:18:12.085Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:18:12.085Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:18:24.090Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:18:24.090Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}
+task notification worker cycle error DrizzleQueryError: Failed query: select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)
+params: pending,2026-05-18T09:18:36.104Z
+    at NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+    at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+    at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+  query: 'select count(*) from "outbox_events" where ("outbox_events"."status" = $1 and "outbox_events"."available_at" <= $2)',
+  params: [ 'pending', '2026-05-18T09:18:36.104Z' ],
+  cause: error: relation "outbox_events" does not exist
+      at C:\Users\cex\Downloads\classify-app-main\node_modules\pg-pool\index.js:45:11
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:161:13)
+      at async NodePgPreparedQuery.queryWithCache (C:\Users\cex\Downloads\classify-app-main\node_modules\src\pg-core\session.ts:71:12)
+      at async <anonymous> (C:\Users\cex\Downloads\classify-app-main\node_modules\src\node-postgres\session.ts:154:19)
+      at async runCycle (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1271:28)
+      at async Timeout.runCycleSafe (C:\Users\cex\Downloads\classify-app-main\server\services\taskNotificationWorker.ts:1306:5) {
+    length: 112,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1392',
+    routine: 'parserOpenTable'
+  }
+}

@@ -17,9 +17,9 @@ import { emitNotificationSync } from "@/lib/notificationRealtime";
 import { markTrialRouteExploration } from "@/lib/trialExperience";
 import { decideTrialRouteRedirect } from "@/lib/trialRouteGuard";
 import { ensureTrialWriteAllowed } from "@/lib/trialWriteGuard";
-import { resolveBrowserSessionChannel } from "@/lib/sessionPriority";
 import { useMobileControls } from "@/capacitor/hooks/useMobileControls";
 import { ParentDashboard } from "@/pages/ParentDashboard";
+import { AuthOracleGate } from "@/components/AuthOracleGate";
 const Toaster = lazy(() => import("@/components/ui/toaster").then(m => ({ default: m.Toaster })));
 const NotFound = lazy(() => import("@/pages/not-found"));
 
@@ -117,16 +117,6 @@ function WrappedChildGames() {
 }
 
 function WrappedChildStore() {
-  const token = localStorage.getItem("childToken");
-
-  if (!token) {
-    return (
-      <Suspense fallback={<PageLoader />}>
-        <ChildStore />
-      </Suspense>
-    );
-  }
-
   return (
     <ChildAppWrapper>
       <Suspense fallback={<PageLoader />}>
@@ -238,13 +228,11 @@ function GuardedHomeRoute() {
     return <ErrorBoundary><Home /></ErrorBoundary>;
   }
 
-  const hasActiveSession = resolveBrowserSessionChannel() !== "none";
-
-  if (hasActiveSession) {
-    return <ErrorBoundary><Home /></ErrorBoundary>;
-  }
-
-  return <ErrorBoundary><AgeGate /></ErrorBoundary>;
+  return (
+    <AuthOracleGate redirectTo="/age-gate">
+      <ErrorBoundary><Home /></ErrorBoundary>
+    </AuthOracleGate>
+  );
 }
 
 function Router() {
@@ -286,17 +274,25 @@ function Router() {
           <ErrorBoundary><TrialGames /></ErrorBoundary>
         </Route>
         <Route path="/parent-dashboard">
-          <ErrorBoundary><ParentDashboard /></ErrorBoundary>
+          <AuthOracleGate requiredChannel="parent">
+            <ErrorBoundary><ParentDashboard /></ErrorBoundary>
+          </AuthOracleGate>
         </Route>
         <Route path="/parent-store">
-          <ErrorBoundary><ParentStore /></ErrorBoundary>
+          <AuthOracleGate requiredChannel="parent">
+            <ErrorBoundary><ParentStore /></ErrorBoundary>
+          </AuthOracleGate>
         </Route>
 
         <Route path="/parent-inventory">
-          <ErrorBoundary><ParentInventory /></ErrorBoundary>
+          <AuthOracleGate requiredChannel="parent">
+            <ErrorBoundary><ParentInventory /></ErrorBoundary>
+          </AuthOracleGate>
         </Route>
         <Route path="/wallet">
-          <ErrorBoundary><Wallet /></ErrorBoundary>
+          <AuthOracleGate requiredChannel="parent">
+            <ErrorBoundary><Wallet /></ErrorBoundary>
+          </AuthOracleGate>
         </Route>
         <Route path="/notifications">
           <ErrorBoundary><Notifications /></ErrorBoundary>
@@ -308,7 +304,9 @@ function Router() {
           <ErrorBoundary><AdminAuth /></ErrorBoundary>
         </Route>
         <Route path="/admin-dashboard">
-          <ErrorBoundary><AdminDashboard /></ErrorBoundary>
+          <AuthOracleGate requiredChannel="admin">
+            <ErrorBoundary><AdminDashboard /></ErrorBoundary>
+          </AuthOracleGate>
         </Route>
         <Route path="/otp">
           <ErrorBoundary><OTPVerification /></ErrorBoundary>
@@ -339,7 +337,9 @@ function Router() {
           <ErrorBoundary><SubjectTasks /></ErrorBoundary>
         </Route>
         <Route path="/parent-tasks">
-          <ErrorBoundary><ParentTasks /></ErrorBoundary>
+          <AuthOracleGate requiredChannel="parent">
+            <ErrorBoundary><ParentTasks /></ErrorBoundary>
+          </AuthOracleGate>
         </Route>
         <Route path="/task-marketplace">
           <ErrorBoundary><TaskMarketplace /></ErrorBoundary>
@@ -427,7 +427,9 @@ function Router() {
           <ErrorBoundary><LibraryProfile /></ErrorBoundary>
         </Route>
         <Route path="/parent-profile">
-          <ErrorBoundary><ParentProfile /></ErrorBoundary>
+          <AuthOracleGate requiredChannel="parent">
+            <ErrorBoundary><ParentProfile /></ErrorBoundary>
+          </AuthOracleGate>
         </Route>
         <Route>
           <ErrorBoundary><NotFound /></ErrorBoundary>

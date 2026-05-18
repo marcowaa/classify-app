@@ -14,7 +14,16 @@ if (!JWT_SECRET) {
 export { JWT_SECRET };
 
 export const authMiddleware = (req: any, res: any, next: any) => {
-  const token = req.headers.authorization?.split(" ")[1];
+  const AUTH_TOKEN_COOKIE_NAME = "auth_token";
+  const AUTH_REDEEM_COOKIE_WRITE_ENABLED =
+    String(process.env.AUTH_REDEEM_COOKIE_WRITE_ENABLED || "")
+      .trim()
+      .toLowerCase() === "true";
+
+  const headerToken = req.headers.authorization?.split(" ")[1];
+  const cookieToken = req.cookies?.[AUTH_TOKEN_COOKIE_NAME];
+
+  const token = headerToken || (AUTH_REDEEM_COOKIE_WRITE_ENABLED ? cookieToken : undefined);
   if (!token) return res.status(401).json(errorResponse(ErrorCode.UNAUTHORIZED, "Unauthorized"));
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as any;

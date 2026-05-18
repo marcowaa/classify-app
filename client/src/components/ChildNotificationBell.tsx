@@ -6,6 +6,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { Bell, X, CheckCheck } from "lucide-react";
 import { getDateLocale } from "@/i18n/config";
 import { emitNotificationSync, notificationSyncEventName } from "@/lib/notificationRealtime";
+import { fetchAuthMe, wipeAllClientAuthState } from "@/lib/authOracle";
 
 type ChildNotification = {
   id: string;
@@ -22,51 +23,121 @@ type ChildNotification = {
 
 const getNotificationIcon = (type: string) => {
   switch (type) {
-    case "points_earned": case "points_adjustment": return "⭐";
-    case "reward_unlocked": case "achievement": return "🏆";
-    case "product_assigned": case "gift_assigned": case "gift_unlocked": case "gift_activated": return "🎁";
-    case "task_reminder": case "task_assigned": return "📝";
-    case "task_completed": return "✅";
-    case "daily_challenge": return "🎯";
-    case "goal_progress": return "📈";
-    case "broadcast": case "system_alert": return "📢";
-    case "game_shared": return "🎮";
-    default: return "🔔";
+    case "points_earned":
+    case "points_adjustment":
+      return "⭐";
+    case "reward_unlocked":
+    case "achievement":
+      return "🏆";
+    case "product_assigned":
+    case "gift_assigned":
+    case "gift_unlocked":
+    case "gift_activated":
+      return "🎁";
+    case "task_reminder":
+    case "task_assigned":
+      return "📝";
+    case "task_completed":
+      return "✅";
+    case "daily_challenge":
+      return "🎯";
+    case "goal_progress":
+      return "📈";
+    case "broadcast":
+    case "system_alert":
+      return "📢";
+    case "game_shared":
+      return "🎮";
+    default:
+      return "🔔";
   }
 };
 
 const getNavigationTarget = (notification: ChildNotification): string | null => {
   if (notification.ctaTarget) return notification.ctaTarget;
+
   switch (notification.type) {
-    case "product_assigned": case "gift_assigned": case "gift_unlocked": case "gift_activated": return "/child-gifts";
-    case "task_reminder": case "task_assigned": case "task_completed":
-    case "scheduled_task_unlocked": case "scheduled_session_activated":
-    case "task": case "task_notification_escalation":
+    case "product_assigned":
+    case "gift_assigned":
+    case "gift_unlocked":
+    case "gift_activated":
+      return "/child-gifts";
+    case "task_reminder":
+    case "task_assigned":
+    case "task_completed":
+    case "scheduled_task_unlocked":
+    case "scheduled_session_activated":
+    case "task":
+    case "task_notification_escalation":
       return "/child-tasks";
-    case "daily_challenge": case "game_shared": return "/child-games";
-    case "points_earned": case "points_adjustment": case "reward_unlocked":
-    case "achievement": case "reward":
+    case "daily_challenge":
+    case "game_shared":
+      return "/child-games";
+    case "points_earned":
+    case "points_adjustment":
+    case "reward_unlocked":
+    case "achievement":
+    case "reward":
       return "/child-rewards";
-    case "goal_progress": return "/child-progress";
-    case "child_pin_changed": return "/child-settings";
-    case "broadcast": case "system_alert": case "info": return "/child-notifications";
-    default: return null;
+    case "goal_progress":
+      return "/child-progress";
+    case "child_pin_changed":
+      return "/child-settings";
+    case "broadcast":
+    case "system_alert":
+    case "info":
+      return "/child-notifications";
+    default:
+      return null;
   }
 };
 
 export function ChildNotificationBell() {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+
   const panelRef = useRef<HTMLDivElement>(null);
   const bellRef = useRef<HTMLButtonElement>(null);
+
   const [, navigate] = useLocation();
   const { isDark } = useTheme();
   const queryClient = useQueryClient();
-  const token = localStorage.getItem("childToken");
+
+  const [me, setMe] = useState<Awaited<ReturnType<typeof fetchAuthMe>>>({
+    authenticated: false,
+    channel: "none",
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const load = async () => {
+      const res = await fetchAuthMe();
+      if (cancelled) return;
+      setMe(res);
+    };
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const isChildAuthed = me.authenticated && me.channel === "child";
+
+  // Token is legacy transport only. For cookie-only, it may be absent.
+  const childToken = localStorage.getItem("childToken");
+
+  const maybeAuthHeaders = (): Record<string, string> => {
+    if (!childToken) return {};
+    return { Authorization: `Bearer ${childToken}` };
+  };
 
   const handleSSENotification = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ["child-notifications"] });
     queryClient.invalidateQueries({ queryKey: ["child-notifications-unread-count"] });
+
     emitNotificationSync({
       source: "sse",
       title: "إشعار جديد (الطفل)",
@@ -80,8 +151,10 @@ export function ChildNotificationBell() {
       queryClient.invalidateQueries({ queryKey: ["child-notifications"] });
       queryClient.invalidateQueries({ queryKey: ["child-notifications-unread-count"] });
     };
+
     const eventName = notificationSyncEventName();
     window.addEventListener(eventName, onSync as EventListener);
+
     return () => {
       window.removeEventListener(eventName, onSync as EventListener);
     };
@@ -89,76 +162,122 @@ export function ChildNotificationBell() {
 
   const { data: notifications = [] } = useQuery<ChildNotification[]>({
     queryKey: ["child-notifications"],
+    enabled: isChildAuthed,
     queryFn: async () => {
       const res = await fetch("/api/child/notifications", {
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
+        headers: maybeAuthHeaders(),
       });
       const json = await res.json();
       return json?.data || [];
     },
-    enabled: !!token,
-    refetchInterval: token ? 30000 : false,
+    retry: 1,
+    staleTime: 30_000,
   });
 
   const { data: unreadCountData } = useQuery<{ count: number }>({
     queryKey: ["child-notifications-unread-count"],
+    enabled: isChildAuthed,
     queryFn: async () => {
       const res = await fetch("/api/child/notifications/unread-count", {
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
+        headers: maybeAuthHeaders(),
       });
       const json = await res.json();
       return json?.data || { count: 0 };
     },
-    enabled: !!token,
-    refetchInterval: token ? 30000 : false,
+    retry: 1,
+    staleTime: 30_000,
   });
 
-  // SSE real-time connection for child notifications
+  // SSE real-time connection for child notifications (Phase 2 oracle-authoritative)
   useEffect(() => {
-    if (!token) return;
+    if (!isChildAuthed) return;
 
-    let eventSource: EventSource | null = null;
-    let reconnectTimeout: ReturnType<typeof setTimeout>;
-    let reconnectDelay = 1000;
-    const MAX_DELAY = 30000;
     let disposed = false;
+    let eventSource: EventSource | null = null;
 
-    const connect = () => {
+    const useCookieMode = me.tokenType === "cookie";
+    const legacyToken = localStorage.getItem("childToken") || "";
+    const legacyUrl = `/api/child/events?token=${encodeURIComponent(legacyToken)}`;
+    const cookieUrl = `/api/child/events`;
+    const url = useCookieMode ? cookieUrl : legacyUrl;
+
+    let reconciledOnce = false;
+    let fallbackOpened = false;
+
+    const closeEs = () => {
+      if (!eventSource) return;
+      try {
+        eventSource.close();
+      } catch {
+        // ignore
+      }
+      eventSource = null;
+    };
+
+    const open = () => {
       if (disposed) return;
-      eventSource = new EventSource(`/api/child/events?token=${encodeURIComponent(token)}`);
+
+      eventSource = new EventSource(url);
 
       eventSource.addEventListener("notification", () => {
         handleSSENotification();
       });
 
-      eventSource.addEventListener("connected", () => {
-        reconnectDelay = 1000;
-      });
+      eventSource.onerror = async () => {
+        closeEs();
 
-      eventSource.onerror = () => {
-        eventSource?.close();
-        eventSource = null;
-        if (!disposed) {
-          reconnectTimeout = setTimeout(connect, reconnectDelay);
-          reconnectDelay = Math.min(reconnectDelay * 2, MAX_DELAY);
+        if (disposed) return;
+        if (reconciledOnce) return;
+
+        // Terminal failure rule: close immediately, reconcile ONCE via /api/auth/me.
+        reconciledOnce = true;
+
+        const after = await fetchAuthMe();
+        if (disposed) return;
+
+        if (!after.authenticated || after.channel !== "child") {
+          wipeAllClientAuthState();
+          return;
+        }
+
+        // If oracle says still authenticated and we started in cookie mode,
+        // allow exactly one transport fallback to legacy token URL.
+        if (after.tokenType === "cookie" && !fallbackOpened) {
+          fallbackOpened = true;
+
+          if (!legacyToken) return; // can't fallback without legacy token transport
+          try {
+            eventSource = new EventSource(legacyUrl);
+          } catch {
+            return;
+          }
+
+          eventSource.addEventListener("notification", () => {
+            handleSSENotification();
+          });
+
+          eventSource.onerror = () => {
+            // No reconnect loop: terminal stop.
+            closeEs();
+          };
         }
       };
     };
 
-    connect();
+    open();
 
     return () => {
       disposed = true;
-      clearTimeout(reconnectTimeout);
-      eventSource?.close();
+      closeEs();
     };
-  }, [token, handleSSENotification]);
+  }, [handleSSENotification, isChildAuthed, me.tokenType]);
 
   const unreadCount = unreadCountData?.count || 0;
 
-  // ─── App Badge API — sync badge with unread count ─────────
   useEffect(() => {
-    if ('setAppBadge' in navigator) {
+    if ("setAppBadge" in navigator) {
       if (unreadCount > 0) {
         (navigator as any).setAppBadge(unreadCount).catch(() => {});
       } else {
@@ -169,6 +288,7 @@ export function ChildNotificationBell() {
 
   const markAsRead = async (id: string) => {
     let wasUnread = false;
+
     queryClient.setQueryData<ChildNotification[]>(["child-notifications"], (prev) => {
       const list = Array.isArray(prev) ? prev : [];
       return list.map((item) => {
@@ -177,20 +297,27 @@ export function ChildNotificationBell() {
         return { ...item, isRead: true };
       });
     });
+
     if (wasUnread) {
       queryClient.setQueryData<{ count: number } | undefined>(["child-notifications-unread-count"], (prev) => ({
         count: Math.max(0, (prev?.count || 0) - 1),
       }));
     }
+
     emitNotificationSync({ source: "action" });
+
     try {
       await fetch(`/api/child/notifications/${id}/read`, {
         method: "PUT",
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
+        headers: maybeAuthHeaders(),
       });
+
       queryClient.invalidateQueries({ queryKey: ["child-notifications"] });
       queryClient.invalidateQueries({ queryKey: ["child-notifications-unread-count"] });
-    } catch {}
+    } catch {
+      // ignore
+    }
   };
 
   const markAllRead = async () => {
@@ -198,31 +325,44 @@ export function ChildNotificationBell() {
       const list = Array.isArray(prev) ? prev : [];
       return list.map((item) => ({ ...item, isRead: true }));
     });
+
     queryClient.setQueryData(["child-notifications-unread-count"], { count: 0 });
+
     emitNotificationSync({ source: "action" });
+
     try {
-      const unread = notifications.filter(n => !n.isRead);
-      await Promise.all(unread.map(n =>
-        fetch(`/api/child/notifications/${n.id}/read`, {
-          method: "PUT",
-          headers: { Authorization: `Bearer ${token}` },
-        })
-      ));
+      const unread = notifications.filter((n) => !n.isRead);
+
+      await Promise.all(
+        unread.map((n) =>
+          fetch(`/api/child/notifications/${n.id}/read`, {
+            method: "PUT",
+            credentials: "include",
+            headers: maybeAuthHeaders(),
+          })
+        )
+      );
+
       queryClient.invalidateQueries({ queryKey: ["child-notifications"] });
       queryClient.invalidateQueries({ queryKey: ["child-notifications-unread-count"] });
-    } catch {}
+    } catch {
+      // ignore
+    }
   };
 
   // Close on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
-        panelRef.current && !panelRef.current.contains(e.target as Node) &&
-        bellRef.current && !bellRef.current.contains(e.target as Node)
+        panelRef.current &&
+        !panelRef.current.contains(e.target as Node) &&
+        bellRef.current &&
+        !bellRef.current.contains(e.target as Node)
       ) {
         setIsOpen(false);
       }
     };
+
     if (isOpen) document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
@@ -256,12 +396,17 @@ export function ChildNotificationBell() {
 
   useEffect(() => {
     if (!isOpen) return;
+
     const obs = setupObserver();
     const timer = setTimeout(() => {
       const items = panelRef.current?.querySelectorAll("[data-notif-id]");
       items?.forEach((el) => obs.observe(el));
     }, 100);
-    return () => { clearTimeout(timer); obs.disconnect(); };
+
+    return () => {
+      clearTimeout(timer);
+      obs.disconnect();
+    };
   }, [isOpen, notifications, setupObserver]);
 
   const handleNotificationClick = (notification: ChildNotification) => {
@@ -297,7 +442,11 @@ export function ChildNotificationBell() {
       {isOpen && (
         <>
           {/* Backdrop for mobile */}
-          <div className="fixed inset-0 z-[10020] bg-black/20 sm:hidden" onClick={() => setIsOpen(false)} role="presentation" />
+          <div
+            className="fixed inset-0 z-[10020] bg-black/20 sm:hidden"
+            onClick={() => setIsOpen(false)}
+            role="presentation"
+          />
 
           <div
             ref={panelRef}
@@ -313,6 +462,7 @@ export function ChildNotificationBell() {
                   <span className="text-xs bg-red-500 text-white px-2 py-0.5 rounded-full">{unreadCount}</span>
                 )}
               </h3>
+
               <div className="flex items-center gap-2">
                 {unreadCount > 0 && (
                   <button
@@ -323,6 +473,7 @@ export function ChildNotificationBell() {
                     <CheckCheck className="h-4 w-4" />
                   </button>
                 )}
+
                 <button
                   onClick={() => setIsOpen(false)}
                   className={`p-2 rounded-lg ${isDark ? "hover:bg-gray-700" : "hover:bg-gray-100"}`}
@@ -342,6 +493,7 @@ export function ChildNotificationBell() {
               ) : (
                 displayNotifications.map((notification) => {
                   const navTarget = getNavigationTarget(notification);
+
                   return (
                     <div
                       key={notification.id}
@@ -349,7 +501,9 @@ export function ChildNotificationBell() {
                       data-notif-read={String(notification.isRead)}
                       className={`px-4 py-3 transition-colors ${
                         !notification.isRead
-                          ? isDark ? "bg-blue-900/20" : "bg-blue-50/70"
+                        ? isDark
+                          ? "bg-blue-900/20"
+                          : "bg-blue-50/70"
                           : ""
                       } ${navTarget ? "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50" : ""}`}
                       onClick={() => handleNotificationClick(notification)}
@@ -359,20 +513,24 @@ export function ChildNotificationBell() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2">
                             <p className={`text-sm font-semibold leading-tight ${isDark ? "text-white" : "text-gray-800"}`}>
-                              {notification.title || notification.message?.split('\n')[0]}
+                              {notification.title || notification.message?.split("\n")[0]}
                             </p>
-                            {!notification.isRead && (
-                              <span className="shrink-0 h-2 w-2 rounded-full bg-blue-500 mt-1.5" />
-                            )}
+                            {!notification.isRead && <span className="shrink-0 h-2 w-2 rounded-full bg-blue-500 mt-1.5" />}
                           </div>
+
                           <p className={`text-xs mt-0.5 line-clamp-2 ${isDark ? "text-gray-400" : "text-gray-500"}`}>
                             {notification.message}
                           </p>
+
                           <p className={`text-[10px] mt-1 ${isDark ? "text-gray-500" : "text-gray-400"}`}>
                             {new Date(notification.createdAt).toLocaleDateString(getDateLocale(), {
-                              month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
+                              month: "short",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
                             })}
                           </p>
+
                           {navTarget && (
                             <p className={`text-[10px] mt-1 ${isDark ? "text-blue-400" : "text-blue-500"}`}>
                               {t("childNotifications.clickToNavigate")} ←
@@ -389,7 +547,10 @@ export function ChildNotificationBell() {
             {/* Footer — View All */}
             <div className={`px-4 py-2.5 border-t text-center ${isDark ? "border-gray-700" : "border-gray-100"}`}>
               <button
-                onClick={() => { setIsOpen(false); navigate("/child-notifications"); }}
+                onClick={() => {
+                  setIsOpen(false);
+                  navigate("/child-notifications");
+                }}
                 className={`text-sm font-semibold ${isDark ? "text-blue-400 hover:text-blue-300" : "text-blue-600 hover:text-blue-700"}`}
               >
                 {t("childNotifications.viewAll")}

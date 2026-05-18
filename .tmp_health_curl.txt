@@ -1,0 +1,10 @@
+* Host localhost:3000 was resolved.
+* IPv6: ::1
+* IPv4: 127.0.0.1
+*   Trying [::1]:3000...
+*   Trying 127.0.0.1:3000...
+* connect to ::1 port 3000 from :: port 50591 failed: Connection refused
+* connect to 127.0.0.1 port 3000 from 0.0.0.0 port 50594 failed: Connection refused
+* Failed to connect to localhost port 3000 after 2247 ms: Could not connect to server
+* closing connection #0
+curl: (7) Failed to connect to localhost port 3000 after 2247 ms: Could not connect to server

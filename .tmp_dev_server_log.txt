@@ -1,0 +1,19 @@
+
+> rest-express@2.0.2 dev
+> dotenv -v NODE_ENV=development -- tsx server/index.ts
+
+C:\Users\cex\Downloads\classify-app-main\node_modules\pino\lib\transport.js:282
+      throw new Error(`unable to determine transport target for "${origin}"`)
+            ^
+
+Error: unable to determine transport target for "pino-pretty"
+    at fixTarget (C:\Users\cex\Downloads\classify-app-main\node_modules\pino\lib\transport.js:282:13)
+    at transport (C:\Users\cex\Downloads\classify-app-main\node_modules\pino\lib\transport.js:252:22)
+    at normalizeArgs (C:\Users\cex\Downloads\classify-app-main\node_modules\pino\lib\tools.js:349:16)
+    at pino (C:\Users\cex\Downloads\classify-app-main\node_modules\pino\pino.js:91:28)
+    at <anonymous> (C:\Users\cex\Downloads\classify-app-main\server\src\utils\logger.ts:6:23)
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.12.0

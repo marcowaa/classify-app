@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { CheckCircle2, Globe, Loader2 } from "lucide-react";
 import { FaApple, FaDiscord, FaFacebookF, FaGithub, FaLinkedinIn, FaXTwitter } from "react-icons/fa6";
 import { getNativeGoogleOAuthCallbackPath, isNativeGoogleSignInAvailable } from "@/lib/nativeGoogleAuth";
+import { startOAuth } from "@/lib/oauthSessionManager";
 
 const OAUTH_REDIRECT_LOCK_KEY = "classify-oauth-redirect-lock-at";
 const OAUTH_REDIRECT_LOCK_MS = 20_000;
@@ -347,10 +348,34 @@ export function SocialLoginButtons({
       return;
     }
 
-    const params = new URLSearchParams({ mode });
-    params.set("returnTo", normalizedReturnTo);
-    const safeProvider = encodeURIComponent(providerKey);
-    window.location.href = `/api/auth/oauth/${safeProvider}?${params.toString()}`;
+    // Phase 1 wiring: route non-Google providers through oauthSessionManager,
+    // which currently returns legacy-redirect URL (webPopup disabled in Phase 1),
+    // but keeps the contract unified for later phases.
+    try {
+      const startResult = await startOAuth({
+        provider: providerKey as any,
+        mode,
+        returnTo: normalizedReturnTo,
+      });
+
+      if (startResult.kind === "legacy-redirect") {
+        window.location.href = startResult.redirectUrl;
+        return;
+      }
+
+      if (startResult.kind === "native-google") {
+        // Should be unreachable here because this branch handles non-google providers,
+        // but keep it safe.
+        window.location.href = startResult.redirectPath;
+        return;
+      }
+
+      setIsRedirecting(false);
+      console.error("[oauth] startOAuth returned noop", startResult);
+    } catch (error) {
+      console.error("[oauth] startOAuth failed", error);
+      setIsRedirecting(false);
+    }
   };
 
   const isCompact = variant === "compact";

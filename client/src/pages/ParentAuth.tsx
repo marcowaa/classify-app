@@ -22,6 +22,7 @@ import { cacheAdultAccountSession } from "@/lib/adultAccountSessions";
 import { useToast } from "@/hooks/use-toast";
 import { trackTrialFunnelEvent } from "@/lib/trialAnalytics";
 import { getNativeGoogleOAuthCallbackPath, isNativeGoogleSignInAvailable } from "@/lib/nativeGoogleAuth";
+import { startOAuth } from "@/lib/oauthSessionManager";
 import { buildWhatsAppSupportUrl, fetchSupportSettingsPublic } from "@/lib/supportContact";
 
 const OAUTH_REDIRECT_LOCK_KEY = "classify-oauth-redirect-lock-at";
@@ -794,7 +795,33 @@ export const ParentAuth = (): JSX.Element => {
       }
     }
 
-    window.location.href = `/api/auth/oauth/${safeProvider}?${params.toString()}`;
+    try {
+      const startResult = await startOAuth({
+        provider: safeProvider as any,
+        mode: "login",
+        returnTo: preferredReturnTo,
+      });
+
+      if (startResult.kind === "legacy-redirect") {
+        window.location.href = startResult.redirectUrl;
+        return;
+      }
+
+      if (startResult.kind === "native-google") {
+        window.location.href = startResult.redirectPath;
+        return;
+      }
+
+      // noop
+      sessionStorage.removeItem(OAUTH_REDIRECT_LOCK_KEY);
+      setIsSocialRedirecting(false);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err || "OAuth start failed");
+      console.error("[oauth] startOAuth failed", { provider: safeProvider, error: message });
+      sessionStorage.removeItem(OAUTH_REDIRECT_LOCK_KEY);
+      setError(message);
+      setIsSocialRedirecting(false);
+    }
   };
 
   const modeOptions = [
