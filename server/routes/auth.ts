@@ -14,6 +14,8 @@ import { JWT_SECRET, authMiddleware } from "./middleware";
 import { smsOTPService } from "../sms-otp";
 import { whatsappOTPService } from "../whatsapp-otp";
 import crypto from "crypto";
+import fs from "fs";
+import path from "path";
 import { successResponse, errorResponse, ErrorCode } from "../utils/apiResponse";
 import { trackOtpEvent } from "../utils/otpMonitoring";
 import { loginLimiter, otpRequestLimiter, otpVerifyLimiter, registerLimiter } from "../utils/rateLimiters";
@@ -5043,12 +5045,50 @@ export async function registerAuthRoutes(app: Express) {
         return res.status(503).json(errorResponse(ErrorCode.BAD_REQUEST, "Social login is disabled"));
       }
 
-      const googleClientId = readGoogleAnyClientId();
+      // Native-config prefers env values directly; container may not include google-services.json.
+      const GOOGLE_WEB_CLIENT_ID_FALLBACK = "277976106301-9qctlaa15pvcs0h1tgniup4m4bco7qas.apps.googleusercontent.com";
+      const googleClientIdResolved = String(process.env.GOOGLE_WEB_CLIENT_ID || "").trim() || GOOGLE_WEB_CLIENT_ID_FALLBACK;
+
+      return res.json(successResponse({ clientId: googleClientIdResolved }, "Google native config retrieved"));
+
+      // Capacitor GoogleAuth Android plugin uses requestIdToken() which typically expects the *web/server* client_id
+      // (client_type=3) rather than the Android client_id (client_type=1).
+      // Deterministic: pick the Web OAuth client_id (client_type=3) from google-services.json
+      const googleServicesPathCandidates = [
+        path.resolve(process.cwd(), "google-services.json"),
+        path.resolve(process.cwd(), "../google-services.json"),
+      ];
+
+      const googleServicesPath = googleServicesPathCandidates.find((p) => {
+        try {
+          return fs.existsSync(p);
+        } catch {
+          return false;
+        }
+      });
+
+      if (!googleServicesPath) {
+        return res.status(404).json(errorResponse(ErrorCode.NOT_FOUND, "google-services.json not found"));
+      }
+
+      const rawGoogleServices = fs.readFileSync(googleServicesPath, "utf8");
+      const googleServices = JSON.parse(rawGoogleServices) as {
+        client?: Array<{
+          oauth_client?: Array<{
+            client_type?: number | string;
+            client_id?: string;
+          }>;
+        }>;
+      };
+
+      const webClient = googleServices?.client?.[0]?.oauth_client?.find((c) => Number(c.client_type) === 3);
+      const googleClientId = webClient?.client_id ? String(webClient.client_id).trim() : "";
+
       if (!googleClientId) {
         return res.status(404).json(errorResponse(ErrorCode.NOT_FOUND, "Google provider is not configured"));
       }
 
-      return res.json(successResponse({ clientId: googleClientId }, "Google native config retrieved"));
+      return res.json(successResponse({ clientId: googleClientIdResolved }, "Google native config retrieved"));
     } catch (error: any) {
       console.error("Get Google native config error:", error);
       return res.status(500).json(errorResponse(ErrorCode.INTERNAL_SERVER_ERROR, "Failed to get Google config"));
